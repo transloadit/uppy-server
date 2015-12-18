@@ -2,7 +2,7 @@ var koa = require('koa');
 var router = require('koa-router')();
 var session = require('koa-session');
 var mount = require('koa-mount');
-var Grent = require('grant-koa');
+var Grant = require('grant-koa');
 var grant = new Grant({
   "server": {
     "protocol": "http",

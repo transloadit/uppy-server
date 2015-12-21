@@ -32,28 +32,39 @@ app.use(router.routes())
 app.use(router.allowedMethods());
 
 router.get('/dropbox/callback', function *(next) {
+  if (!this.session.tokens) {
+    this.session.tokens = {};
+  }
   var code = this.query.code;
 
   request.post({
     url: 'https://api.dropboxapi.com/1/oauth2/token',
+    json: true,
     qs: {
       code: code,
       grant_type: 'authorization_code',
       client_id: authConfig.dropbox.clientKey,
       client_secret: authConfig.dropbox.clientSecret,
       redirect_uri: 'http://localhost:3000/dropbox/callback'
-    }
-  }, function(err, res, body) {
+    },
+    headers: [
+      {
+        name: 'content-type',
+        value: 'application/json'
+      }
+    ]
+  }, (err, res, body) => {
     if (err) {
       return console.log(err);
     }
 
     this.session.tokens.dropbox = body.access_token;
 
-  })
+  });
 });
 
 router.get('/dropbox/fetch', function *(next) {
+  this.session = null;
   this.redirect('http://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id=' + authConfig.dropbox.clientKey + '&redirect_uri=http://localhost:3000/dropbox/callback');
 })
 

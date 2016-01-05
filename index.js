@@ -1,7 +1,5 @@
 var koa = require('koa')
-var request = require('request')
-var router = require('koa-router')()
-var routes = require('./server/routes');
+var router = require('./server/router')();
 var session = require('koa-session')
 var mount = require('koa-mount')
 var Grant = require('grant-koa')
@@ -43,72 +41,6 @@ app.use(mount(grant))
 
 app.use(router.routes())
 app.use(router.allowedMethods())
-
-function authCallbackHandler(provider) {
-  if (!this.session.tokens) {
-    this.session.tokens = {}
-  }
-  console.log(this.session.tokens)
-  console.log(this.query.code)
-  request.post({
-    url: auth[provider].tokenURI,
-    json: true,
-    qs: {
-      code: this.query.code,
-      grant_type: 'authorization_code',
-      client_id: auth[provider].clientKey,
-      client_secret: auth[provider].clientSecret,
-      redirect_uri: 'http://localhost:3000/dropbox/callback'
-    },
-    headers: [
-      {
-        name: 'content-type',
-        value: 'application/json'
-      }
-    ]
-  }, (err, res, body) => {
-    if (err) {
-      return console.log(err)
-    }
-  
-    this.session.tokens[provider] = body.access_token
-
-  })
-}
-
-router.get('/dropbox/callback', function *(next) {
-  authCallbackHandler.bind(this)('dropbox');
-})
-
-router.get('/google/callback', function *(next) {
-  authCallbackHandler('google').bind(this)
-})
-
-router.get('/instagram/callback', function *(next) {
-  authCallbackHandler('instagram').bind(this)
-})
-
-router.get('/dropbox/connect', function *(next) {
-  this.redirect('http://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id=' + auth.dropbox.clientKey + '&redirect_uri=http://localhost:3000/dropbox/callback')
-})
-
-router.get('/dropbox/connect', function *(next) {
-  this.redirect('http://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id=' + auth.dropbox.clientKey + '&redirect_uri=http://localhost:3000/dropbox/callback')
-})
-
-router.get('/google/connect', function *(next) {
-  this.redirect('http://www.google.com/1/oauth2/authorize?response_type=code&client_id=' + auth.google.clientKey + '&redirect_uri=http://localhost:3000/google/callback')
-})
-
-router.get('/instagram/connect', function *(next) {
-  this.redirect('http://www.instagram.com/1/oauth2/authorize?response_type=code&client_id=' + auth.instagram.clientKey + '&redirect_uri=http://localhost:3000/instagram/callback')
-})
-
-router.get('/', function *(next) {
-  console.log('index')
-})
-
-
 
 app.listen(3000)
 

@@ -6,8 +6,7 @@ module.exports = function (provider) {
     if (!this.session.tokens) {
       this.session.tokens = {}
     }
-    console.log(this.session.tokens)
-    console.log(this.query.code)
+
     request.post({
       url: auth[provider].tokenURI,
       json: true,

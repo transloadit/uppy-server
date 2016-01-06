@@ -10,6 +10,7 @@
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
   "dependencies": {
+    "dropbox": "^0.10.3",
     "google-auth-library": "^0.9.7",
     "googleapis": "^2.1.7",
     "grant-koa": "^3.5.3",

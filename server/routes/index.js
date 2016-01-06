@@ -3,10 +3,17 @@ var redirectController = require('../controllers/redirect')
 
 module.exports = [
   { 
-    route: '/dropbox/callback', 
+    type: 'GET',
+    route: '/dropbox/callback',
     handler: authController('dropbox')
   },
   {
+    type: 'POST',
+    route: '/dropbox/fetch',
+    handler: authController('dropbox')
+  },
+  {
+    type: 'GET',
     route: '/dropbox/connect',
     handler: redirectController('dropbox')
   }

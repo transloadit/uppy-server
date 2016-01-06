@@ -1,5 +1,6 @@
 var koa = require('koa')
-var router = require('./server/router')();
+var routes = require('./server/routes')
+var router = require('./server/router')(routes);
 var session = require('koa-session')
 var mount = require('koa-mount')
 var Grant = require('grant-koa')

@@ -1,17 +1,17 @@
-var authController = require('../controllers/auth')
+var dropboxController = require('../controllers/dropbox/auth')
 var redirectController = require('../controllers/redirect')
 
 module.exports = [
   { 
     type: 'GET',
     route: '/dropbox/callback',
-    handler: authController('dropbox')
+    handler: dropboxController
   },
-  {
-    type: 'POST',
-    route: '/dropbox/fetch',
-    handler: authController('dropbox')
-  },
+  // {
+  //   type: 'POST',
+  //   route: '/dropbox/fetch',
+  //   handler: dropboxAuthController('dropbox')
+  // },
   {
     type: 'GET',
     route: '/dropbox/connect',

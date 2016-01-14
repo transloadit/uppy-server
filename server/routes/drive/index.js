@@ -1,12 +1,12 @@
 var controllers = require('../../controllers/drive')
-
 var auth = controllers.auth
-var listFiles = controllers.listFiles
+var get = controllers.get
+var list = controllers.list
 
 module.exports = function(router) {
   router.get('/drive/auth/authorize', auth.getAuthUrl)
   router.get('/drive/callback', auth.getToken)
-  router.get('/drive/listFiles', listFiles)
-
+  router.get('/drive/get', get)
+  router.get('/drive/listFiles', list)
   return router;
 }

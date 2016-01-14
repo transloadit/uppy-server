@@ -1,8 +1,7 @@
 var koa = require('koa')
-var routes = require('./server/routes')
-var router = require('./server/router')(routes)
+var router = require('./server/routes')()
 var session = require('koa-session')
-var cors = require('koa-cors');
+var cors = require('koa-cors')
 var mount = require('koa-mount')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/auth'))

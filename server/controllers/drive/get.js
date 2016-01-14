@@ -1,6 +1,5 @@
 var fs = require('fs')
 var google = require('googleapis')
-var 
 
 module.exports = function () {
   return function *(next) {
@@ -8,6 +7,7 @@ module.exports = function () {
 
     service.files.get({
       fileId: this.query.fileId,
+      auth: this.session.drive.auth,
       alt: 'media'
     }, function(error, file) {
       if (err) {

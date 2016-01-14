@@ -2,6 +2,8 @@ var googleAuth = require('google-auth-library')
 var config = require('../../../config/auth')
 var callback = config.server.protocol + '://' + config.server.host  + config.drive.callback
 
+var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+
 module.exports = {
   authorize: function* (next) {
     if (!this.session.drive) {
@@ -11,13 +13,18 @@ module.exports = {
     if (!this.session.drive.auth || !this.session.drive.client) {
       var auth = new googleAuth()
       var client = new auth.OAuth2(config.drive.key, config.drive.secret, callback)
-
       this.session.drive.auth = auth
       this.session.drive.client = client
     }
 
     if (!this.session.drive.token) {
-      this.redirect(this.getAuthUrl())
+      console.log(this.session.drive);
+      var authUrl = this.session.drive.client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES
+      })
+
+      this.redirect(authUrl)
     } else {
       this.session.drive.client.credentials = this.session.drive.token
     }
@@ -32,13 +39,5 @@ module.exports = {
     this.session.drive.token = token
     this.redirect('/')
     })
-  },
-  getAuthUrl: function* getAuthUrl(next) {
-    var authUrl = this.session.drive.client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES
-    })
-
-    this.body = authUrl
   }
 }

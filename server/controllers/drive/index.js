@@ -1,7 +1,5 @@
-var auth = require('./auth')
-var list = require('./list')
-
 module.exports = {
-  auth,
-  list
+  auth: require('./auth'),
+  get: require('./get'),
+  list: require('./list')
 }

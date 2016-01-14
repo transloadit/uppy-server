@@ -1,7 +1,6 @@
-var request = require('request')
+var request = require('request');
 var Dropbox = require('dropbox')
 var config = require('../../../config/auth')
-
 var callback = config.server.protocol + '://' + config.server.host + config.dropbox.callback;
 
 module.exports = function() {

@@ -1,20 +1,6 @@
-var dropboxController = require('../controllers/dropbox/auth')()
-var redirectController = require('../controllers/redirect')
+var router = require('koa-router')()
 
-module.exports = [
-  {
-    type   : 'GET',
-    route  : '/dropbox/callback',
-    handler: dropboxController
-  },
-  // {
-  //   type: 'POST',
-  //   route: '/dropbox/fetch',
-  //   handler: dropboxAuthController('dropbox')
-  // },
-  {
-    type   : 'GET',
-    route  : '/dropbox/connect',
-    handler: redirectController('dropbox')
-  }
-]
+module.exports = function() {
+  require('./drive')(router)
+  return router
+}

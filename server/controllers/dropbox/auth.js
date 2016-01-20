@@ -10,18 +10,18 @@ module.exports = function *(next) {
   }
 
   request.post({
-    url: config.tokenURI,
+    url : config.tokenURI,
     json: true,
-    qs: {
-      code: this.query.code,
-      grant_type: 'authorization_code',
-      client_id: config.dropbox.clientKey,
+    qs  : {
+      code         : this.query.code,
+      grant_type   : 'authorization_code',
+      client_id    : config.dropbox.clientKey,
       client_secret: config.dropbox.clientSecret,
-      redirect_uri: protocol + host + config.dropbox.callback
+      redirect_uri : protocol + host + config.dropbox.callback
     },
     headers: [
       {
-        name: 'content-type',
+        name : 'content-type',
         value: 'application/json'
       }
     ]

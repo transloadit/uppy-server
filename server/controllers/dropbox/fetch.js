@@ -1,7 +1,7 @@
-var request = require('request')
+// var request = require('request')
 
-module.exports = function() {
+module.exports = function () {
   return function *(next) {
-    
+
   }
 }

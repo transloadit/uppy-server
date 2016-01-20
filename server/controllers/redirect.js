@@ -1,4 +1,4 @@
-var request = require('request')
+// var request = require('request')
 var config = require('../../config/auth')
 
 var protocol = config.server.protocol

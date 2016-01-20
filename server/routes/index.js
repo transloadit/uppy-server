@@ -1,6 +1,6 @@
 var router = require('koa-router')()
 
-module.exports = function() {
+module.exports = function () {
   require('./drive')(router)
   return router
 }

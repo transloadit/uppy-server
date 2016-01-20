@@ -1,27 +1,27 @@
-var request = require('request');
+var request = require('request')
 var Dropbox = require('dropbox')
 var config = require('../../../config/auth')
-var callback = config.server.protocol + '://' + config.server.host + config.dropbox.callback;
+var callback = config.server.protocol + '://' + config.server.host + config.dropbox.callback
 
-module.exports = function() {
+module.exports = function () {
   return function *(next) {
     if (!this.session.dropbox) {
       this.session.dropbox = {}
     }
 
     request.post({
-      url: config.dropbox.tokenURI,
+      url : config.dropbox.tokenURI,
       json: true,
-      qs: {
-        code: this.query.code,
-        grant_type: 'authorization_code',
-        client_id: config.dropbox.clientKey,
+      qs  : {
+        code         : this.query.code,
+        grant_type   : 'authorization_code',
+        client_id    : config.dropbox.clientKey,
         client_secret: config.dropbox.clientSecret,
-        redirect_uri: callback
+        redirect_uri : callback
       },
       headers: [
         {
-          name: 'content-type',
+          name : 'content-type',
           value: 'application/json'
         }
       ]
@@ -31,9 +31,10 @@ module.exports = function() {
       }
 
       var client = new Dropbox.Client({
-        key: config.dropbox.key,
+        key   : config.dropbox.key,
         secret: config.dropbox.secret
-      });
+      })
+      console.dir(client)
 
       this.session.dropbox.token = body.access_token
     })

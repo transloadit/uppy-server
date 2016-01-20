@@ -1,5 +1,5 @@
 var google = require('googleapis')
-var googleAuth = require('google-auth-library')
+var GoogleAuth = require('google-auth-library')
 var config = require('../../../config/auth')
 
 var clientKey = config.drive.key
@@ -9,19 +9,19 @@ var redirectUrl = config.server.url + config.drive.callback
 module.exports = function () {
   return function *(next) {
     var service = google.drive('v2')
-    var auth = new googleAuth()
+    var auth = new GoogleAuth()
 
     var oauth2Client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
     oauth2Client.credentials = this.session.drive.token
 
-    var query = "'" + (this.query.dir || "root") + "' in parents"
+    var query = "'" + (this.query.dir || 'root') + "' in parents"
 
-    yield function listFiles(cb) {
+    yield function listFiles (cb) {
       service.files.list({
-        auth: auth,
+        auth     : auth,
         nextToken: this.query.nextToken || '',
-        q: query
-      }, function(err, res) {
+        q        : query
+      }, function (err, res) {
         if (err) {
           this.body = err
           return cb()

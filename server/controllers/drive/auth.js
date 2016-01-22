@@ -22,7 +22,7 @@ module.exports = {
           scope      : SCOPES
         })
 
-        this.redirect(authUrl)
+        this.body = authUrl
       } else {
         this.session.drive.client.credentials = this.session.drive.token
       }

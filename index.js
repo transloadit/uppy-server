@@ -1,7 +1,7 @@
 var koa = require('koa')
-var routes = require('./server/routes')
-var router = require('./server/router')(routes)
+var router = require('./server/routes')()
 var session = require('koa-session')
+var cors = require('koa-cors')
 var mount = require('koa-mount')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/auth'))
@@ -13,10 +13,12 @@ app.keys = ['grant']
 
 app.use(session(app))
 app.use(mount(grant))
+app.use(cors({
+  origin: '*'
+}))
 
 app.use(router.routes())
 app.use(router.allowedMethods())
+app.listen(3002)
 
-app.listen(3000)
-
-console.log('Listening on port 3000.')
+console.log('Listening on port 3002.')

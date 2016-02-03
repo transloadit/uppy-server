@@ -22,9 +22,15 @@ module.exports = {
           scope      : SCOPES
         })
 
-        this.body = authUrl
+        this.body = {
+          isAuthenticated: false,
+          authUrl
+        }
       } else {
-        this.session.drive.client.credentials = this.session.drive.token
+        this.body = {
+          isAuthenticated: true,
+          authUrl: null
+        }
       }
     }
   },

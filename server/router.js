@@ -1,5 +1,5 @@
 var router = require('koa-router')()
 
-module.exports = function(routes) {
+module.exports = function (routes) {
   return router
 }

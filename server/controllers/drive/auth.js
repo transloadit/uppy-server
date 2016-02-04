@@ -5,7 +5,7 @@ var clientKey = config.drive.key
 var clientSecret = config.drive.secret
 var redirectUrl = config.server.url + config.drive.callback
 
-var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+var SCOPES = ['https://www.googleapis.com/auth/drive']
 
 module.exports = {
   authorize () {
@@ -13,12 +13,12 @@ module.exports = {
       if (!this.session.drive) {
         this.session.drive = {}
       }
+
       var auth = new GoogleAuth()
       var client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
 
       if (!this.session.drive.token) {
         var authUrl = client.generateAuthUrl({
-          access_type: 'offline',
           scope      : SCOPES
         })
 
@@ -36,9 +36,8 @@ module.exports = {
   },
   getToken () {
     return function * (next) {
-      var callback = 'todo' // @todo Where is callback coming from?
       var auth   = new GoogleAuth()
-      var client = new auth.OAuth2(config.drive.key, config.drive.secret, callback)
+      var client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
 
       yield function fetchToken (cb) {
         client.getToken(this.query.code, function tokenCallback (err, token) {

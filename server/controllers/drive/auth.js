@@ -19,7 +19,7 @@ module.exports = {
 
       if (!this.session.drive.token) {
         var authUrl = client.generateAuthUrl({
-          scope      : SCOPES
+          scope: SCOPES
         })
 
         this.body = {

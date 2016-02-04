@@ -14,7 +14,8 @@ app.keys = ['grant']
 app.use(session(app))
 app.use(mount(grant))
 app.use(cors({
-  origin: '*'
+  origin: 'http://localhost:4000',
+  credentials: true
 }))
 
 app.use(router.routes())

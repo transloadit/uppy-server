@@ -1,0 +1,124 @@
+[infra.provider.aws]
+  access_key = "${var.FREY_AWS_ACCESS_KEY}"
+  secret_key = "${var.FREY_AWS_SECRET_KEY}"
+  region     = "us-east-1"
+
+[infra.variable.ami]
+  [infra.variable.ami.default]
+    us-east-1 = "ami-37bde352"
+
+[infra.output.public_address]
+  value = "${aws_instance.uppy-server.0.public_dns}"
+[infra.output.public_addresses]
+  value = "${join(\"\n\", aws_instance.uppy-server.*.public_dns)}"
+
+[infra.resource.aws_key_pair.uppy-server]
+  key_name   = "uppy-server"
+  public_key = "${file(var.FREY__RUNTIME__SSH__KEYPUB_FILE)}"
+
+[infra.resource.aws_instance.uppy-server]
+  ami             = "${lookup(var.ami, var.region)}"
+  instance_type   = "m1.medium"
+  key_name        = "${aws_key_pair.uppy-server.key_name}"
+  security_groups = ["fw-uppy-server"]
+  [infra.resource.aws_instance.uppy-server.connection]
+    key_file = "${var.FREY__RUNTIME__SSH__KEYPRV_FILE}"
+    user     = "${var.FREY__RUNTIME__SSH__USER}"
+  [infra.resource.aws_instance.uppy-server.tags]
+    Name = "${var.FREY_DOMAIN}"
+
+[infra.resource.aws_route53_record.www]
+  name    = "${var.FREY_DOMAIN}"
+  records = ["${aws_instance.uppy-server.public_dns}"]
+  ttl     = "300"
+  type    = "CNAME"
+  zone_id = "${var.FREY_AWS_ZONE_ID}"
+
+[infra.resource.aws_security_group.fw-uppy-server]
+  description = "Infra uppy-server"
+  name        = "fw-uppy-server"
+  [[infra.resource.aws_security_group.fw-uppy-server.ingress]]
+    cidr_blocks = ["${var.ip_all}"]
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
+  [[infra.resource.aws_security_group.fw-uppy-server.ingress]]
+    cidr_blocks = ["${var.ip_all}"]
+    from_port   = 8080
+    protocol    = "tcp"
+    to_port     = 8080
+
+[infra.variable.FREY_AWS_ACCESS_KEY]
+  description = "FREY_AWS_ACCESS_KEY"
+[infra.variable.FREY_AWS_SECRET_KEY]
+  description = "FREY_AWS_SECRET_KEY"
+[infra.variable.FREY_AWS_ZONE_ID]
+  description = "FREY_AWS_ZONE_ID"
+[infra.variable.FREY_DOMAIN]
+  description = "FREY_DOMAIN"
+[infra.variable.FREY__RUNTIME__SSH__KEYPUB_FILE]
+  description = "FREY__RUNTIME__SSH__KEYPUB_FILE"
+[infra.variable.FREY__RUNTIME__SSH__KEYPRV_FILE]
+  description = "FREY__RUNTIME__SSH__KEYPRV_FILE"
+[infra.variable.FREY__RUNTIME__SSH__USER]
+  description = "FREY__RUNTIME__SSH__USER _"
+
+[infra.variable.ip_all]
+  default = "0.0.0.0/0"
+  description = "ip_all"
+[infra.variable.ip_kevin]
+  default = "62.163.187.106/32"
+  description = "ip_kevin"
+[infra.variable.ip_marius]
+  default = "84.146.5.70/32"
+  description = "ip_marius"
+[infra.variable.ip_tim]
+  default = "24.134.75.132/32"
+  description = "ip_tim"
+[infra.variable.region]
+  default = "us-east-1"
+  description = "The region of AWS, for AMI lookups."
+
+
+[[install.playbooks]]
+  hosts = "uppy-server"
+  name  = "Install uppy-server"
+
+  [[install.playbooks.tasks]]
+    action   = "template src=../templates/sources.list dest=/etc/apt/sources.list"
+    name     = "Common | Add US APT Mirrors"
+    register = "apt_sources"
+
+  [[install.playbooks.tasks]]
+    apt  = "upgrade=dist cache_valid_time=3600 update_cache=yes dpkg_options='force-confold,force-confdef'"
+    name = "Common | Update APT"
+    when = "apt_sources|changed"
+
+  [[install.playbooks.tasks]]
+    apt        = "pkg={{ item }} state=present"
+    name       = "Common | Install Packages"
+    with_items = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "psmisc", "telnet", "vim", "wget"]
+
+  [[install.playbooks.tasks]]
+    action = "lineinfile dest=/home/ubuntu/.bashrc line=\"alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'\""
+    name   = "Common | Add convenience shortcut wtf"
+
+  [[install.playbooks.tasks]]
+    file = "path=/srv/uppy-server/current state=cwd owner=www-data group=www-data mode=0755 recurse=yes"
+    name = "uppy-server | Create approot"
+
+  [[install.playbooks.tasks]]
+    file = "path=/mnt/uppy-server-data state=cwd owner=www-data group=www-data mode=0755 recurse=yes"
+    name = "uppy-server | Create dataroot"
+
+  [[install.playbooks.tasks]]
+    action = "template src=../templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
+    name = "uppy-server | Upload environment"
+
+  [[install.playbooks.tasks]]
+    action = "template src=../templates/upstart-uppy-server dest=/etc/init/uppy-server.conf"
+    name = "uppy-server | Install upstart file"
+
+  [[install.playbooks.tasks]]
+    action = "service name=uppy-server state=restarted"
+    name = "uppy-server | Restart"

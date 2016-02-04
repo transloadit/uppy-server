@@ -1,0 +1,25 @@
+stop on runlevel [016]
+start on (started networking)
+
+# The respawn limits function as follows: If the process is respawned
+# more than count times within an interval of timeout seconds,
+# the process will be stopped automatically, and not restarted.
+# Unless set explicitly, the limit defaults to 10 times within 5 seconds.
+# http://upstart.ubuntu.com/wiki/Stanzas#respawn_limit
+respawn
+respawn limit 10 5
+
+limit nofile 32768 32768
+
+pre-stop exec status uppy-server | grep -q "stop/waiting" && initctl emit --no-wait stopped JOB=uppy-server || true
+
+script
+  set -e
+  set -x
+  mkfifo /tmp/uppy-server-log-fifo
+  ( logger -t uppy-server </tmp/uppy-server-log-fifo & )
+  exec >/tmp/uppy-server-log-fifo
+  rm /tmp/uppy-server-log-fifo
+  exec bash -c "cd /srv/uppy-server/current \
+    && exec sudo -EHu www-data ./uppy-server -port=8080 -dir=/mnt/uppy-server-data -store-size=10737418240"
+end script

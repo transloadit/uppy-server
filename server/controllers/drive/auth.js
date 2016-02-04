@@ -11,6 +11,7 @@ module.exports = {
   authorize () {
     return function * (next) {
       if (!this.session.drive) {
+        console.log('undefined')
         this.session.drive = {}
       }
 

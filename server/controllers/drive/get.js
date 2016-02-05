@@ -18,7 +18,7 @@ module.exports = function () {
     yield function getFile (cb) {
       service.files.get({
         fileId: this.query.fileId,
-        auth  : auth,
+        auth  : oauth2Client,
         alt   : 'media'
       }, function (error, file) {
         if (error) {

@@ -8,12 +8,15 @@ __base="$(basename ${__file} .sh)"
 __rootdir="${__dir}"
 
 export DEPLOY_ENV="${DEPLOY_ENV:-production}"
+export DEBUG="frey:*"
 
 # Secret keys here:
 # export FREY_AWS_ACCESS_KEY="xyz"
 # export FREY_AWS_SECRET_KEY="xyz123"
 # export FREY_AWS_ZONE_ID="Z123"
+
 # export FREY_DOMAIN="uppy-server.transloadit.com"
+
 # export FREY_SSH_KEY_FILE="/Users/kvz/.ssh/frey-uppy-server.pem"
 # export FREY_SSH_USER="ubuntu"
 # export FREY_SSH_KEY_NAME="uppy-server"

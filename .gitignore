@@ -28,6 +28,6 @@ node_modules
 
 # oAuth Configuration
 config/auth.js
-.frey/residu/
+frey-residu*
 
 env.sh

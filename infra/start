@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
 
+# If you want to use the transpiled lib:
+source ../env.sh && node ../node_modules/.bin/frey --app uppy-server
+
+# If you want to use src with _some_ es6:
 # source ../env.sh && node --harmony ../node_modules/.bin/frey --app uppy-server
-source ../env.sh && babel-node --presets es2015 -- ../node_modules/.bin/frey --app uppy-server
+
+# If you want to use src with all es6, via instant transpiling:
+# source ../env.sh && babel-node --presets es2015 -- ../node_modules/.bin/frey --app uppy-server

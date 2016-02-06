@@ -85,7 +85,7 @@
   name  = "Install uppy-server"
 
   [[install.playbooks.tasks]]
-    action   = "template src=.frey/templates/sources.list dest=/etc/apt/sources.list"
+    action   = "template src=templates/sources.list dest=/etc/apt/sources.list"
     name     = "Common | Add US APT Mirrors"
     register = "apt_sources"
 
@@ -112,11 +112,11 @@
     name = "uppy-server | Deploy from Git"
 
   [[install.playbooks.tasks]]
-    action = "template src=.frey/templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
+    action = "template src=templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
     name = "uppy-server | Upload environment"
 
   [[install.playbooks.tasks]]
-    action = "template src=.frey/templates/upstart-uppy-server dest=/etc/init/uppy-server.conf"
+    action = "template src=templates/upstart-uppy-server dest=/etc/init/uppy-server.conf"
     name = "uppy-server | Install upstart file"
 
   [[install.playbooks.tasks]]

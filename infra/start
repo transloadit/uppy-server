@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-source ../env.sh && node --harmony ../node_modules/.bin/frey --app uppy-server
+# source ../env.sh && node --harmony ../node_modules/.bin/frey --app uppy-server
+source ../env.sh && babel-node --presets es2015 -- ../node_modules/.bin/frey --app uppy-server

@@ -16,23 +16,36 @@ module.exports = function () {
     var query = "'" + (this.query.dir || 'root') + "' in parents"
 
     yield function listFiles (cb) {
-      service.files.list({
-        auth     : oauth2Client,
-        query    : query,
-        fields   : 'items(id,kind,mimeType,title),kind,nextPageToken',
-        nextToken: this.query.nextPageToken || ''
-      }, function (err, res) {
-        if (err) {
-          this.body = err
-          return cb()
-        }
+      var files = []
 
-        this.body = {
-          items        : res.items,
-          nextPageToken: res.nextPageToken
-        }
-        cb()
-      })
+      var getList = (nextPageToken, callCount) => {
+        service.files.list({
+          auth      : oauth2Client,
+          query     : query,
+          fields    : 'items(id,kind,mimeType,title),kind,nextPageToken',
+          maxResults: 1000,
+          pageToken : nextPageToken
+        }, (err, res) => {
+          if (err) {
+            console.log(err)
+            this.body = err
+            return cb()
+          }
+
+          files.concat(res.items)
+
+          if (res.nextPageToken) {
+            getList(res.nextPageToken, callCount + 1)
+          } else {
+            this.body = {
+              items        : res.items,
+              nextPageToken: res.nextPageToken
+            }
+            cb()
+          }
+        })
+      }
+      getList('', 1)
     }
   }
 }

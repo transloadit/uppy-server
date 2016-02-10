@@ -14,19 +14,26 @@ module.exports = function () {
 
     var oauth2Client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
     oauth2Client.credentials = this.session.drive.token
-
+    var fileId = this.query.fileId || ''
     yield function getFile (cb) {
       service.files.get({
-        fileId: this.query.fileId,
+        fileId: fileId,
         auth  : oauth2Client,
         alt   : 'media'
       }, function (error, file) {
         if (error) {
+          console.log(error)
           this.body = error
           return cb()
         }
-        fs.writeFile('files/' + this.query.fileId, file, function (err, res) {
+
+        if (!fs.existsSync('files')) {
+          fs.mkdirSync('files')
+        }
+
+        fs.writeFile('./files/tester.pdf', file, function (err, res) {
           if (err) {
+            console.log(err)
             this.body = err
           }
 

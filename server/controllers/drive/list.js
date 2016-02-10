@@ -31,15 +31,14 @@ module.exports = function () {
             this.body = err
             return cb()
           }
-
+          console.log(res)
           files.concat(res.items)
 
           if (res.nextPageToken) {
             getList(res.nextPageToken, callCount + 1)
           } else {
             this.body = {
-              items        : res.items,
-              nextPageToken: res.nextPageToken
+              items: res.items
             }
             cb()
           }

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var koa = require('koa')
 var router = require('./server/routes')()
 var session = require('koa-session')

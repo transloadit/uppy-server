@@ -11,6 +11,7 @@ module.exports = function(app) {
   })
 
   router.get('/callback', handlers.callback)
+  router.get('/get', handlers.get)
   router.get('/list', handlers.list)
 
   app.use(router.routes())

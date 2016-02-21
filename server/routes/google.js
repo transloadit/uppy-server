@@ -9,7 +9,7 @@ module.exports = function (app) {
 
     yield next
   })
-  
+
   router.get('/authorize', handlers.authorize)
   router.get('/callback', handlers.callback)
   router.get('/get', handlers.get)

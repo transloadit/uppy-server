@@ -7,6 +7,17 @@
   [infra.variable.ami.default]
     us-east-1 = "ami-37bde352"
 
+[infra.variable.ip_all]
+  default = "0.0.0.0/0"
+[infra.variable.ip_kevin]
+  default = "62.163.187.106/32"
+[infra.variable.ip_marius]
+  default = "84.146.5.70/32"
+[infra.variable.ip_tim]
+  default = "24.134.75.132/32"
+[infra.variable.region]
+  default = "us-east-1"
+
 [infra.output.public_address]
   value = "${aws_instance.uppy-server.0.public_dns}"
 [infra.output.public_addresses]
@@ -14,7 +25,7 @@
 
 [infra.resource.aws_key_pair.uppy-server]
   key_name   = "uppy-server"
-  public_key = "${file(var.FREY__RUNTIME__SSH__KEYPUB_FILE)}"
+  public_key = "${file(\"{{{config.global.ssh.publickey_file}}}\")}"
 
 [infra.resource.aws_instance.uppy-server]
   ami             = "${lookup(var.ami, var.region)}"
@@ -22,8 +33,8 @@
   key_name        = "${aws_key_pair.uppy-server.key_name}"
   security_groups = ["fw-uppy-server"]
   [infra.resource.aws_instance.uppy-server.connection]
-    key_file = "${var.FREY__RUNTIME__SSH__KEYPRV_FILE}"
-    user     = "${var.FREY__RUNTIME__SSH__USER}"
+    key_file = "{{{config.global.ssh.privatekey_file}}}"
+    user     = "{{{config.global.ssh.user}}}"
   [infra.resource.aws_instance.uppy-server.tags]
     Name = "${var.FREY_DOMAIN}"
 
@@ -47,38 +58,6 @@
     from_port   = 8080
     protocol    = "tcp"
     to_port     = 8080
-
-[infra.variable.FREY_AWS_ACCESS_KEY]
-  description = "FREY_AWS_ACCESS_KEY"
-[infra.variable.FREY_AWS_SECRET_KEY]
-  description = "FREY_AWS_SECRET_KEY"
-[infra.variable.FREY_AWS_ZONE_ID]
-  description = "FREY_AWS_ZONE_ID"
-[infra.variable.FREY_DOMAIN]
-  description = "FREY_DOMAIN"
-[infra.variable.FREY__RUNTIME__SSH__KEYPUB_FILE]
-  description = "FREY__RUNTIME__SSH__KEYPUB_FILE"
-[infra.variable.FREY__RUNTIME__SSH__KEYPRV_FILE]
-  description = "FREY__RUNTIME__SSH__KEYPRV_FILE"
-[infra.variable.FREY__RUNTIME__SSH__USER]
-  description = "FREY__RUNTIME__SSH__USER"
-
-[infra.variable.ip_all]
-  default = "0.0.0.0/0"
-  description = "ip_all"
-[infra.variable.ip_kevin]
-  default = "62.163.187.106/32"
-  description = "ip_kevin"
-[infra.variable.ip_marius]
-  default = "84.146.5.70/32"
-  description = "ip_marius"
-[infra.variable.ip_tim]
-  default = "24.134.75.132/32"
-  description = "ip_tim"
-[infra.variable.region]
-  default = "us-east-1"
-  description = "The region of AWS, for AMI lookups."
-
 
 [[install.playbooks]]
   hosts = "uppy-server"

@@ -1,6 +1,3 @@
-var router = require('koa-router')()
-
-module.exports = function () {
-  require('./drive')(router)
-  return router
+module.exports = function (app) {
+  require('./google')(app)
 }

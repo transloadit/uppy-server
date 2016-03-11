@@ -13,22 +13,38 @@ module.exports = function () {
 
     var oauth2Client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
     oauth2Client.credentials = this.session.drive.token
-
     var query = "'" + (this.query.dir || 'root') + "' in parents"
 
     yield function listFiles (cb) {
-      service.files.list({
-        auth     : auth,
-        nextToken: this.query.nextToken || '',
-        q        : query
-      }, function (err, res) {
-        if (err) {
-          this.body = err
-          return cb()
-        }
-        this.body = res.items
-        cb()
-      })
+      var files = []
+
+      var getList = (nextPageToken, callCount) => {
+        service.files.list({
+          auth      : oauth2Client,
+          query     : query,
+          fields    : 'items(id,kind,mimeType,title),kind,nextPageToken',
+          maxResults: 1000,
+          pageToken : nextPageToken
+        }, (err, res) => {
+          if (err) {
+            console.log(err)
+            this.body = err
+            return cb()
+          }
+          console.log(res)
+          files.concat(res.items)
+
+          if (res.nextPageToken) {
+            getList(res.nextPageToken, callCount + 1)
+          } else {
+            this.body = {
+              items: res.items
+            }
+            cb()
+          }
+        })
+      }
+      getList('', 1)
     }
   }
 }

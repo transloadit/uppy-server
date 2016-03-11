@@ -31,4 +31,4 @@ config/auth.js
 
 env.sh
 
-Frey-residu*
+infra/Frey-residu-*

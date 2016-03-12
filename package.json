@@ -5,14 +5,18 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "deploy:unsafe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js infra --project-dir ./infra",
-    "deploy:unsafe": "source env.sh && frey infra --bail --project-dir ./infra",
+    "install:safe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js install --project-dir ./infra",
+    "install:safe": "source env.sh && frey install --project-dir ./infra",
+    "launch:unsafe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js infra --project-dir ./infra",
+    "launch:unsafe": "source env.sh && frey infra --project-dir ./infra",
     "plan:safe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js plan --bail --project-dir ./infra",
-    "prepare:safe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js prepare --bail --project-dir ./infra",
     "plan:safe": "source env.sh && frey plan --bail --project-dir ./infra",
+    "prepare:safe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js prepare --bail --project-dir ./infra",
+    "prepare:safe": "source env.sh && frey prepare --bail --project-dir ./infra",
+    "refresh:safe:localfrey": "source env.sh && env DEBUG=frey:* babel-node ~/code/frey/src/cli.js refresh --bail --project-dir ./infra",
     "refresh:safe": "source env.sh && frey refresh --bail --project-dir ./infra"
   },
-  "author": "",
+  "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
   "devDependencies": {

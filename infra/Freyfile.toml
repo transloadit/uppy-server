@@ -32,7 +32,7 @@
 
 [infra.resource.aws_instance.uppy-server]
   ami             = "${lookup(var.ami, var.region)}"
-  instance_type   = "m1.medium"
+  instance_type   = "c1.medium"
   key_name        = "${aws_key_pair.uppy-server.key_name}"
   security_groups = ["fw-uppy-server"]
   [infra.resource.aws_instance.uppy-server.connection]
@@ -40,6 +40,14 @@
     user     = "{{{config.global.ssh.user}}}"
   [infra.resource.aws_instance.uppy-server.tags]
     Name = "${var.FREY_DOMAIN}"
+
+  # This is important to make sure we test and wait until SSH becomes available
+  # otherwise install will fail with an UNREACHABLE
+  [infra.resource.aws_instance.uppy-server.provisioner.remote-exec]
+    inline = [ "sudo pwd" ]
+    [infra.resource.aws_instance.uppy-server.provisioner.remote-exec.connection]
+      key_file = "{{{config.global.ssh.privatekey_file}}}"
+      user     = "{{{config.global.ssh.user}}}"
 
 [infra.resource.aws_route53_record.www]
   name    = "${var.FREY_DOMAIN}"

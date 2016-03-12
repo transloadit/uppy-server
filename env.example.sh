@@ -14,9 +14,8 @@ export DEBUG="frey:*"
 # export FREY_AWS_ACCESS_KEY="xyz"
 # export FREY_AWS_SECRET_KEY="xyz123"
 # export FREY_AWS_ZONE_ID="Z123"
+# ^-- Travis won't need these. We'll only use Travis for deploys
 
-# export FREY_DOMAIN="uppy-server.transloadit.com"
+# export FREY_DOMAIN="server.uppy.io"
 
-# export FREY_SSH_KEY_FILE="/Users/kvz/.ssh/frey-uppy-server.pem"
-# export FREY_SSH_USER="ubuntu"
-# export FREY_SSH_KEY_NAME="uppy-server"
+# export FREY_ENCRYPTION_SECRET="abcdefghijklmnopqrstuvwXYZ!"

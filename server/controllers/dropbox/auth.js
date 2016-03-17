@@ -12,18 +12,18 @@ module.exports = function () {
     // How do you want to resolve @hedgerh?
     const request = {}
     request.post({
-      url : config.dropbox.tokenURI,
+      url: config.dropbox.tokenURI,
       json: true,
-      qs  : {
-        code         : this.query.code,
-        grant_type   : 'authorization_code',
-        client_id    : config.dropbox.clientKey,
+      qs: {
+        code: this.query.code,
+        grant_type: 'authorization_code',
+        client_id: config.dropbox.clientKey,
         client_secret: config.dropbox.clientSecret,
-        redirect_uri : callback
+        redirect_uri: callback
       },
       headers: [
         {
-          name : 'content-type',
+          name: 'content-type',
           value: 'application/json'
         }
       ]
@@ -33,7 +33,7 @@ module.exports = function () {
       }
 
       var client = new Dropbox.Client({
-        key   : config.dropbox.key,
+        key: config.dropbox.key,
         secret: config.dropbox.secret
       })
       console.dir(client)

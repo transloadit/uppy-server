@@ -29,7 +29,7 @@ module.exports = {
       } else {
         this.body = {
           isAuthenticated: true,
-          authUrl        : null
+          authUrl: null
         }
       }
     }

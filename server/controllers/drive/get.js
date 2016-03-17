@@ -18,8 +18,8 @@ module.exports = function () {
     yield function getFile (cb) {
       service.files.get({
         fileId: fileId,
-        auth  : oauth2Client,
-        alt   : 'media'
+        auth: oauth2Client,
+        alt: 'media'
       }, function (error, file) {
         if (error) {
           console.log(error)

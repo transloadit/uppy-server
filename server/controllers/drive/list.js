@@ -20,11 +20,11 @@ module.exports = function () {
 
       var getList = (nextPageToken, callCount) => {
         service.files.list({
-          auth      : oauth2Client,
-          query     : query,
-          fields    : 'items(id,kind,mimeType,title),kind,nextPageToken',
+          auth: oauth2Client,
+          query: query,
+          fields: 'items(id,kind,mimeType,title),kind,nextPageToken',
           maxResults: 1000,
-          pageToken : nextPageToken
+          pageToken: nextPageToken
         }, (err, res) => {
           if (err) {
             console.log(err)

@@ -137,7 +137,7 @@
     name = "uppy-server | Upload environment"
 
   [[deploy.playbooks.tasks]]
-    npm = "path=/srv/uppy-server/current"
+    npm = "path=/srv/uppy-server/current production=yes"
     name = "uppy-server | Install node modules"
 
 [[restart.playbooks]]

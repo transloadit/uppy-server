@@ -19,3 +19,19 @@ export DEBUG="frey:*"
 # export FREY_DOMAIN="server.uppy.io"
 
 # export FREY_ENCRYPTION_SECRET="abcdefghijklmnopqrstuvwXYZ!"
+
+export DROPBOX_KEY="***"
+export DROPBOX_SECRET="***"
+export GOOGLE_KEY="***"
+export GOOGLE_SECRE="***"
+export INSTAGRAM_KEY="***"
+export INSTAGRAM_SECRET="***"
+
+# source env.sh
+# travis encrypt --add env.global "FREY_ENCRYPTION_SECRET=${FREY_ENCRYPTION_SECRET}"
+# travis encrypt --add env.global "DROPBOX_KEY=${DROPBOX_KEY}"
+# travis encrypt --add env.global "DROPBOX_SECRET=${DROPBOX_SECRET}"
+# travis encrypt --add env.global "GOOGLE_KEY=${GOOGLE_KEY}"
+# travis encrypt --add env.global "GOOGLE_SECRE=${GOOGLE_SECRE}"
+# travis encrypt --add env.global "INSTAGRAM_KEY=${INSTAGRAM_KEY}"
+# travis encrypt --add env.global "INSTAGRAM_SECRET=${INSTAGRAM_SECRET}"

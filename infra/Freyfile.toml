@@ -1,14 +1,20 @@
 [global.ssh]
   key_dir = "./ssh"
 
+[global.ansiblecfg.privilege_escalation]
+  become = true
+
 [infra.provider.aws]
   access_key = "${var.FREY_AWS_ACCESS_KEY}"
   secret_key = "${var.FREY_AWS_SECRET_KEY}"
   region     = "us-east-1"
 
-[infra.variable.ami]
-  [infra.variable.ami.default]
-    us-east-1 = "ami-37bde352"
+[infra.variable.ami.default]
+  # tosip-main-ec2-ebs200-v14.4.4
+  us-east-1 = "ami-37bde352"
+
+[infra.variable.region]
+  default = "us-east-1"
 
 [infra.variable.ip_all]
   default = "0.0.0.0/0"
@@ -18,8 +24,6 @@
   default = "84.146.5.70/32"
 [infra.variable.ip_tim]
   default = "24.134.75.132/32"
-[infra.variable.region]
-  default = "us-east-1"
 
 [infra.output.public_address]
   value = "${aws_instance.uppy-server.0.public_dns}"
@@ -32,7 +36,7 @@
 
 [infra.resource.aws_instance.uppy-server]
   ami             = "${lookup(var.ami, var.region)}"
-  instance_type   = "c1.medium"
+  instance_type   = "m1.medium"
   key_name        = "${aws_key_pair.uppy-server.key_name}"
   security_groups = ["fw-uppy-server"]
   [infra.resource.aws_instance.uppy-server.connection]
@@ -93,22 +97,53 @@
     action = "lineinfile dest=/home/ubuntu/.bashrc line=\"alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'\""
     name   = "Common | Add convenience shortcut wtf"
 
-  [[install.playbooks.tasks]]
-    file = "path=/srv/uppy-server/current state=directory owner=www-data group=www-data mode=0755 recurse=yes"
-    name = "uppy-server | Create approot"
+[[setup.playbooks]]
+  hosts = "uppy-server"
+  name  = "Setup uppy-server"
+  roles = [
+    "{{{init.paths.roles_dir}}}/nodejs/v2.1.1",
+  ]
+  [setup.playbooks.vars]
+    nodejs_version = "4.x"
 
-  [[install.playbooks.tasks]]
-    git = "repo=https://github.com/transloadit/uppy-server.git dest=/srv/uppy-server/current clone=yes update=yes bare=yes version=master force=yes"
-    name = "uppy-server | Deploy from Git"
+  [[setup.playbooks.tasks]]
+    file = "path=/srv/uppy-server/shared/logs state=directory owner=www-data group=www-data mode=0755 recurse=yes"
+    name = "uppy-server | Create shared log dir"
 
-  [[install.playbooks.tasks]]
-    action = "template src=templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
-    name = "uppy-server | Upload environment"
+  [[setup.playbooks.tasks]]
+    file = "path=/mnt/uppy-server-data state=directory owner=www-data group=www-data mode=0755 recurse=yes"
+    name = "uppy-server | Create uppy data dir"
 
-  [[install.playbooks.tasks]]
+  [[setup.playbooks.tasks]]
     action = "template src=templates/upstart-uppy-server dest=/etc/init/uppy-server.conf"
     name = "uppy-server | Install upstart file"
 
-  [[install.playbooks.tasks]]
+[[deploy.playbooks]]
+  hosts = "uppy-server"
+  name  = "Deploy uppy-server"
+  roles = [
+    "{{{init.paths.roles_dir}}}/deploy/v1.3.0",
+  ]
+  [deploy.playbooks.vars]
+    ansistrano_deploy_from = "{{{init.cliargs.projectDir}}}"
+    ansistrano_deploy_to = "/srv/uppy-server"
+    ansistrano_shared_paths = [ "logs" ]
+    ansistrano_deploy_via = "git"
+    ansistrano_keep_releases = 10
+    ansistrano_git_repo = "https://github.com/transloadit/uppy-server.git"
+
+  [[deploy.playbooks.tasks]]
+    action = "template src=templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
+    name = "uppy-server | Upload environment"
+
+  [[deploy.playbooks.tasks]]
+    npm = "path=/srv/uppy-server/current"
+    name = "uppy-server | Install node modules"
+
+[[restart.playbooks]]
+  hosts = "uppy-server"
+  name  = "Restart uppy-server"
+
+  [[restart.playbooks.tasks]]
     action = "service name=uppy-server state=restarted"
     name = "uppy-server | Restart"

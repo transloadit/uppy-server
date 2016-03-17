@@ -14,7 +14,6 @@ before_script:
 script:
 - npm run-script lint
 after_success:
-- find /home/travis/build/transloadit/uppy-server/node_modules/frey/roles
 - npm run frey:setup:travis
 env:
   global:

@@ -32,8 +32,13 @@ __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 __base="$(basename ${__file} .sh)"
 __root="$(dirname "${__dir}")"
 
+if [ -f "${__root}/env.sh" ]; then
+  echo "You alreayd have a '${__root}/env.sh'"
+  exit 1
+fi
+
 cp -v "${__root}/env.example.sh" "${__root}/env.sh"
-for var in $(env |awk -F= '{print $1}' |egrep '^FREY_[A-Z0-9_]+$' |sort); do
+for var in $(env |awk -F= '{print $1}' |egrep '^(FREY|UPPYSERVER)_[A-Z0-9_]+$'| grep -v '_AWS_' |sort); do
   echo "Adding '${var}' to env.sh"
   echo "export ${var}=\"${!var}\"" >> "${__root}/env.sh"
 done

@@ -10,7 +10,7 @@ addons:
 before_script:
 - scripts/rebuild-env.sh
 script:
-- npm run-script lint || true
+- npm run-script lint
 after_success:
 - npm run frey:setup
 env:

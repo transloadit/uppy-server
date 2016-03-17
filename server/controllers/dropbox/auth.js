@@ -8,6 +8,9 @@ module.exports = function () {
       this.session.dropbox = {}
     }
 
+    // @todo Lint says: "request" is not defined. Adding this but will obviously break.
+    // How do you want to resolve @hedgerh?
+    const request = {}
     request.post({
       url : config.dropbox.tokenURI,
       json: true,

@@ -36,7 +36,7 @@ module.exports = {
   },
   getToken () {
     return function * (next) {
-      var auth   = new GoogleAuth()
+      var auth = new GoogleAuth()
       var client = new auth.OAuth2(clientKey, clientSecret, redirectUrl)
 
       yield function fetchToken (cb) {

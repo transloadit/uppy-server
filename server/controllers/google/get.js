@@ -2,7 +2,7 @@ var fs = require('fs')
 
 module.exports = function *(next) {
   var Purest = require('purest')
-  var google = new Purest({provider:'google', api: 'drive'})
+  var google = new Purest({provider: 'google', api: 'drive'})
   yield function listFiles (cb) {
     google.get(`files/${this.query.fileId}`, {
       auth: {

@@ -28,6 +28,11 @@ node_modules
 
 # oAuth Configuration
 config/auth.js
+
 env.sh
 
 infra/Frey-residu-*
+
+infra/ssh/frey-infra.pem
+
+infra/ssh/frey-infra.pub

@@ -5,18 +5,26 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "start": "nodemon ./index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "fix": "eslint . --fix"
+    "deploy": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
+    "deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
+    "destroy": "source env.sh && ${FREYCMD:-frey} destroy --project-dir ./infra",
+    "install": "source env.sh && ${FREYCMD:-frey} install --project-dir ./infra",
+    "launch": "source env.sh && ${FREYCMD:-frey} infra --project-dir ./infra",
+    "plan": "source env.sh && ${FREYCMD:-frey} plan --bail --project-dir ./infra",
+    "prepare": "source env.sh && ${FREYCMD:-frey} prepare --bail --project-dir ./infra",
+    "refresh": "source env.sh && ${FREYCMD:-frey} refresh --bail --project-dir ./infra",
+    "remote": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
+    "restart": "source env.sh && ${FREYCMD:-frey} restart --bail --project-dir ./infra",
+    "show": "source env.sh && ${FREYCMD:-frey} show --bail --project-dir ./infra"
   },
-  "author": "",
+  "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
   "devDependencies": {
     "eslint": "1.10.3",
     "eslint-config-standard": "4.4.0",
     "eslint-plugin-standard": "1.3.1",
+    "frey": "kvz/frey#8017ffb972632392da2b34f2ba40ac98bb7cc3f0",
     "nodemon": "^1.8.1"
   },
   "dependencies": {

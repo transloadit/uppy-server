@@ -1,7 +1,7 @@
 module.exports = {
   server: {
-    protocol: 'http',
-    host: 'localhost:8080'
+    host: 'localhost:8080',
+    protocol: 'http'
   },
   dropbox: {
     key     : process.env.UPPYSERVER_DROPBOX_KEY,

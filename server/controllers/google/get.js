@@ -3,7 +3,7 @@ var fs = require('fs')
 module.exports = function *(next) {
   var Purest = require('purest')
   var google = new Purest({provider:'google', api: 'drive'})
-  yield function listFiles(cb) {
+  yield function listFiles (cb) {
     google.get(`files/${this.query.fileId}`, {
       auth: {
         bearer: this.session.google.token
@@ -13,8 +13,8 @@ module.exports = function *(next) {
       }
     }, function (err, res, body) {
       if (err) {
-        console.log('error ', err);
-        this.body = 'Error: ' + err; return cb();
+        console.log('error ', err)
+        this.body = 'Error: ' + err; return cb()
       }
       fs.writeFile('./output', body, function (err, res) {
         if (err) {

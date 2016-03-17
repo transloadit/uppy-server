@@ -15,7 +15,9 @@
     "frey:refresh": "source env.sh && ${FREYCMD:-frey} refresh --bail --project-dir ./infra",
     "frey:remote": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
     "frey:restart": "source env.sh && ${FREYCMD:-frey} restart --bail --project-dir ./infra",
-    "frey:show": "source env.sh && ${FREYCMD:-frey} show --bail --project-dir ./infra"
+    "frey:show": "source env.sh && ${FREYCMD:-frey} show --bail --project-dir ./infra",
+    "fix": "eslint . --fix",
+    "lint": "eslint ."
   },
   "author": "Transloadit.com",
   "license": "ISC",

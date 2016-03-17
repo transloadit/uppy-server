@@ -19,8 +19,8 @@ set -o errexit
 set -o nounset
 # set -o xtrace
 
-if [ -z "${FREY_AWS_ACCESS_KEY:-}" ]; then
-  echo "FREY_AWS_ACCESS_KEY not present. "
+if [ -z "${FREY_DOMAIN:-}" ]; then
+  echo "FREY_DOMAIN not present. "
   echo "Please first source env.sh"
   exit 1
 fi

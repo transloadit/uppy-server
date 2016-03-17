@@ -38,6 +38,7 @@ if [ -f "${__root}/env.sh" ]; then
 fi
 
 cp -v "${__root}/env.example.sh" "${__root}/env.sh"
+chmod 400 "${__root}/env.sh"
 for var in $(env |awk -F= '{print $1}' |egrep '^(FREY|UPPYSERVER)_[A-Z0-9_]+$'| grep -v '_AWS_' |sort); do
   echo "Adding '${var}' to env.sh"
   echo "export ${var}=\"${!var}\"" >> "${__root}/env.sh"

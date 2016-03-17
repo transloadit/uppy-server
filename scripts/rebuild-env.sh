@@ -43,3 +43,6 @@ for var in $(env |awk -F= '{print $1}' |egrep '^(FREY|UPPYSERVER)_[A-Z0-9_]+$'| 
   echo "Adding '${var}' to env.sh"
   echo "export ${var}=\"${!var}\"" >> "${__root}/env.sh"
 done
+
+find "${__root}/env.sh"
+ls -al "${__root}/env.sh"

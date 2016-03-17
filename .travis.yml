@@ -12,7 +12,7 @@ before_script:
 script:
 - npm run-script lint
 after_success:
-- npm run frey:setup
+- bash -c 'npm run frey:setup'
 env:
   global:
   - CXX=g++-4.8

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Uppy-server. Copyright (c) 2016, Transloadit Ltd.
-#
+
 # This file:
 #
-#  - Walks over any FREY_ and UPPYSERVER_ environment variable (except for _AWS_)
-#  - Adds encrypted keys ready for use to .travis.yml
+#  - Creates a brand new env.sh based on env.example.sh that is shipped with Git
+#  - Walks over any FREY_ and UPPYSERVER_ environment variable
+#  - Adds them as exports to to env.sh
 #
 # Run as:
 #
-#  source env.sh && ./encrypt.sh
+#  ./rebuild-env.sh
 #
 # Authors:
 #
@@ -31,7 +32,8 @@ __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 __base="$(basename ${__file} .sh)"
 __root="$(dirname "${__dir}")"
 
-for var in $(env |awk -F= '{print $1}' |egrep '^(FREY|UPPYSERVER)_[A-Z0-9_]+$' |grep -v '_AWS_' |sort); do
-  echo "Encrypting and adding '${var}'"
-  travis encrypt "${var}=${!var}" --add env.global
+cp -v "${__root}/env.example.sh" "${__root}/env.sh"
+for var in $(env |awk -F= '{print $1}' |egrep '^FREY_[A-Z0-9_]+$' |sort); do
+  echo "Adding '${var}' to env.sh"
+  echo "export ${var}=\"${!var}\"" >> "${__root}/env.sh"
 done

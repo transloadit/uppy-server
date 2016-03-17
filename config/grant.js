@@ -4,14 +4,14 @@ module.exports = {
     host: 'localhost:8080'
   },
   dropbox: {
-    key     : process.env.DROPBOX_KEY,
-    secret  : process.env.DROPBOX_SECRET,
+    key     : process.env.UPPYSERVER_DROPBOX_KEY,
+    secret  : process.env.UPPYSERVER_DROPBOX_SECRET,
     scope   : [],
     callback: '/dropbox/callback'
   },
   google: {
-    key   : process.env.GOOGLE_KEY,
-    secret: process.env.GOOGLE_SECRET,
+    key   : process.env.UPPYSERVER_GOOGLE_KEY,
+    secret: process.env.UPPYSERVER_GOOGLE_SECRETT,
     scope : [
       'https://www.googleapis.com/auth/drive',
       'https://www.googleapis.com/auth/drive.file'
@@ -19,8 +19,8 @@ module.exports = {
     callback: '/google/callback'
   },
   instagram: {
-    key     : process.env.INSTAGRAM_KEY,
-    secret  : process.env.INSTAGRAM_SECRET,
+    key     : process.env.UPPYSERVER_INSTAGRAM_KEY,
+    secret  : process.env.UPPYSERVER_INSTAGRAM_SECRET,
     scope   : [],
     callback: '/instagram/callback'
   },

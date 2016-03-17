@@ -5,8 +5,8 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "frey:deploy": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
-    "frey:deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
+    "frey:setup": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
+    "frey:setup:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
     "frey:destroy": "source env.sh && ${FREYCMD:-frey} destroy --project-dir ./infra",
     "frey:install": "source env.sh && ${FREYCMD:-frey} install --project-dir ./infra",
     "frey:launch": "source env.sh && ${FREYCMD:-frey} infra --project-dir ./infra",

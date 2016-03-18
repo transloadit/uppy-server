@@ -110,6 +110,10 @@
     nodejs_version = "4.x"
 
   [[setup.playbooks.tasks]]
+    hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
+    name = "uppy-server | Set hostname"
+
+  [[setup.playbooks.tasks]]
     file = "path=/srv/uppy-server/shared/logs state=directory owner=www-data group=www-data mode=0755 recurse=yes"
     name = "uppy-server | Create shared log dir"
 

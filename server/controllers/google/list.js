@@ -1,4 +1,4 @@
-module.exports = function *(next) {
+module.exports = function * (next) {
   var self = this
   var Purest = require('purest')
   var google = new Purest({provider: 'google', api: 'drive'})

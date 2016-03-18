@@ -1,5 +1,5 @@
 module.exports = function () {
-  return function *(next) {
+  return function * (next) {
     var dir = 'todo' // @todo Where is dir coming from?
     this.session.dropbox.client.readdir(dir, (error, entries, stat, statFiles) => {
       if (error) {

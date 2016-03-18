@@ -1,3 +1,3 @@
-module.exports = function *(next) {
+module.exports = function * (next) {
   this.session.google.token = null
 }

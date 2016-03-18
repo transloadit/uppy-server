@@ -8,7 +8,7 @@ var clientSecret = config.drive.secret
 var redirectUrl = config.server.url + config.drive.callback
 
 module.exports = function () {
-  return function *(next) {
+  return function * (next) {
     var service = google.drive('v2')
     var auth = new GoogleAuth()
 

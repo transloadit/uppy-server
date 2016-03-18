@@ -3,7 +3,7 @@ var config = require('../../../config/auth')
 var callback = config.server.protocol + '://' + config.server.host + config.dropbox.callback
 
 module.exports = function () {
-  return function *(next) {
+  return function * (next) {
     if (!this.session.dropbox) {
       this.session.dropbox = {}
     }

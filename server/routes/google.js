@@ -2,7 +2,7 @@ var router = require('koa-router')({ prefix: '/google' })
 var handlers = require('../controllers/google')
 
 module.exports = function (app) {
-  router.use('/', function *(next) {
+  router.use('/', function * (next) {
     if (!this.session.google) {
       this.session.google = {}
     }

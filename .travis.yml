@@ -18,7 +18,7 @@ before_script:
 - scripts/rebuild-env.sh
 script:
 - npm run lint
-- npm run frey:setup:travis
+- if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]; then npm run frey:setup:travis else echo "Skipping deploy for non-master/PRs"; fi
 env:
   global:
   - CXX=g++-4.8

@@ -129,7 +129,7 @@
     name = "uppy-server | Create uppy data dir"
 
   [[setup.playbooks.tasks]]
-    action = "template src=templates/upstart-uppy-server dest=/etc/init/uppy-server.conf"
+    action = "template src=templates/upstart-uppy-server.conf.j2 dest=/etc/init/uppy-server.conf"
     name = "uppy-server | Install upstart file"
 
 [[deploy.playbooks]]

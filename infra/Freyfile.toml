@@ -136,7 +136,7 @@
     ansistrano_git_repo = "https://github.com/transloadit/uppy-server.git"
 
   [[deploy.playbooks.tasks]]
-    action = "template src=templates/env dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
+    action = "template src=../env.sh dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
     name = "uppy-server | Upload environment"
 
   [[deploy.playbooks.tasks]]

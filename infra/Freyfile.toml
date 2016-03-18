@@ -80,21 +80,28 @@
 [[install.playbooks]]
   hosts = "uppy-server"
   name  = "Install uppy-server"
+  roles = [
+    "{{{init.paths.roles_dir}}}/apt/v1.0.0",
+  ]
+  [install.playbooks.vars]
+    apt_packages = [
+      "apg",
+      "build-essential",
+      "curl",
+      "git-core",
+      "htop",
+      "iotop",
+      "libpcre3",
+      "logtail",
+      "mlocate",
+      "mtr",
+      "mysql-client",
+      "psmisc",
+      "telnet",
+      "vim",
+      "wget",
+    ]
 
-  [[install.playbooks.tasks]]
-    action   = "template src=templates/sources.list dest=/etc/apt/sources.list"
-    name     = "Common | Add US APT Mirrors"
-    register = "apt_sources"
-
-  [[install.playbooks.tasks]]
-    apt  = "upgrade=dist cache_valid_time=3600 update_cache=yes dpkg_options='force-confold,force-confdef'"
-    name = "Common | Update APT"
-    when = "apt_sources|changed"
-
-  [[install.playbooks.tasks]]
-    apt        = "pkg={{ item }} state=present"
-    name       = "Common | Install Packages"
-    with_items = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "psmisc", "telnet", "vim", "wget"]
 
   [[install.playbooks.tasks]]
     action = "lineinfile dest=/home/ubuntu/.bashrc line=\"alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'\""

@@ -6,10 +6,10 @@
   "bin": "index.js",
   "scripts": {
     "fix": "eslint . --fix",
-    "frey:destroy": "source env.sh && ${FREYCMD:-frey} destroy --project-dir ./infra",
+    "frey:destroy": "source env.master.sh && ${FREYCMD:-frey} destroy --project-dir ./infra",
     "frey:install": "source env.sh && ${FREYCMD:-frey} install --project-dir ./infra",
-    "frey:launch": "source env.sh && ${FREYCMD:-frey} infra --project-dir ./infra",
-    "frey:plan": "source env.sh && ${FREYCMD:-frey} plan --bail --project-dir ./infra",
+    "frey:launch": "source env.master.sh && ${FREYCMD:-frey} infra --project-dir ./infra",
+    "frey:plan": "source env.master.sh && ${FREYCMD:-frey} plan --bail --project-dir ./infra",
     "frey:prepare": "source env.sh && ${FREYCMD:-frey} prepare --bail --project-dir ./infra",
     "frey:refresh": "source env.sh && ${FREYCMD:-frey} refresh --bail --project-dir ./infra",
     "frey:remote": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",

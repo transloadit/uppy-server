@@ -30,6 +30,7 @@ node_modules
 config/auth.js
 
 env.sh
+env.master.sh
 
 infra/Frey-residu-*
 

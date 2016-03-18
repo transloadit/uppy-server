@@ -37,3 +37,5 @@ infra/Frey-residu-*
 infra/ssh/frey-infra.pem
 
 infra/ssh/frey-infra.pub
+
+master.env.sh

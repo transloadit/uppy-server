@@ -1,6 +1,11 @@
 language: node_js
 # We need sudo so that Frey can install pip, until Frey figures that out
 sudo: true
+cache:
+  apt: true
+  directories:
+    - node_modules
+    - /home/travis/.frey/tools
 node_js:
 - 4.2.2
 addons:

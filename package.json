@@ -15,7 +15,7 @@
     "frey:remote": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
     "frey:restart": "source env.sh && ${FREYCMD:-frey} restart --bail --project-dir ./infra",
     "frey:setup:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run frey:setup",
-    "frey:setup:travis": "bash -c 'source env.sh && ${FREYCMD:-frey} setup --force-yes --project-dir ./infra'",
+    "frey:setup:travis": "bash -c 'source env.sh && env DEBUG="" frey setup --force-yes --project-dir ./infra'",
     "frey:setup": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
     "frey:show": "source env.sh && ${FREYCMD:-frey} show --bail --project-dir ./infra",
     "lint": "eslint ."

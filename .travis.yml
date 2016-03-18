@@ -18,7 +18,7 @@ before_script:
 - scripts/rebuild-env.sh
 script:
 - npm run lint
-- env DEBUG="" npm run frey:setup:travis
+- npm run frey:setup:travis
 env:
   global:
   - CXX=g++-4.8

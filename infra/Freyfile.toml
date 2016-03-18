@@ -102,7 +102,6 @@
       "wget",
     ]
 
-
   [[install.playbooks.tasks]]
     action = "lineinfile dest=/home/ubuntu/.bashrc line=\"alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'\""
     name   = "Common | Add convenience shortcut wtf"
@@ -118,7 +117,7 @@
 
   [[setup.playbooks.tasks]]
     hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
-    name = "uppy-server | Set hostname"
+    name     = "uppy-server | Set hostname"
 
   [[setup.playbooks.tasks]]
     file = "path=/srv/uppy-server/shared/logs state=directory owner=www-data group=www-data mode=0755 recurse=yes"
@@ -130,7 +129,7 @@
 
   [[setup.playbooks.tasks]]
     action = "template src=templates/upstart-uppy-server.conf.j2 dest=/etc/init/uppy-server.conf"
-    name = "uppy-server | Install upstart file"
+    name   = "uppy-server | Install upstart file"
 
 [[deploy.playbooks]]
   hosts = "uppy-server"
@@ -139,19 +138,19 @@
     "{{{init.paths.roles_dir}}}/deploy/v1.3.0",
   ]
   [deploy.playbooks.vars]
-    ansistrano_deploy_from = "{{{init.cliargs.projectDir}}}"
-    ansistrano_deploy_to = "/srv/uppy-server"
-    ansistrano_shared_paths = [ "logs" ]
-    ansistrano_deploy_via = "git"
+    ansistrano_deploy_from   = "{{{init.cliargs.projectDir}}}"
+    ansistrano_deploy_to     = "/srv/uppy-server"
+    ansistrano_shared_paths  = [ "logs" ]
+    ansistrano_deploy_via    = "git"
     ansistrano_keep_releases = 10
-    ansistrano_git_repo = "https://github.com/transloadit/uppy-server.git"
+    ansistrano_git_repo      = "https://github.com/transloadit/uppy-server.git"
 
   [[deploy.playbooks.tasks]]
     copy = "src=../env.sh dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
     name = "uppy-server | Upload environment"
 
   [[deploy.playbooks.tasks]]
-    npm = "path=/srv/uppy-server/current production=yes"
+    npm  = "path=/srv/uppy-server/current production=yes"
     name = "uppy-server | Install node modules"
 
 [[restart.playbooks]]
@@ -160,4 +159,4 @@
 
   [[restart.playbooks.tasks]]
     action = "service name=uppy-server state=restarted"
-    name = "uppy-server | Restart"
+    name   = "uppy-server | Restart"

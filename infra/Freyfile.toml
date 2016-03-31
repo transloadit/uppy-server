@@ -80,10 +80,9 @@
 [[install.playbooks]]
   hosts = "uppy-server"
   name  = "Install uppy-server"
-  roles = [
-    "{{{init.paths.roles_dir}}}/apt/v1.0.0",
-  ]
-  [install.playbooks.vars]
+
+  [[install.playbooks.roles]]
+    role         = "{{{init.paths.roles_dir}}}/apt/v1.0.0"
     apt_packages = [
       "apg",
       "build-essential",
@@ -102,6 +101,9 @@
       "wget",
     ]
 
+  [[install.playbooks.roles]]
+    role = "{{{init.paths.roles_dir}}}/unattended-upgrades/v1.2.0"
+
   [[install.playbooks.tasks]]
     action = "lineinfile dest=/home/ubuntu/.bashrc line=\"alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'\""
     name   = "Common | Add convenience shortcut wtf"
@@ -109,10 +111,9 @@
 [[setup.playbooks]]
   hosts = "uppy-server"
   name  = "Setup uppy-server"
-  roles = [
-    "{{{init.paths.roles_dir}}}/nodejs/v2.1.1",
-  ]
-  [setup.playbooks.vars]
+
+  [[setup.playbooks.roles]]
+    role = "{{{init.paths.roles_dir}}}/nodejs/v2.1.1",
     nodejs_version = "4.x"
 
   [[setup.playbooks.tasks]]
@@ -134,10 +135,9 @@
 [[deploy.playbooks]]
   hosts = "uppy-server"
   name  = "Deploy uppy-server"
-  roles = [
-    "{{{init.paths.roles_dir}}}/deploy/v1.3.0",
-  ]
-  [deploy.playbooks.vars]
+
+  [[install.playbooks.roles]]
+    role                     = "{{{init.paths.roles_dir}}}/deploy/v1.3.0"
     ansistrano_deploy_from   = "{{{init.cliargs.projectDir}}}"
     ansistrano_deploy_to     = "/srv/uppy-server"
     ansistrano_shared_paths  = [ "logs" ]

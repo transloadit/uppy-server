@@ -113,7 +113,7 @@
   name  = "Setup uppy-server"
 
   [[setup.playbooks.roles]]
-    role = "{{{init.paths.roles_dir}}}/nodejs/v2.1.1",
+    role = "{{{init.paths.roles_dir}}}/nodejs/v2.1.1"
     nodejs_version = "4.x"
 
   [[setup.playbooks.tasks]]

@@ -19,6 +19,10 @@
     "frey:setup:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey setup --force-yes --project-dir ./infra'",
     "frey:setup": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
     "frey:show": "source env.sh && ${FREYCMD:-frey} show --bail --project-dir ./infra",
+    "release:major": "env SEMANTIC=major npm run release",
+    "release:minor": "env SEMANTIC=minor npm run release",
+    "release:patch": "env SEMANTIC=patch npm run release",
+    "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",    
     "lint": "eslint ."
   },
   "author": "Transloadit.com",

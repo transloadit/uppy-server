@@ -23,7 +23,8 @@
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start": "node index.js"
   },
   "author": "Transloadit.com",
   "license": "ISC",

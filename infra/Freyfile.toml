@@ -1,6 +1,9 @@
+[global]
+  appname = "uppy-server"
+  approot = "/srv/uppy-server"
+
 [global.ssh]
   key_dir = "./ssh"
-  appname = "uppy-server"
 
 [global.ansiblecfg.privilege_escalation]
   become = true
@@ -117,6 +120,17 @@
     role = "{{{init.paths.roles_dir}}}/nodejs/v2.1.1"
     nodejs_version = "4.x"
 
+  [[setup.playbooks.roles]]
+    role                  = "{{{init.paths.roles_dir}}}/upstart/v1.0.0"
+    upstart_command       = "npm run start"
+    upstart_description   = "uppy-server"
+    upstart_name          = "{{{config.global.appname}}}"
+    upstart_runtime_root  = "{{{config.global.approot}}}/current"
+    upstart_pidfile_path  = "{{{config.global.approot}}}/shared/{{{config.global.appname}}}.pid"
+    upstart_respawn       = true
+    upstart_respawn_limit = true
+    upstart_user          = "www-data"
+
   [[setup.playbooks.tasks]]
     hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
     name     = "uppy-server | Set hostname"
@@ -128,10 +142,6 @@
   [[setup.playbooks.tasks]]
     file = "path=/mnt/uppy-server-data state=directory owner=www-data group=www-data mode=0755 recurse=yes"
     name = "uppy-server | Create uppy data dir"
-
-  [[setup.playbooks.tasks]]
-    action = "template src=templates/upstart-uppy-server.conf.j2 dest=/etc/init/uppy-server.conf"
-    name   = "uppy-server | Install upstart file"
 
 [[deploy.playbooks]]
   hosts = "uppy-server"

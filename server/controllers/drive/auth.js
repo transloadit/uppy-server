@@ -51,7 +51,7 @@ module.exports = {
         }.bind(this))
       }
 
-      this.redirect('http://localhost:4000/examples/modal')
+      this.redirect(process.env.UPPY_ENDPOINT + '/examples/modal')
     }
   }
 }

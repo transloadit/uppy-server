@@ -23,7 +23,7 @@ app.use(cors({
     // You cannot allow multiple domains besides *
     // http://stackoverflow.com/a/1850482/151666
     // so we make it dynamic, depending on who is asking
-    var originWhiteList = [ 'http://localhost:4000', 'http://uppy.io' ]
+    var originWhiteList = [ process.env.UPPY_ENDPOINT ]
     var origin = req.header.origin
     if (originWhiteList.indexOf(origin) !== -1) {
       return origin
@@ -36,4 +36,4 @@ app.use(cors({
 require('./server/routes')(app)
 app.listen(3020)
 
-console.log('Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020')
+console.log('Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020 servicing ' + process.env.UPPY_ENDPOINT)

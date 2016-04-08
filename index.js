@@ -18,6 +18,7 @@ app.keys = ['grant']
 app.use(session(app))
 app.use(mount(grant))
 app.use(cors({
+  methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
   origin: function (req) {
     return [
       'http://localhost:4000',

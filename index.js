@@ -20,10 +20,13 @@ app.use(mount(grant))
 app.use(cors({
   methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
   origin: function (req) {
-    return [
-      'http://localhost:4000',
-      'http://uppy.io'
-    ].join(', ')
+    // You cannot allow multiple domains besides *
+    // http://stackoverflow.com/a/1850482/151666
+    // so we make it dynamic, depending on who is asking
+    if (req.header('Origin') === 'http://uppy.io') {
+      return 'http://uppy.io'
+    }
+    return 'http://localhost:4000'
   },
   credentials: true
 }))

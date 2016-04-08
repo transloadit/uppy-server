@@ -23,10 +23,12 @@ app.use(cors({
     // You cannot allow multiple domains besides *
     // http://stackoverflow.com/a/1850482/151666
     // so we make it dynamic, depending on who is asking
-    if (req.header('Origin') === 'http://uppy.io') {
-      return 'http://uppy.io'
+    var originWhiteList = [ 'http://localhost:4000', 'http://uppy.io' ]
+    var origin = req.header.origin
+    if (originWhiteList.indexOf(origin) !== -1) {
+      return origin
     }
-    return 'http://localhost:4000'
+    return false
   },
   credentials: true
 }))

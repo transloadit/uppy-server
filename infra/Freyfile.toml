@@ -1,5 +1,6 @@
 [global.ssh]
   key_dir = "./ssh"
+  appname = "uppy-server"
 
 [global.ansiblecfg.privilege_escalation]
   become = true

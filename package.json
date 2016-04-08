@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Almost as cute as a Puppy :dog:",
   "main": "index.js",
   "bin": "index.js",

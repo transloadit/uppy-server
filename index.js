@@ -18,7 +18,12 @@ app.keys = ['grant']
 app.use(session(app))
 app.use(mount(grant))
 app.use(cors({
-  origin: 'http://localhost:4000',
+  origin: function (req) {
+    return [
+      'http://localhost:4000',
+      'http://uppy.io'
+    ].join(', ')
+  },
   credentials: true
 }))
 

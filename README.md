@@ -18,7 +18,7 @@ $EDITOR env.sh
 For local development:
 
 ```bash
-npm run start:dev
+npm run start
 ```
 
 In production
@@ -27,7 +27,7 @@ In production
 # As a privileged user
 source env.sh
 # As an non-privileged user
-npm run start
+npm run start:production
 ```
 
 An example server is running at http://server.uppy.io, which is deployed via 

@@ -122,7 +122,7 @@
 
   [[setup.playbooks.roles]]
     role                  = "{{{init.paths.roles_dir}}}/upstart/v1.0.0"
-    upstart_command       = "npm run start"
+    upstart_command       = "npm run start:production"
     upstart_description   = "uppy-server"
     upstart_name          = "{{{config.global.appname}}}"
     upstart_runtime_root  = "{{{config.global.approot}}}/current"

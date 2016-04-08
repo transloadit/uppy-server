@@ -137,7 +137,7 @@
   hosts = "uppy-server"
   name  = "Deploy uppy-server"
 
-  [[install.playbooks.roles]]
+  [[deploy.playbooks.roles]]
     role                     = "{{{init.paths.roles_dir}}}/deploy/v1.3.0"
     ansistrano_deploy_from   = "{{{init.cliargs.projectDir}}}"
     ansistrano_deploy_to     = "/srv/uppy-server"

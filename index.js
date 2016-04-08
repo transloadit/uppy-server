@@ -36,4 +36,4 @@ app.use(cors({
 require('./server/routes')(app)
 app.listen(3020)
 
-console.log('Listening on http://0.0.0.0:3020')
+console.log('Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020')

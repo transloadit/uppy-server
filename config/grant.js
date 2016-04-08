@@ -1,6 +1,6 @@
 module.exports = {
   server: {
-    host: 'localhost:3020',
+    host: process.env.UPPYSERVER_DOMAIN + ':3020',
     protocol: 'http'
   },
   dropbox: {

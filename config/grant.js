@@ -1,6 +1,6 @@
 module.exports = {
   server: {
-    host: 'localhost:8080',
+    host: 'localhost:3020',
     protocol: 'http'
   },
   dropbox: {

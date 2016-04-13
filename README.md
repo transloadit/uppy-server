@@ -36,3 +36,19 @@ An example server is running at http://server.uppy.io, which is deployed via
 All the secrets are stored in `env.infra.sh`, so using `env.infra.example.sh`, you could
 use the same Freyfile but target a different cloud vendor with different secrets, and run your own
 uppy-server.
+
+## Logging
+
+Requires Frey, if you haven't set it up yet type
+
+```bash
+npm run install:frey
+```
+
+afterwards, production logs are available through:
+
+```bash
+npm run logtail
+```
+
+This requires at least the `FREY_ENCRYPTION_SECRET` key present in your `./env.sh`.

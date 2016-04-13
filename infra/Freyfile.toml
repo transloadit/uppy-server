@@ -146,8 +146,8 @@
     name     = "uppy-server | Set hostname"
 
   [[setup.playbooks.tasks]]
-    file = "path=/srv/uppy-server/shared/logs state=directory owner=www-data group=www-data mode=0755 recurse=yes"
-    name = "uppy-server | Create shared log dir"
+    file = "path=/srv/uppy-server/shared/logs state=directory owner=ubuntu group=syslog mode=u=rwX,g=rwX,o-rwx recurse=yes"
+    name = "uppy-server | Create and chown shared log dir"
 
   [[setup.playbooks.tasks]]
     file = "path=/mnt/uppy-server-data state=directory owner=www-data group=www-data mode=0755 recurse=yes"

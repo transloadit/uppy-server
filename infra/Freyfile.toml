@@ -131,6 +131,16 @@
     upstart_respawn_limit = true
     upstart_user          = "www-data"
 
+  [[setup.playbooks.roles]]
+    role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.1"
+
+    [setup.playbooks.roles.rsyslog_rsyslog_d_files.49-uppy-server]
+      # Send {{{config.global.appname}}} messages to a dedicated logfile
+      directives = [ "& stop" ]
+      [[setup.playbooks.roles.rsyslog_rsyslog_d_files.49-uppy-server.rules]]
+        rule    = ":programname, startswith, \"{{{config.global.appname}}}\""
+        logpath = "{{{config.global.approot}}}/shared/logs/{{{config.global.appname}}}.log"
+
   [[setup.playbooks.tasks]]
     hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
     name     = "uppy-server | Set hostname"

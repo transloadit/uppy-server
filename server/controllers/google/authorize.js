@@ -1,3 +1,10 @@
+/**
+ * Checks if a Google Drive token is in session store.
+ * If one is found, it tests if access token is valid or expired
+ * by fetching from the API.
+ * If fetch fails or token not found in store, isAuthenticated is false.
+ * Otherwise, it's true.
+ */
 module.exports = function * (next) {
   var self = this
   var Purest = require('purest')
@@ -20,6 +27,7 @@ module.exports = function * (next) {
               isAuthenticated: false
             }
             cb()
+            // Can't figure out how to get refresh tokens from API yet.
             // google.get('', {
             //   qs: {
             //     refresh_token: self.session.google.refreshToken

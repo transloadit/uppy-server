@@ -14,6 +14,7 @@ module.exports = function (app) {
   router.get('/callback', handlers.callback)
   router.get('/get', handlers.get)
   router.get('/list', handlers.list)
+  router.get('/logout', handlers.logout)
 
   app.use(router.routes())
   app.use(router.allowedMethods())

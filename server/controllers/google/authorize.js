@@ -36,7 +36,6 @@ module.exports = function * (next) {
             // })
           }
         } else {
-          console.log('good')
           self.body = {
             isAuthenticated: true
           }

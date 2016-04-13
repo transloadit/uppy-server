@@ -28,7 +28,7 @@ app.use(cors({
     if (originWhiteList.indexOf(origin) !== -1) {
       return origin
     }
-    return false
+    return process.env.UPPY_ENDPOINT
   },
   credentials: true
 }))

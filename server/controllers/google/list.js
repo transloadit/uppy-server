@@ -3,9 +3,13 @@ module.exports = function * (next) {
   var Purest = require('purest')
   var google = new Purest({provider: 'google', api: 'drive'})
   yield function listFiles (cb) {
+    var query = `'${self.query.dir}' in parents`
     google.get('files', {
       auth: {
         bearer: this.session.google.token
+      },
+      qs: {
+        q: query
       }
     }, function (err, res, body) {
       if (err) {
@@ -19,7 +23,6 @@ module.exports = function * (next) {
     })
   }
 }
-
 
 // var google = require('googleapis')
 // var GoogleAuth = require('google-auth-library')

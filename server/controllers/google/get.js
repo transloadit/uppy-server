@@ -6,7 +6,7 @@ module.exports = function *(next) {
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
-    api     : 'drive'
+    api: 'drive'
   })
 
   yield function listFiles (cb) {
@@ -56,24 +56,23 @@ module.exports = function *(next) {
             alt: 'media'
           }
         }, function (err, res, body) {
-          console.log(res.headers)
           if (err) {
             console.log('fetcher')
             console.log(err)
             self.body = 'Error: ' + err
             return cb()
           }
-          cb()
-          // fs.writeFile(`./output/${file.title}`, body, function (err, res) {
-          //   if (err) {
-          //     console.log(err)
-          //     self.body = err
-          //   }
-          //   console.log('we did it')
-          //   self.body = 'ok'
-          //   self.status = 200
-          //   cb()
-          // })
+
+          fs.writeFile(`./output/${file.title}`, body, function (err, res) {
+            if (err) {
+              console.log(err)
+              self.body = err
+            }
+            console.log('we did it')
+            self.body = 'ok'
+            self.status = 200
+            cb()
+          })
         })
       }
     })

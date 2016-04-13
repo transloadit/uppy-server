@@ -1,6 +1,6 @@
 var fs = require('fs')
 
-module.exports = function *(next) {
+module.exports = function * (next) {
   console.log('getFilegoogle')
   var self = this
   var Purest = require('purest')

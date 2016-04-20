@@ -8,14 +8,15 @@ module.exports = function * (next) {
 
   yield function listFiles (cb) {
     // Query filters based on a file's parents
-    var query = `'${self.query.dir}' in parents`
+    var query = `'${self.query.dir}' in parents and trashed=false`
 
     google.get('files', {
       auth: {
         bearer: this.session.google.token
       },
       qs: {
-        q: query
+        q: query,
+        fields: 'items(createdDate,id,labels,mimeType,modifiedByMeDate,ownedByMe,parents,title,userPermission)'
       }
     }, function (err, res, body) {
       if (err) {
@@ -24,6 +25,7 @@ module.exports = function * (next) {
       }
 
       self.body = body
+
       cb()
     })
   }

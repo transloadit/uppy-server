@@ -1,5 +1,11 @@
 var fs = require('fs')
 
+var fileTypes = {
+  'document': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'presentation': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'spreadsheet': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+}
+
 /**
  * Fetch a file from Google Drive
  */
@@ -23,39 +29,42 @@ module.exports = function * (next) {
       }
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
+        var exportMimeType = fileTypes[file.mimeType.replace('application/vnd.google-apps.', '')]
+
         // Pass mimeType of desired file type to export
         // TODO: Google Docs, Sheets, etc, need to be passed different mimeTypes.
         //       'application/...wordprocessingml.document' is for Google Docs files
         //
-        // google.get(`files/${self.query.fileId}/export`, {
-        //   auth: {
-        //     bearer: self.session.google.token
-        //   },
-        //   qs: {
-        //     mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        //   }
-        // }, function (err, res, body) {
-        //   if (err) {
-        //     console.log(err)
-        //     self.body = 'Error: ' + err
-        //     return cb()
-        //   }
-        //
-        //   fs.writeFile('./output/doc.docx', body, function (err, res) {
-        //     if (err) {
-        //       console.log(err)
-        //       self.body = err
-        //     }
-        //     console.log('we did it')
-        //     self.body = 'ok'
-        //     self.status = 200
-        //     cb()
-        //   })
-        // })
-        self.status = 401
-        self.body = 'Uppy Server does not currently support fetching Google documents'
-        cb()
+        google.get(`files/${self.query.fileId}/export`, {
+          auth: {
+            bearer: self.session.google.token
+          },
+          qs: {
+            mimeType: exportMimeType
+          }
+        }, function (err, res, body) {
+          if (err) {
+            console.log(err)
+            self.body = 'Error: ' + err
+            return cb()
+          }
+
+          fs.writeFile('./output/doc.docx', body, function (err, res) {
+            if (err) {
+              console.log(err)
+              self.body = err
+            }
+            console.log('we did it')
+            self.body = 'ok'
+            self.status = 200
+            cb()
+          })
+        })
+        // self.status = 401
+        // self.body = 'Uppy Server does not currently support fetching Google documents'
+        // cb()
       } else {
+        console.log('else')
         // Fetch non-Google files
         google.get(`files/${self.query.fileId}`, {
           auth: {

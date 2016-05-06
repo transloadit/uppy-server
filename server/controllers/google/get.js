@@ -1,5 +1,4 @@
 var fs = require('fs')
-var path = require('path')
 var fileTypes = {
   'document': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],
   'presentation': ['application/vnd.openxmlformats-officedocument.presentationml.presentation', '.pptx'],

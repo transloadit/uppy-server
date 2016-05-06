@@ -18,15 +18,17 @@ module.exports = function * (next) {
   })
 
   yield function getFile (cb) {
+    var url = `files/${this.query.fileId}`
     // First fetch file meta data, not actual file
-    google.get(`files/${this.query.fileId}`, {
+    google.get(url, {
       auth: {
         bearer: this.session.google.token
       }
     }, function (err, res, file) {
       if (err) {
-        throw err
+        throw new Error(`Could not retrieve '${url}' from Google Drive. ${err}`)
       }
+
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
         var fileType = fileTypes[file.mimeType.replace('application/vnd.google-apps.', '')]
@@ -46,6 +48,7 @@ module.exports = function * (next) {
             return cb()
           }
 
+          console.log(`Saving exported file with content-type: '${res.headers['content-type']}' as exportMime '${fileType[0]}' to './output/${file.title}${fileType[1]}'`)
           self.body = 'ok'
           self.status = 200
           cb()
@@ -66,7 +69,7 @@ module.exports = function * (next) {
             return cb()
           }
 
-          console.log('we did it')
+          console.log(`Saving regular file with content-type: '${res.headers['content-type']}' to './output/${file.title}'`)
           self.body = 'ok'
           self.status = 200
           cb()

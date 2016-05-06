@@ -9,7 +9,7 @@ var grant = new Grant(require('./config/grant'))
 // router.get('/', function *(next) {
 //   this.body = 'hello world'
 // })
-
+var version = require('./package.json').version
 var app = koa()
 require('koa-qs')(app)
 
@@ -36,4 +36,4 @@ app.use(cors({
 require('./server/routes')(app)
 app.listen(3020)
 
-console.log('Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020 servicing ' + process.env.UPPY_ENDPOINT)
+console.log('Uppy-server ' + version + ' Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020 servicing ' + process.env.UPPY_ENDPOINT)

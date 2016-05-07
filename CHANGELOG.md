@@ -12,9 +12,13 @@ and patch levels.
 
 Ideas that will be planned and find their way into a release at one point
 
+## 0.0.6
+
+- [x] Make `env.sh` not being available non-fatal
+
 ## 0.0.5
 
-<a name="next"></a> Not scheduled
+- [x] Deal with corrupted files being saved
 
 ## 0.0.4
 

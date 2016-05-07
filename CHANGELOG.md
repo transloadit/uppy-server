@@ -12,6 +12,10 @@ and patch levels.
 
 Ideas that will be planned and find their way into a release at one point
 
+## 0.0.7
+
+- [x] Better version of: Make `env.sh` not being available non-fatal
+
 ## 0.0.6
 
 - [x] Make `env.sh` not being available non-fatal

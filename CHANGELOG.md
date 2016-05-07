@@ -12,6 +12,9 @@ and patch levels.
 
 Ideas that will be planned and find their way into a release at one point
 
+- [ ] Deploy on Lambda via Apex
+- [ ] Steal locutus' Travis deploy method. Currently fatals still deploy.
+
 ## 0.0.7
 
 - [x] Better version of: Make `env.sh` not being available non-fatal

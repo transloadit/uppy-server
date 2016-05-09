@@ -13,7 +13,7 @@ and patch levels.
 Ideas that will be planned and find their way into a release at one point
 
 - [ ] Deploy on Lambda via Apex
-- [ ] Steal locutus' Travis deploy method. Currently fatals still deploy.
+- [x] Steal locutus' Travis deploy method. Currently fatals still deploy.
 
 ## 0.0.7
 

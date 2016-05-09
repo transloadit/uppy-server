@@ -18,7 +18,6 @@ before_script:
 - scripts/rebuild-env.sh
 script:
 - npm run lint
-- if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]; then npm run deploy:travis else echo "Skipping deploy for non-master/PRs"; fi
 env:
   global:
   - CXX=g++-4.8
@@ -36,3 +35,11 @@ env:
 notifications:
   slack:
     secure: KpMEfM6BPCmcHQsFM/RfMwxUVujTCRY3nolMnQ8MllK04TXZswW7qwtdb32jSpja2N0F3CUx/UEeushpdQ51eD+XqFnpioPFUzoTm+vmAza6QiXvQDGAMIF688BMjlR/BeCIVL7BwEUd5vBv2G0nh9hgqE2ItBc4X9UoMikn+StiNuVwHP9WHJ2GpLW9ft9TPXyUrtNsaIhQ3AJCJyBO0H+HZpK8AaTv/IA+rcfcvv73mB4LzK6o4PxfIeJAE2NeW9v0+pNlQ7obQVmltAvOd3W6mWgVvYA0I0NJN0LCRd5LFzf/uQQAh1n4oUgnAnQKUWBckcWRnznx14r1LWRyRgZMIJdGCKpn+MQPl2I8WHnHgl1YRxFxD9JjPHquoe7tPlbbaenj7eC8By7s+Q7gog6F4h6Df0JsiRtfg/fuGkLukqAfWrrTND9T3EIZCL6k4HtpLvvfG1pz9kRIKco2lUKyqZUeZYuimElmZ9Pw7wiUogfhjfnMGWzpERNwZewGt7LDNSNy9nLjzGd36IrqXjE+4rwKkZ6/Bcv8/zh1KCRBxT+3OT4a7c4RmJ9ay+thzbJVatwzUYZ4GQE3cw196I1MJUnDMpqm0z0BRxWvtdZfA/Jo97HVfPsC43R8VDNBzXfZLLryCj9FIKUrX84yAI3/4dUe5Nef2mp6YewXAGU=
+# Travis docs: Note that pull request builds skip deployment step altogether.
+# https://docs.travis-ci.com/user/deployment/#Conditional-Releases-with-on
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: scripts/travis-deploy.sh
+  on:
+    branch: master

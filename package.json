@@ -34,6 +34,7 @@
     "nodemon": "1.8.1"
   },
   "dependencies": {
+    "atob": "^2.0.3",
     "dropbox": "0.10.3",
     "google-auth-library": "0.9.7",
     "googleapis": "2.1.7",

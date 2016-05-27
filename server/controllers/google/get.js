@@ -1,4 +1,5 @@
 var fs = require('fs')
+
 var fileTypes = {
   'document': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],
   'presentation': ['application/vnd.openxmlformats-officedocument.presentationml.presentation', '.pptx'],
@@ -17,7 +18,7 @@ module.exports = function * (next) {
   })
 
   yield function getFile (cb) {
-    var url = `files/${this.query.fileId}`
+    var url = `files/${this.request.body.fileId}`
     // First fetch file meta data, not actual file
     google.get(url, {
       auth: {
@@ -25,7 +26,10 @@ module.exports = function * (next) {
       }
     }, function (err, res, file) {
       if (err) {
-        throw new Error(`Could not retrieve '${url}' from Google Drive. ${err}`)
+        console.log(`Error: Could not retrieve '${url}' from Google Drive. ${err}`)
+        this.status = 500
+        this.statusText = err
+        return cb()
       }
 
       // If file is Google document, need to download exported Office doc
@@ -36,8 +40,9 @@ module.exports = function * (next) {
           self.statusText = 'File type not recognized.'
           return cb()
         }
+
         // Pass mimeType of desired file type to export
-        google.get(`files/${self.query.fileId}/export`, {
+        google.get(`${url}/export`, {
           auth: {
             bearer: self.session.google.token
           },
@@ -58,7 +63,7 @@ module.exports = function * (next) {
         }).pipe(fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png'))
       } else {
         // Fetch non-Google files
-        google.get(`files/${file.id}`, {
+        google.get(`${url}`, {
           auth: {
             bearer: self.session.google.token
           },

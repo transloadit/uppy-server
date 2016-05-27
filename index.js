@@ -3,6 +3,7 @@ var koa = require('koa')
 var session = require('koa-session')
 var cors = require('koa-cors')
 var mount = require('koa-mount')
+var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 
@@ -16,6 +17,7 @@ require('koa-qs')(app)
 app.keys = ['grant']
 
 app.use(session(app))
+app.use(bodyParser())
 app.use(mount(grant))
 app.use(cors({
   methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',

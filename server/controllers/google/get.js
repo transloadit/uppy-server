@@ -31,7 +31,11 @@ module.exports = function * (next) {
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
         var fileType = fileTypes[file.mimeType.replace('application/vnd.google-apps.', '')]
-
+        if (!fileType) {
+          self.status = 500
+          self.statusText = 'File type not recognized.'
+          return cb()
+        }
         // Pass mimeType of desired file type to export
         google.get(`files/${self.query.fileId}/export`, {
           auth: {

@@ -1,6 +1,5 @@
 var fs = require('fs')
 var http = require('http')
-var es = require('event-stream')
 
 var fileTypes = {
   'document': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],

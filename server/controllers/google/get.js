@@ -1,4 +1,6 @@
 var fs = require('fs')
+var http = require('http')
+var es = require('event-stream')
 
 var fileTypes = {
   'document': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],
@@ -31,6 +33,18 @@ module.exports = function * (next) {
         this.statusText = err
         return cb()
       }
+      var writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+      writer.on('finish', function () {
+        fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
+        .pipe(http.request({
+          host: this.request.body.target,
+          method: 'POST',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': ''
+        }, (res) => {
+          console.log(res.statusCode)
+        }))
+      })
 
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
@@ -40,7 +54,6 @@ module.exports = function * (next) {
           self.statusText = 'File type not recognized.'
           return cb()
         }
-
         // Pass mimeType of desired file type to export
         google.get(`${url}/export`, {
           auth: {
@@ -60,7 +73,8 @@ module.exports = function * (next) {
           self.body = 'ok'
           self.status = 200
           cb()
-        }).pipe(fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png'))
+        })
+        .pipe(writer)
       } else {
         // Fetch non-Google files
         google.get(`${url}`, {

@@ -18,8 +18,11 @@ module.exports = function * (next) {
     api: 'drive'
   })
 
+  console.log(self.request.body.target)
+
   yield function getFile (cb) {
-    var url = `files/${this.request.body.fileId}`
+    var writer
+    var url = `files/${self.request.body.fileId}`
     // First fetch file meta data, not actual file
     google.get(url, {
       auth: {
@@ -32,18 +35,6 @@ module.exports = function * (next) {
         this.statusText = err
         return cb()
       }
-      var writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
-      writer.on('finish', function () {
-        fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
-        .pipe(http.request({
-          host: this.request.body.target,
-          method: 'POST',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': ''
-        }, (res) => {
-          console.log(res.statusCode)
-        }))
-      })
 
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
@@ -53,6 +44,50 @@ module.exports = function * (next) {
           self.statusText = 'File type not recognized.'
           return cb()
         }
+
+        writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+        writer.on('finish', function () {
+          fs.readFile('./output/' + file.title + fileType[1], function (err, data) {
+            if (err) { console.log(err) }
+
+            var req = http.request({
+              host: self.request.body.target,
+              method: 'POST',
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': data.length
+            }, (res) => {
+              console.log(`STATUS: ${res.statusCode}`)
+              console.log(`HEADERS: ${JSON.stringify(res.headers)}`)
+              res.on('data', (chunk) => {
+                console.log(`BODY: ${chunk}`)
+              })
+
+              res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode <= 300) {
+                  self.statusCode = res.statusCode
+                  return cb()
+                }
+                console.log('No more data in response.')
+              })
+            })
+
+            req.on('error', (e) => {
+              console.log(`problem with request: ${e.message}`)
+            })
+
+            req.write(data)
+            req.end()
+          })
+          // fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
+          // .pipe(http.request({
+          //   host: self.request.body.target,
+          //   method: 'POST',
+          //   'Content-Type': 'application/x-www-form-urlencoded',
+          //   'Content-Length': ''
+          // }, (res) => {
+          //   console.log(res)
+          // }))
+        })
         // Pass mimeType of desired file type to export
         google.get(`${url}/export`, {
           auth: {
@@ -75,6 +110,18 @@ module.exports = function * (next) {
         })
         .pipe(writer)
       } else {
+        writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
+        writer.on('finish', function () {
+          fs.createReadStream('./output/' + file.title || 'cat.png')
+          .pipe(http.request({
+            host: self.request.body.target,
+            method: 'POST',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': '1000'
+          }, (res) => {
+            console.log(res.statusCode)
+          }))
+        })
         // Fetch non-Google files
         google.get(`${url}`, {
           auth: {
@@ -94,7 +141,7 @@ module.exports = function * (next) {
           self.body = 'ok'
           self.status = 200
           cb()
-        }).pipe(fs.createWriteStream('./output/' + file.title || 'cat.png'))
+        }).pipe(writer)
       }
     })
   }

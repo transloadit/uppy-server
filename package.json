@@ -36,6 +36,7 @@
   "dependencies": {
     "atob": "^2.0.3",
     "dropbox": "0.10.3",
+    "event-stream": "^3.3.2",
     "google-auth-library": "0.9.7",
     "googleapis": "2.1.7",
     "grant-koa": "3.5.3",

@@ -44,8 +44,8 @@ module.exports = function * (next) {
           return cb()
         }
 
-        let writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
-        writer.on('finish', function () {
+        var exportWriter = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+        exportWriter.on('finish', function () {
           fs.readFile('./output/' + file.title + fileType[1], function (err, data) {
             if (err) { console.log(err) }
 
@@ -107,9 +107,9 @@ module.exports = function * (next) {
           self.status = 200
           cb()
         })
-        .pipe(writer)
+        .pipe(exportWriter)
       } else {
-        let writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
+        var writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
         writer.on('finish', function () {
           fs.createReadStream('./output/' + file.title || 'cat.png')
           .pipe(http.request({

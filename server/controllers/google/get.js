@@ -19,7 +19,7 @@ module.exports = function * (next) {
   })
 
   yield function getFile (cb) {
-    var url = `files/${this.request.body.fileId}`
+    var url = `files/${self.request.body.fileId}`
     // First fetch file meta data, not actual file
     google.get(url, {
       auth: {
@@ -32,18 +32,6 @@ module.exports = function * (next) {
         this.statusText = err
         return cb()
       }
-      var writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
-      writer.on('finish', function () {
-        fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
-        .pipe(http.request({
-          host: this.request.body.target,
-          method: 'POST',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': ''
-        }, (res) => {
-          console.log(res.statusCode)
-        }))
-      })
 
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
@@ -53,6 +41,19 @@ module.exports = function * (next) {
           self.statusText = 'File type not recognized.'
           return cb()
         }
+
+        var writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+        writer.on('finish', function () {
+          fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
+          .pipe(http.request({
+            host: self.request.body.target,
+            method: 'POST',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': ''
+          }, (res) => {
+            console.log(res.statusCode)
+          }))
+        })
         // Pass mimeType of desired file type to export
         google.get(`${url}/export`, {
           auth: {
@@ -75,6 +76,18 @@ module.exports = function * (next) {
         })
         .pipe(writer)
       } else {
+        var writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
+        writer.on('finish', function () {
+          fs.createReadStream('./output/' + file.title || 'cat.png')
+          .pipe(http.request({
+            host: self.request.body.target,
+            method: 'POST',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': '1000'
+          }, (res) => {
+            console.log(res.statusCode)
+          }))
+        })
         // Fetch non-Google files
         google.get(`${url}`, {
           auth: {

@@ -21,6 +21,7 @@ module.exports = function * (next) {
   console.log(self.request.body.target)
 
   yield function getFile (cb) {
+    var writer
     var url = `files/${self.request.body.fileId}`
     // First fetch file meta data, not actual file
     google.get(url, {
@@ -44,8 +45,8 @@ module.exports = function * (next) {
           return cb()
         }
 
-        var exportWriter = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
-        exportWriter.on('finish', function () {
+        writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+        writer.on('finish', function () {
           fs.readFile('./output/' + file.title + fileType[1], function (err, data) {
             if (err) { console.log(err) }
 
@@ -107,9 +108,9 @@ module.exports = function * (next) {
           self.status = 200
           cb()
         })
-        .pipe(exportWriter)
+        .pipe(writer)
       } else {
-        var writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
+        writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
         writer.on('finish', function () {
           fs.createReadStream('./output/' + file.title || 'cat.png')
           .pipe(http.request({

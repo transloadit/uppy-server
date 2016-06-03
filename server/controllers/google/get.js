@@ -42,7 +42,7 @@ module.exports = function * (next) {
           return cb()
         }
 
-        var writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
+        let writer = fs.createWriteStream('./output/' + file.title + fileType[1] || 'cat.png')
         writer.on('finish', function () {
           fs.createReadStream('./output/' + file.title + fileType[1] || 'cat.png')
           .pipe(http.request({
@@ -76,7 +76,7 @@ module.exports = function * (next) {
         })
         .pipe(writer)
       } else {
-        var writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
+        let writer = fs.createWriteStream('./output/' + file.title || 'cat.png')
         writer.on('finish', function () {
           fs.createReadStream('./output/' + file.title || 'cat.png')
           .pipe(http.request({

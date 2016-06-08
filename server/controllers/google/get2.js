@@ -1,11 +1,32 @@
 var fs = require('fs')
 var http = require('http')
 
-var fileTypes = {
-  'document': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],
-  'presentation': ['application/vnd.openxmlformats-officedocument.presentationml.presentation', '.pptx'],
-  'spreadsheet': ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '.xlsx']
+var googleFileTypes = {
+  document: {
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    extension: '.docx'
+  },
+  presentation: {
+    mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    extension: '.pptx'
+  },
+  spreadsheet: {
+    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    extension: '.xlsx'
+  }
 }
+
+function isGoogleFile (file) {
+  return file.mimeType.indexOf('application/vnd.google-apps.') !== -1
+}
+
+// function getFileType (type) {
+//   return googleFileTypes[type.replace('application/vnd.google-apps.', '')]
+// }
+
+// function getFileMimeType (type) {
+//   return googleFileTypes[type.replace('application/vnd.google-apps.', '')].mimeType
+// }
 
 /**
  * Fetch a file from Google Drive
@@ -15,8 +36,28 @@ module.exports = function * (next) {
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
-    api: 'drive'
+    api: 'drive',
+    promise: true,
+    defaults: {
+      auth: {
+        bearer: this.session.google.token
+      }
+    }
   })
+
+  google.query()
+    .get(`files/${self.request.body.fileId}`)
+    .request((err, res, file) => {
+      if (err) {
+        this.status = 500
+        this.statusText = 'There was an error fetching the file information.'
+        return
+      }
+
+      if (isGoogleFile(file)) {
+
+      }
+    })
 
   yield function getFile (cb) {
     var writer
@@ -36,7 +77,7 @@ module.exports = function * (next) {
 
       // If file is Google document, need to download exported Office doc
       if (file.mimeType.indexOf('application/vnd.google-apps.') !== -1) {
-        var fileType = fileTypes[file.mimeType.replace('application/vnd.google-apps.', '')]
+        var fileType = googleFileTypes[file.mimeType.replace('application/vnd.google-apps.', '')]
         if (!fileType) {
           self.status = 500
           self.statusText = 'File type not recognized.'

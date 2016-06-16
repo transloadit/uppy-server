@@ -46,7 +46,7 @@ function getUploadStream (opts, cb, self) {
         }
 
         var req = http.request({
-          host: 'api2.transloadit.com',
+          host: opts.target,
           method: 'POST',
           'Content-Type': 'multipart/form-data',
           'Content-Length': data.length

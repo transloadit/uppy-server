@@ -7,9 +7,17 @@ var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 
-// router.get('/', function *(next) {
-//   this.body = 'hello world'
-// })
+var WebSocketServer = require('ws').Server
+var wss = new WebSocketServer({ port: 9876 })
+
+wss.on('connection', function connection (ws) {
+  ws.on('message', function incoming (message) {
+    console.log('received: %s', message)
+  })
+
+  ws.send('something cool')
+})
+
 var version = require('./package.json').version
 var app = koa()
 require('koa-qs')(app)

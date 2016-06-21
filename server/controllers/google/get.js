@@ -38,67 +38,65 @@ function getUploadStream (opts, cb, self) {
   var writer = fs.createWriteStream(opts.fileName)
 
   writer.on('finish', function () {
-    if (opts.target) {
-      fs.readFile(opts.fileName, function (err, data) {
-        if (err) {
-          console.log(err)
-          return
-        }
-
-        var req = http.request({
-          host: opts.target,
-          method: 'POST',
-          'Content-Type': 'multipart/form-data',
-          'Content-Length': data.length
-        }, (res) => {
-          console.log('STATUS:', res.statusCode)
-          console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
-          res.on('data', (chunk) => {
-            console.log('BODY:', chunk)
-          })
-
-          res.on('end', () => {
-            console.log('No more data in response.')
-
-            if (res.statusCode >= 200 && res.statusCode <= 300) {
-              if (res.status) {
-                self.status = res.status
-              }
-
-              // Server logging
-              console.log('Transfer to server `' + opts.target + '` was successful.')
-              console.log('Status code: ', res.statusCode)
-
-              self.statusCode = res.statusCode
-              return cb()
-            }
-
-            // Server logging
-            console.log('Status Code was not between 200-300.  There was an error: ')
-            console.log('response status code:', res.statusCode)
-            console.log('response status:')
-            console.log(res.status)
-
-            if (res.status) {
-              self.status = res.status
-            }
-            self.statusCode = res.statusCode
-            return cb()
-          })
-        })
-
-        req.on('error', (e) => {
-          console.log(`problem with request: ${e.message}`)
-        })
-
-        req.write(data)
-        req.end()
-      })
-    } else {
+    if (!opts.target) {
       self.status = 200
       self.statusText = 'File written to uppy server local storage'
       return cb()
     }
+
+    fs.readFile(opts.fileName, function (err, data) {
+      if (err) {
+        console.log(err)
+        return
+      }
+
+      var req = http.request({
+        host: opts.target,
+        method: 'POST',
+        'Content-Type': 'multipart/form-data',
+        'Content-Length': data.length
+      }, (res) => {
+        console.log('STATUS:', res.statusCode)
+        console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
+
+        res.on('data', (chunk) => {
+          console.log('BODY:', chunk)
+        })
+
+        res.on('end', () => {
+          console.log('No more data in response.')
+
+          if (res.status) {
+            self.status = res.status
+          }
+
+          if (res.statusCode >= 200 && res.statusCode <= 300) {
+            // Server logging
+            console.log('Transfer to server `' + opts.target + '` was successful.')
+            console.log('Status code: ', res.statusCode)
+
+            self.status = res.statusCode
+            return cb()
+          }
+
+          // Server logging
+          console.log('Status Code was not between 200-300.  There was an error: ')
+          console.log('response status code:', res.statusCode)
+          console.log('response status:')
+          console.log(res.status)
+
+          self.status = res.statusCode
+          return cb()
+        })
+      })
+
+      req.on('error', (e) => {
+        console.log(`problem with request: ${e.message}`)
+      })
+
+      req.write(data)
+      req.end()
+    })
   })
 
   return writer
@@ -147,15 +145,15 @@ module.exports = function * (next) {
           var mimeType = getFileMimeType(file.mimeType)
           var extension = getFileExtension(file.mimeType)
 
-          opts = {
-            fileName: './output/' + file.title + extension,
-            target: target
-          }
-
           if (!mimeType) {
             self.status = 500
             self.statusText = 'Uppy Server cannot export this type of file'
             return cb()
+          }
+
+          opts = {
+            fileName: './output/' + file.title + extension,
+            target: target
           }
 
           writer = getUploadStream(opts, cb, self)

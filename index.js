@@ -6,17 +6,32 @@ var mount = require('koa-mount')
 var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
+var googleGet = require('./server/websocket/google/get')
+var googleList = require('./server/websocket/google/list')
 
-var WebSocketServer = require('ws').Server
-var wss = new WebSocketServer({ port: 9876 })
+var wss = require('./websocket')
+wss.on('connection', function (ws) {
+  ws.on('message', routeMessage.bind(this, ws))
 
-wss.on('connection', function connection (ws) {
-  ws.on('message', function incoming (message) {
-    console.log('received: %s', message)
+  ws.on('google:get', function (data) {
+    console.log('google:get')
+    googleGet(data, ws)
   })
 
-  ws.send('something cool')
+  ws.on('google:list', function (data) {
+    googleList(data, ws)
+  })
 })
+
+function routeMessage (ws, message) {
+  try {
+    var parsedMessage = JSON.parse(message)
+    ws.emit(parsedMessage.action, parsedMessage.payload)
+  } catch (err) {
+    // not sure how we should be handling errors
+    return err
+  }
+}
 
 var version = require('./package.json').version
 var app = koa()

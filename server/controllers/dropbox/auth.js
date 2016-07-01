@@ -10,7 +10,7 @@ module.exports = function () {
 
     // @todo Lint says: "request" is not defined. Adding this but will obviously break.
     // How do you want to resolve @hedgerh?
-    const request = {}
+    var request = {}
     request.post({
       url: config.dropbox.tokenURI,
       json: true,

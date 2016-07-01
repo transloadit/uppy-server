@@ -12,17 +12,18 @@ module.exports = function * (next) {
 
     google.get('files', {
       auth: {
-        bearer: this.session.google.token
+        bearer: self.session.google.token
       },
       qs: {
         q: query
       }
     }, function (err, res, body) {
       if (err) {
-        this.body = 'Error: ' + err
+        console.log('error time!')
+        self.body = 'Error: ' + err
         return cb()
       }
-
+      console.log(body.length)
       self.body = body
 
       cb()

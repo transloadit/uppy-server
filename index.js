@@ -59,7 +59,7 @@ function wrapSend (sendFn) {
       return sendFn.call(this, action, cb)
     }
 
-    const message = JSON.stringify({
+    var message = JSON.stringify({
       action,
       payload
     })

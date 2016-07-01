@@ -5,5 +5,6 @@
  */
 
 module.exports = function * (next) {
+  this.websocket.send('uppy.debug', { message: this.query.access_token })
   this.websocket.emit('google.callback', this.query.access_token)
 }

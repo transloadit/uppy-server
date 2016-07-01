@@ -45,6 +45,6 @@
     "koa-session": "3.3.1",
     "koa-websocket": "^2.0.0",
     "purest": "2.0.0",
-    "tus-js-client": "git+https://github.com/tus/tus-js-client.git#node-compat"
+    "tus-js-client": "git+https://github.com/tus/tus-js-client.git"
   }
 }

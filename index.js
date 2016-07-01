@@ -78,9 +78,10 @@ app.ws.use(route.all('/', function * (next) {
   this.websocket.on('google.logout', googleLogout.bind(this))
   this.websocket.on('google.list', googleList.bind(this))
   this.websocket.on('google.callback', (token) => {
+    this.session.google.token = token
     this.websocket.send('google.auth.complete')
     this.websocket.send('google.auth.pass')
-    this.session.google.token = token
+    this.websocket.send('uppy.debug', { message: 'token stored successfully' })
   })
 }))
 

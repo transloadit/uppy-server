@@ -19,7 +19,7 @@ module.exports = function (data) {
   })
 
   if (self.session.google.token === undefined) {
-    self.websocket.send('google.auth.fail')
+    self.websocket.send('google.auth.fail', { err: 'no token' })
   }
 
   google.query()
@@ -30,7 +30,7 @@ module.exports = function (data) {
           // self.session.google.token = null
         }
 
-        self.websocket.send('google.auth.fail')
+        self.websocket.send('google.auth.fail', { err: 'other error' })
         return
       }
 

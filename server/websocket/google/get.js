@@ -1,5 +1,7 @@
 var fs = require('fs')
 var http = require('http')
+var tus = require('tus-js-client')
+var path = require('path')
 
 var googleFileTypes = {
   document: {
@@ -44,6 +46,33 @@ function getUploadStream (opts, self) {
       return
     }
 
+    if (opts.protocol === 'tus') {
+      var filePath = opts.fileName
+      var file = fs.createReadStream(filePath)
+      var size = fs.statSync(filePath).size
+      var options = {
+        endpoint: opts.target,
+        resume: true,
+        metadata: {
+          filename: path.basename(opts.fileName)
+        },
+        uploadSize: size,
+        onError: function (error) {
+          throw error
+        },
+        onProgress: function (bytesUploaded, bytesTotal) {
+          var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+          console.log(bytesUploaded, bytesTotal, percentage + '%')
+        },
+        onSuccess: function () {
+          console.log('Upload finished:', upload.url)
+        }
+      }
+
+      var upload = new tus.Upload(file, options)
+      upload.start()
+    }
+
     fs.readFile(opts.fileName, function (err, data) {
       if (err) {
         console.log(err)
@@ -65,7 +94,9 @@ function getUploadStream (opts, self) {
 
         res.on('end', () => {
           console.log('No more data in response.')
-
+          self.websocket.send('upload-complete', {
+            statusCode: res.statusCode
+          })
           if (res.status) {
           }
 
@@ -102,28 +133,28 @@ function getUploadStream (opts, self) {
 /**
  * Fetch a file from Google Drive
  */
-module.exports = function (data, ws) {
+module.exports = function (data) {
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
     api: 'drive',
     defaults: {
       auth: {
-        bearer: 'ya29.Ci8PAx_polNMNmcbWumXsliYXTVUo20zCDUNfljbJob1YDK526OgXHYHNuZHVGqM_g'
+        bearer: this.session.google.token
       }
     }
   })
 
-  var fileId = data.fileId
+  var id = data.id
   var target = data.target
 
-  if (!fileId) {
-    console.log('invalid file id: ' + fileId)
+  if (!id) {
+    console.log('invalid file id: ' + id)
     return
   }
 
   google.query()
-    .get('files/' + fileId)
+    .get('files/' + id)
     .request((err, res, file) => {
       var writer
       var opts
@@ -142,12 +173,13 @@ module.exports = function (data, ws) {
 
         opts = {
           fileName: './output/' + file.title + extension,
-          target: target
+          target: target,
+          protocol: data.protocol
         }
 
-        writer = getUploadStream(opts)
+        writer = getUploadStream(opts, this)
 
-        google.get('files/' + fileId + '/export', {
+        google.get('files/' + id + '/export', {
           qs: {
             mimeType: mimeType
           }
@@ -165,9 +197,9 @@ module.exports = function (data, ws) {
           target: target
         }
 
-        writer = getUploadStream(opts)
+        writer = getUploadStream(opts, this)
 
-        google.get('files/' + fileId, {
+        google.get('files/' + id, {
           qs: {
             alt: 'media'
           }

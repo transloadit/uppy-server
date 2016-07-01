@@ -8,6 +8,7 @@ var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 var route = require('koa-route')
 var websockify = require('koa-websocket')
+
 var googleGet = require('./server/websocket/google/get')
 var googleAuth = require('./server/websocket/google/authorize')
 var googleLogout = require('./server/websocket/google/logout')

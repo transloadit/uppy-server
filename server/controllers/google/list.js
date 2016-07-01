@@ -23,7 +23,6 @@ module.exports = function * (next) {
         self.body = 'Error: ' + err
         return cb()
       }
-      console.log(body.length)
       self.body = body
 
       cb()

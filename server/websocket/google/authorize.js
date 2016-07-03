@@ -6,6 +6,16 @@
  * Otherwise, it's true.
  */
 module.exports = function (data) {
+  if (!this.session.google) {
+    self.websocket.send('google.auth.fail', {err: 'no token'})
+    return
+  }
+
+  if (!this.session.google.token) {
+    self.websocket.send('google.auth.fail', { err: 'no token' })
+    return
+  }
+
   var self = this
   var Purest = require('purest')
   var google = new Purest({
@@ -18,9 +28,7 @@ module.exports = function (data) {
     }
   })
 
-  if (self.session.google.token === undefined) {
-    self.websocket.send('google.auth.fail', { err: 'no token' })
-  }
+  self.websocket.send('uppy.debug', self.session.google.token)
 
   google.query()
     .get('files')

@@ -6,7 +6,9 @@
 
 module.exports = function * (next) {
   this.session.google.token = this.query.access_token
-  this.websocket.emit('google.callback', this.query.access_token)
+  if (this.websocket) {
+    this.websocket.emit('google.callback', this.query.access_token)
+  }
 
   if (!this.websocket) {
     this.body = {

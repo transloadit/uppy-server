@@ -3,16 +3,12 @@
  */
 module.exports = function (data) {
   var self = this
-
-  self.websocket.send('uppy.debug', {message: 'top of list'})
-  self.websocket.send('uppy.debug', {message: JSON.stringify(data)})
-  self.websocket.send('uppy.debug', { message: self.session })
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
     api: 'drive'
   })
-
+  console.log('list token: ', self.session.google.token)
   // Query filters based on a file's parents
   var query = `'${data.dir}' in parents and trashed=false`
   google.get('files', {
@@ -28,7 +24,7 @@ module.exports = function (data) {
       self.websocket.send('google.list.fail', err)
       return
     }
-    self.websocket.send('uppy.debug', { message: 'we are good.' })
+
     self.websocket.send('google.list.ok', body)
   })
 }

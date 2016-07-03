@@ -40,6 +40,7 @@ function getUploadStream (opts, self) {
   var writer = fs.createWriteStream(opts.fileName)
 
   writer.on('finish', function () {
+    console.log('Download from Google Drive complete.')
     if (!opts.target) {
       self.status = 200
       self.statusText = 'File written to uppy server local storage'
@@ -47,6 +48,7 @@ function getUploadStream (opts, self) {
     }
 
     if (opts.protocol === 'tus') {
+      console.log('tus upload')
       var filePath = opts.fileName
       var file = fs.createReadStream(filePath)
       var size = fs.statSync(filePath).size
@@ -66,11 +68,13 @@ function getUploadStream (opts, self) {
         },
         onSuccess: function () {
           console.log('Upload finished:', upload.url)
+          self.websocket.send('upload-success')
         }
       }
 
       var upload = new tus.Upload(file, options)
       upload.start()
+      return
     }
 
     fs.readFile(opts.fileName, function (err, data) {
@@ -194,7 +198,8 @@ module.exports = function (data) {
       } else {
         opts = {
           fileName: './output/' + file.title,
-          target: target
+          target: target,
+          protocol: data.protocol
         }
 
         writer = getUploadStream(opts, this)

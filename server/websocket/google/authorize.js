@@ -7,12 +7,12 @@
  */
 module.exports = function (data) {
   if (!this.session.google) {
-    self.websocket.send('google.auth.fail', {err: 'no token'})
+    this.websocket.send('google.auth.fail', {err: 'no token'})
     return
   }
 
   if (!this.session.google.token) {
-    self.websocket.send('google.auth.fail', { err: 'no token' })
+    this.websocket.send('google.auth.fail', { err: 'no token' })
     return
   }
 

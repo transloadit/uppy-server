@@ -73,6 +73,7 @@ function wrapSend (sendFn) {
 app.ws.use(route.all('/', function * (next) {
   this.websocket.send = wrapSend(this.websocket.send).bind(this.websocket)
   app.context.websocket = this.websocket
+  this.websocket.send('uppy.debug', 'websocket init')
   this.websocket.on('message', routeMessage.bind(this))
   this.websocket.on('google.get', googleGet.bind(this))
   this.websocket.on('google.auth', googleAuth.bind(this))

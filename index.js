@@ -25,6 +25,7 @@ var sess = session(app)
 
 app.use(sess)
 app.ws.use(sess)
+
 app.use(bodyParser())
 app.use(mount(grant))
 app.use(cors({

@@ -20,7 +20,7 @@
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
     "start:production": "node index.js",
-    "start": "(source env.sh || true); env UPPYSERVER_DOMAIN=localhost UPPY_ENDPOINT=http://localhost:4000 nodemon ./index.js"
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DOMAIN=localhost UPPY_ENDPOINT=http://localhost:4000 nodemon ./index.js'"
   },
   "author": "Transloadit.com",
   "license": "ISC",

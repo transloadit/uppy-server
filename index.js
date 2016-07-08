@@ -71,6 +71,7 @@ function wrapSend (sendFn) {
 }
 
 app.ws.use(route.all('/', function * (next) {
+  console.log(this.session)
   this.websocket.send = wrapSend(this.websocket.send).bind(this.websocket)
   app.context.websocket = this.websocket
   this.websocket.send('uppy.debug', 'websocket init')
@@ -80,6 +81,10 @@ app.ws.use(route.all('/', function * (next) {
   this.websocket.on('google.logout', googleLogout.bind(this))
   this.websocket.on('google.list', googleList.bind(this))
   this.websocket.on('google.callback', (token) => {
+    console.log('callback')
+    if (!this.session.google) {
+      this.session.google = {}
+    }
     this.session.google.token = token
     this.websocket.send('google.auth.complete')
     this.websocket.send('google.auth.pass')

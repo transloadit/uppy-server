@@ -138,6 +138,12 @@ function getUploadStream (opts, self) {
  * Fetch a file from Google Drive
  */
 module.exports = function (data) {
+  if (!this.session.google) {
+    console.log('this.session.google')
+    console.log(this.session.google)
+    return
+  }
+
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
@@ -164,6 +170,7 @@ module.exports = function (data) {
       var opts
 
       if (err) {
+        console.log('error')
         return
       }
 

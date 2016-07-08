@@ -34,6 +34,7 @@
     "nodemon": "1.8.1"
   },
   "dependencies": {
+    "atob": "^2.0.3",
     "grant-koa": "3.5.3",
     "koa": "1.1.2",
     "koa-bodyparser": "^2.2.0",

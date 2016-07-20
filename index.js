@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var koa = require('koa')
+var websockify = require('koa-websocket')
 var session = require('koa-session')
 var cors = require('koa-cors')
 var mount = require('koa-mount')
@@ -7,8 +8,12 @@ var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 var route = require('koa-route')
-var websockify = require('koa-websocket')
 
+// websocket utils
+var routeMessage = require('./utils/routeMessage')
+var wrapSend = require('./utils/wrapSend')
+
+// google websocket event handlers
 var googleGet = require('./server/websocket/google/get')
 var googleAuth = require('./server/websocket/google/authorize')
 var googleLogout = require('./server/websocket/google/logout')
@@ -44,34 +49,10 @@ app.use(cors({
   credentials: true
 }))
 
-function routeMessage (message) {
-  try {
-    var parsedMessage = JSON.parse(message)
-    this.websocket.emit(parsedMessage.action, parsedMessage.payload)
-  } catch (err) {
-    // not sure how we should be handling errors
-    return err
-  }
-}
-
-function wrapSend (sendFn) {
-  return function (action, payload, options, cb) {
-    if (typeof payload === 'function') {
-      cb = payload
-      return sendFn.call(this, action, cb)
-    }
-
-    var message = JSON.stringify({
-      action,
-      payload
-    })
-
-    sendFn.call(this, message, options, cb)
-  }
-}
-
+// websocket event subscribers
 app.ws.use(route.all('/', function * (next) {
   console.log(this.session)
+  this.session = null
   this.websocket.send = wrapSend(this.websocket.send).bind(this.websocket)
   app.context.websocket = this.websocket
   this.websocket.send('uppy.debug', 'websocket init')
@@ -81,7 +62,6 @@ app.ws.use(route.all('/', function * (next) {
   this.websocket.on('google.logout', googleLogout.bind(this))
   this.websocket.on('google.list', googleList.bind(this))
   this.websocket.on('google.callback', (token) => {
-    console.log('callback')
     if (!this.session.google) {
       this.session.google = {}
     }

@@ -23,10 +23,10 @@ function generateAndStoreToken (req, opts) {
   console.log(GUID)
   var token = generateToken(req, GUID, opts)
   console.log('generated')
-  var record = {
-    'valid': true,
-    'created': new Date().getTime()
-  }
+  // var record = {
+  //   'valid': true,
+  //   'created': new Date().getTime()
+  // }
 
   // client.set(GUID, JSON.stringify(record), redis.print)
 
@@ -51,6 +51,6 @@ function generateGUID () {
 }
 
 module.exports = {
-  verify : verifyToken,
+  verify: verifyToken,
   generateAndStoreToken: generateAndStoreToken
 }

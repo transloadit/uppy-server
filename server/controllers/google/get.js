@@ -1,5 +1,7 @@
 var fs = require('fs')
 var http = require('http')
+var path = require('path')
+var tus = require('tus-js-client')
 
 var googleFileTypes = {
   document: {
@@ -44,6 +46,39 @@ function getUploadStream (opts, cb, self) {
       return cb()
     }
 
+    if (opts.protocol === 'tus') {
+      console.log('tus upload')
+      var filePath = opts.fileName
+      var file = fs.createReadStream(filePath)
+      var size = fs.statSync(filePath).size
+      var options = {
+        endpoint: 'api2.transloadit.com',
+        resume: true,
+        metadata: {
+          filename: path.basename(opts.fileName)
+        },
+        uploadSize: size,
+        onError: function (error) {
+          throw error
+        },
+        onProgress: function (bytesUploaded, bytesTotal) {
+          var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+          console.log(bytesUploaded, bytesTotal, percentage + '%')
+        },
+        onSuccess: function () {
+          console.log('Upload finished:', upload.url)
+          this.body = {
+            ok: true
+          }
+          return cb()
+        }
+      }
+
+      var upload = new tus.Upload(file, options)
+      upload.start()
+      return
+    }
+
     fs.readFile(opts.fileName, function (err, data) {
       if (err) {
         console.log(err)
@@ -51,7 +86,7 @@ function getUploadStream (opts, cb, self) {
       }
 
       var req = http.request({
-        host: opts.target,
+        host: 'api2.transloadit.com',
         method: 'POST',
         'Content-Type': 'multipart/form-data',
         'Content-Length': data.length

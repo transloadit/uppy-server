@@ -6,7 +6,7 @@ var mount = require('koa-mount')
 var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
-var helpers = require('./utils/helpers')
+// var helpers = require('./utils/helpers')
 
 var SocketServer = require('ws').Server
 
@@ -69,25 +69,25 @@ app.use(cors({
 //   })
 // }))
 
-function handleAuth (data) {
-  var token = data.token
+// function handleAuth (data) {
+//   var token = data.token
 
-  if (token === null || typeof token === 'undefined') {
-    console.log('im in here')
-    console.log(data)
-    // token = helpers.generateAndStoreToken(data.upgradeReq)
-    console.log(token)
-    this.websocket.send('uppy.token', {token})
-  }
-  console.log(token)
-  var decoded = helpers.verifyToken(token)
+//   if (token === null || typeof token === 'undefined') {
+//     console.log('im in here')
+//     console.log(data)
+//     // token = helpers.generateAndStoreToken(data.upgradeReq)
+//     console.log(token)
+//     this.websocket.send('uppy.token', {token})
+//   }
+//   console.log(token)
+//   var decoded = helpers.verifyToken(token)
 
-  if (!decoded || !decoded.auth) {
-  }
+//   if (!decoded || !decoded.auth) {
+//   }
 
-  this.websocket.sessionId = decoded.auth
-  this.websocket.send('uppy.auth.pass')
-}
+//   this.websocket.sessionId = decoded.auth
+//   this.websocket.send('uppy.auth.pass')
+// }
 
 require('./server/routes')(app)
 

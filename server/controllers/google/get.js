@@ -160,6 +160,7 @@ function getUploadStream (opts, cb, self) {
  * Fetch a file from Google Drive
  */
 module.exports = function * (next) {
+  console.log('get controller')
   var self = this
   var Purest = require('purest')
   var google = new Purest({

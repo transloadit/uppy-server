@@ -249,9 +249,6 @@ module.exports = function * (next) {
               return cb()
             }
 
-            // var token = helpers.generate
-            // return cb()
-
             console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `./output/' + file.title + '`')
           })
           .pipe(writer)

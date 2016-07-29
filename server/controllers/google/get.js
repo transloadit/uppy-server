@@ -188,8 +188,8 @@ module.exports = function * (next) {
     google.query()
       .get('files/' + fileId)
       .request((err, res, file) => {
-        var writer
-        var opts
+        // var writer
+        // var opts
 
         if (err) {
           self.status = 500

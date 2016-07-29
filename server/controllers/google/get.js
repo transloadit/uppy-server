@@ -1,9 +1,9 @@
 var fs = require('fs')
-var http = require('http')
-var path = require('path')
-var tus = require('tus-js-client')
-var wss = require('../../../WebsocketServer')
-var generateUUID = require('../../../utils/generateUUID')
+// var http = require('http')
+// var path = require('path')
+// var tus = require('tus-js-client')
+// var wss = require('../../../WebsocketServer')
+// var generateUUID = require('../../../utils/generateUUID')
 
 var googleFileTypes = {
   document: {

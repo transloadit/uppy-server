@@ -197,62 +197,68 @@ module.exports = function * (next) {
           return cb()
         }
 
-        if (isGoogleFile(file)) {
-          var mimeType = getFileMimeType(file.mimeType)
-          var extension = getFileExtension(file.mimeType)
-
-          if (!mimeType) {
-            self.status = 500
-            self.statusText = 'Uppy Server cannot export this type of file'
-            return cb()
-          }
-
-          opts = {
-            fileName: './output/' + file.title + extension,
-            target: target,
-            protocol: protocol
-          }
-
-          writer = getUploadStream(opts, cb, self)
-
-          google.get('files/' + fileId + '/export', {
-            qs: {
-              mimeType: mimeType
-            }
-          }, (err, res, body) => {
-            if (err) {
-              self.status = res.status
-              self.statusText = res.statusText
-              return cb()
-            }
-
-            console.log('Saving exported file with content-type: `' + res.headers['content-type'] + '` as export mimeType `' + mimeType + '` to `./output/' + file.title + extension + '`')
-          })
-          .pipe(writer)
-        } else {
-          opts = {
-            fileName: './output/' + file.title,
-            target: target,
-            protocol: protocol
-          }
-
-          writer = getUploadStream(opts, cb, self)
-
-          google.get('files/' + fileId, {
-            qs: {
-              alt: 'media'
-            }
-          }, (err, res, body) => {
-            if (err) {
-              self.status = res.status
-              self.statusText = res.statusText
-              return cb()
-            }
-
-            console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `./output/' + file.title + '`')
-          })
-          .pipe(writer)
+        self.body = {
+          ok: 'yes!@'
         }
+
+        return cb()
+
+        // if (isGoogleFile(file)) {
+        //   var mimeType = getFileMimeType(file.mimeType)
+        //   var extension = getFileExtension(file.mimeType)
+
+        //   if (!mimeType) {
+        //     self.status = 500
+        //     self.statusText = 'Uppy Server cannot export this type of file'
+        //     return cb()
+        //   }
+
+        //   opts = {
+        //     fileName: './output/' + file.title + extension,
+        //     target: target,
+        //     protocol: protocol
+        //   }
+
+        //   writer = getUploadStream(opts, cb, self)
+
+        //   google.get('files/' + fileId + '/export', {
+        //     qs: {
+        //       mimeType: mimeType
+        //     }
+        //   }, (err, res, body) => {
+        //     if (err) {
+        //       self.status = res.status
+        //       self.statusText = res.statusText
+        //       return cb()
+        //     }
+
+        //     console.log('Saving exported file with content-type: `' + res.headers['content-type'] + '` as export mimeType `' + mimeType + '` to `./output/' + file.title + extension + '`')
+        //   })
+        //   .pipe(writer)
+        // } else {
+        //   opts = {
+        //     fileName: './output/' + file.title,
+        //     target: target,
+        //     protocol: protocol
+        //   }
+
+        //   writer = getUploadStream(opts, cb, self)
+
+        //   google.get('files/' + fileId, {
+        //     qs: {
+        //       alt: 'media'
+        //     }
+        //   }, (err, res, body) => {
+        //     if (err) {
+        //       self.status = res.status
+        //       self.statusText = res.statusText
+        //       return cb()
+        //     }
+
+        //     console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `./output/' + file.title + '`')
+        //   })
+        //   .pipe(writer)
+        // }
       })
   }
 }

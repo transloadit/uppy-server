@@ -1,9 +1,5 @@
 var fs = require('fs')
-// var http = require('http')
-// var path = require('path')
-// var tus = require('tus-js-client')
-// var wss = require('../../../WebsocketServer')
-// var generateUUID = require('../../../utils/generateUUID')
+var http = require('http')
 
 var googleFileTypes = {
   document: {
@@ -42,120 +38,65 @@ function getUploadStream (opts, cb, self) {
   var writer = fs.createWriteStream(opts.fileName)
 
   writer.on('finish', function () {
-    self.status = 200
-    self.statusText = 'we did it'
-    self.body = {
-      ok: 'yes!$!$!'
+    if (!opts.target) {
+      self.status = 200
+      self.statusText = 'File written to uppy server local storage'
+      return cb()
     }
-    // if (!opts.target) {
-    //   self.status = 200
-    //   self.statusText = 'File written to uppy server local storage'
-    //   return cb()
-    // }
 
-    // if (opts.protocol === 'tus') {
-    //   var token = generateUUID()
-    //   console.log('tus upload')
-    //   var filePath = opts.fileName
-    //   var file = fs.createReadStream(filePath)
-    //   var size = fs.statSync(filePath).size
-    //   var options = {
-    //     endpoint: opts.target,
-    //     resume: true,
-    //     metadata: {
-    //       filename: path.basename(opts.fileName)
-    //     },
-    //     uploadSize: size,
-    //     onError: function (error) {
-    //       throw error
-    //     },
-    //     onProgress: function (bytesUploaded, bytesTotal) {
-    //       var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
-    //       console.log(bytesUploaded, bytesTotal, percentage + '%')
+    fs.readFile(opts.fileName, function (err, data) {
+      if (err) {
+        console.log(err)
+        return
+      }
 
-    //       wss.emit('google:' + token, JSON.stringify({
-    //         action: 'progress',
-    //         payload: {
-    //           progress: percentage,
-    //           bytesUploaded: bytesUploaded,
-    //           bytesTotal: bytesTotal
-    //         }
-    //       }))
-    //     },
-    //     onSuccess: function () {
-    //       console.log('Upload finished:', upload.url)
-    //       wss.emit('google:' + token, JSON.stringify({
-    //         action: 'progress',
-    //         payload: {
-    //           fileId: 'foo',
-    //           complete: true
-    //         }
-    //       }))
-    //     }
-    //   }
+      var req = http.request({
+        host: opts.target,
+        method: 'POST',
+        'Content-Type': 'multipart/form-data',
+        'Content-Length': data.length
+      }, (res) => {
+        console.log('STATUS:', res.statusCode)
+        console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
 
-    //   var upload = new tus.Upload(file, options)
-    //   upload.start()
-    //   self.body = {
-    //     token: token
-    //   }
-    //   self.status = 200
-    //   return cb()
-    // }
+        res.on('data', (chunk) => {
+          console.log('BODY:', chunk)
+        })
 
-    // fs.readFile(opts.fileName, function (err, data) {
-    //   if (err) {
-    //     console.log(err)
-    //     return
-    //   }
+        res.on('end', () => {
+          console.log('No more data in response.')
 
-    //   var req = http.request({
-    //     host: 'api2.transloadit.com',
-    //     method: 'POST',
-    //     'Content-Type': 'multipart/form-data',
-    //     'Content-Length': data.length
-    //   }, (res) => {
-    //     console.log('STATUS:', res.statusCode)
-    //     console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
+          if (res.status) {
+            self.status = res.status
+          }
 
-    //     res.on('data', (chunk) => {
-    //       console.log('BODY:', chunk)
-    //     })
+          if (res.statusCode >= 200 && res.statusCode <= 300) {
+            // Server logging
+            console.log('Transfer to server `' + opts.target + '` was successful.')
+            console.log('Status code: ', res.statusCode)
 
-    //     res.on('end', () => {
-    //       console.log('No more data in response.')
+            self.status = res.statusCode
+            return cb()
+          }
 
-    //       if (res.status) {
-    //         self.status = res.status
-    //       }
+          // Server logging
+          console.log('Status Code was not between 200-300.  There was an error: ')
+          console.log('response status code:', res.statusCode)
+          console.log('response status:')
+          console.log(res.status)
 
-    //       if (res.statusCode >= 200 && res.statusCode <= 300) {
-    //         // Server logging
-    //         console.log('Transfer to server `' + opts.target + '` was successful.')
-    //         console.log('Status code: ', res.statusCode)
+          self.status = res.statusCode
+          return cb()
+        })
+      })
 
-    //         self.status = res.statusCode
-    //         return cb()
-    //       }
+      req.on('error', (e) => {
+        console.log(`problem with request: ${e.message}`)
+      })
 
-    //       // Server logging
-    //       console.log('Status Code was not between 200-300.  There was an error: ')
-    //       console.log('response status code:', res.statusCode)
-    //       console.log('response status:')
-    //       console.log(res.status)
-
-    //       self.status = res.statusCode
-    //       return cb()
-    //     })
-    //   })
-
-    //   req.on('error', (e) => {
-    //     console.log(`problem with request: ${e.message}`)
-    //   })
-
-    //   req.write(data)
-    //   req.end()
-    // })
+      req.write(data)
+      req.end()
+    })
   })
 
   return writer
@@ -165,7 +106,6 @@ function getUploadStream (opts, cb, self) {
  * Fetch a file from Google Drive
  */
 module.exports = function * (next) {
-  console.log('get controller')
   var self = this
   var Purest = require('purest')
   var google = new Purest({
@@ -180,7 +120,6 @@ module.exports = function * (next) {
 
   var fileId = this.request.body.fileId
   var target = this.request.body.target
-  var protocol = this.request.body.protocol
 
   yield function getFile (cb) {
     if (!fileId) {
@@ -214,8 +153,7 @@ module.exports = function * (next) {
 
           opts = {
             fileName: './output/' + file.title + extension,
-            target: target,
-            protocol: protocol
+            target: target
           }
 
           writer = getUploadStream(opts, cb, self)
@@ -237,8 +175,7 @@ module.exports = function * (next) {
         } else {
           opts = {
             fileName: './output/' + file.title,
-            target: target,
-            protocol: protocol
+            target: target
           }
 
           writer = getUploadStream(opts, cb, self)

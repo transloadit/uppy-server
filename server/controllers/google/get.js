@@ -2,6 +2,8 @@ var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
+var wss = require('../../../WebsocketServer')
+var generateUUID = require('../../../utils/generateUUID')
 
 var googleFileTypes = {
   document: {
@@ -47,12 +49,13 @@ function getUploadStream (opts, cb, self) {
     }
 
     if (opts.protocol === 'tus') {
+      var token = generateUUID()
       console.log('tus upload')
       var filePath = opts.fileName
       var file = fs.createReadStream(filePath)
       var size = fs.statSync(filePath).size
       var options = {
-        endpoint: 'api2.transloadit.com',
+        endpoint: opts.target,
         resume: true,
         metadata: {
           filename: path.basename(opts.fileName)
@@ -64,19 +67,35 @@ function getUploadStream (opts, cb, self) {
         onProgress: function (bytesUploaded, bytesTotal) {
           var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
           console.log(bytesUploaded, bytesTotal, percentage + '%')
+
+          wss.emit('google:' + token, JSON.stringify({
+            action: 'progress',
+            payload: {
+              progress: percentage,
+              bytesUploaded: bytesUploaded,
+              bytesTotal: bytesTotal
+            }
+          }))
         },
         onSuccess: function () {
           console.log('Upload finished:', upload.url)
-          this.body = {
-            ok: true
-          }
-          return cb()
+          wss.emit('google:' + token, JSON.stringify({
+            action: 'progress',
+            payload: {
+              fileId: 'foo',
+              complete: true
+            }
+          }))
         }
       }
 
       var upload = new tus.Upload(file, options)
       upload.start()
-      return
+      self.body = {
+        token: token
+      }
+      self.status = 200
+      return cb()
     }
 
     fs.readFile(opts.fileName, function (err, data) {
@@ -155,6 +174,7 @@ module.exports = function * (next) {
 
   var fileId = this.request.body.fileId
   var target = this.request.body.target
+  var protocol = this.request.body.protocol
 
   yield function getFile (cb) {
     if (!fileId) {
@@ -188,7 +208,8 @@ module.exports = function * (next) {
 
           opts = {
             fileName: './output/' + file.title + extension,
-            target: target
+            target: target,
+            protocol: protocol
           }
 
           writer = getUploadStream(opts, cb, self)
@@ -210,7 +231,8 @@ module.exports = function * (next) {
         } else {
           opts = {
             fileName: './output/' + file.title,
-            target: target
+            target: target,
+            protocol: protocol
           }
 
           writer = getUploadStream(opts, cb, self)
@@ -225,6 +247,9 @@ module.exports = function * (next) {
               self.statusText = res.statusText
               return cb()
             }
+
+            // var token = helpers.generate
+            // return cb()
 
             console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `./output/' + file.title + '`')
           })

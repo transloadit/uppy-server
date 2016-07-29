@@ -6,19 +6,7 @@ var mount = require('koa-mount')
 var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
-// var helpers = require('./utils/helpers')
-
-var SocketServer = require('ws').Server
-
-// websocket utils
-// var routeMessage = require('./utils/routeMessage')
-// var wrapSend = require('./utils/wrapSend')
-
-// // google websocket event handlers
-// var googleGet = require('./server/websocket/google/get')
-// var googleAuth = require('./server/websocket/google/authorize')
-// var googleLogout = require('./server/websocket/google/logout')
-// var googleList = require('./server/websocket/google/list')
+var wss = require('./WebsocketServer')
 
 var app = koa()
 
@@ -47,57 +35,28 @@ app.use(cors({
   credentials: true
 }))
 
-// websocket event subscribers
-// app.ws.use(route.all('/', function * (next) {
-//   console.log(this.session)
-//   this.session = null
-//   this.websocket.send = wrapSend(this.websocket.send).bind(this.websocket)
-//   app.context.websocket = this.websocket
-//   this.websocket.send('uppy.debug', 'websocket init')
-//   this.websocket.on('message', routeMessage.bind(this))
-//   this.websocket.on('google.get', googleGet.bind(this))
-//   this.websocket.on('google.auth', googleAuth.bind(this))
-//   this.websocket.on('google.logout', googleLogout.bind(this))
-//   this.websocket.on('google.list', googleList.bind(this))
-//   this.websocket.on('google.callback', (token) => {
-//     if (!this.session.google) {
-//       this.session.google = {}
-//     }
-//     this.session.google.token = token
-//     this.websocket.send('google.auth.complete')
-//     this.websocket.send('google.auth.pass')
-//   })
-// }))
-
-// function handleAuth (data) {
-//   var token = data.token
-
-//   if (token === null || typeof token === 'undefined') {
-//     console.log('im in here')
-//     console.log(data)
-//     // token = helpers.generateAndStoreToken(data.upgradeReq)
-//     console.log(token)
-//     this.websocket.send('uppy.token', {token})
-//   }
-//   console.log(token)
-//   var decoded = helpers.verifyToken(token)
-
-//   if (!decoded || !decoded.auth) {
-//   }
-
-//   this.websocket.sessionId = decoded.auth
-//   this.websocket.send('uppy.auth.pass')
-// }
-
 require('./server/routes')(app)
 
-var wss = new SocketServer({
-  server: app
-})
-
 wss.on('connection', function (ws) {
+  var fullPath = ws.upgradeReq.url
+  console.log(fullPath)
+
+  var token = fullPath.replace(/\/api\//, '')
+  console.log(token)
+
   console.log('Client connected')
+
+  function sendProgress (data) {
+    console.log(data)
+    ws.send(data, function (err) {
+      console.log('Error: ' + err)
+    })
+  }
+
+  wss.on('google:' + token, sendProgress)
+
   ws.on('close', function () {
+    wss.removeListener('google:' + token, sendProgress)
     console.log('Client disconnected')
   })
 })

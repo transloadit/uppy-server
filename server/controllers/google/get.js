@@ -1,5 +1,5 @@
 var fs = require('fs')
-// var http = require('http')
+var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
 var wss = require('../../../WebsocketServer')
@@ -42,60 +42,65 @@ function getUploadStream (opts, cb, self) {
   var writer = fs.createWriteStream(opts.fileName)
 
   writer.on('finish', function () {
-    if (!opts.target) {
-      self.status = 200
-      self.statusText = 'File written to uppy server local storage'
-      return cb()
+    self.status = 200
+    self.statusText = 'we did it'
+    self.body = {
+      ok: 'yes!$!$!'
     }
+    // if (!opts.target) {
+    //   self.status = 200
+    //   self.statusText = 'File written to uppy server local storage'
+    //   return cb()
+    // }
 
     // if (opts.protocol === 'tus') {
-    var token = generateUUID()
-    console.log('tus upload')
-    var filePath = opts.fileName
-    var file = fs.createReadStream(filePath)
-    var size = fs.statSync(filePath).size
-    var options = {
-      endpoint: opts.target,
-      resume: true,
-      metadata: {
-        filename: path.basename(opts.fileName)
-      },
-      uploadSize: size,
-      onError: function (error) {
-        throw error
-      },
-      onProgress: function (bytesUploaded, bytesTotal) {
-        var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
-        console.log(bytesUploaded, bytesTotal, percentage + '%')
+    //   var token = generateUUID()
+    //   console.log('tus upload')
+    //   var filePath = opts.fileName
+    //   var file = fs.createReadStream(filePath)
+    //   var size = fs.statSync(filePath).size
+    //   var options = {
+    //     endpoint: opts.target,
+    //     resume: true,
+    //     metadata: {
+    //       filename: path.basename(opts.fileName)
+    //     },
+    //     uploadSize: size,
+    //     onError: function (error) {
+    //       throw error
+    //     },
+    //     onProgress: function (bytesUploaded, bytesTotal) {
+    //       var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+    //       console.log(bytesUploaded, bytesTotal, percentage + '%')
 
-        wss.emit('google:' + token, JSON.stringify({
-          action: 'progress',
-          payload: {
-            progress: percentage,
-            bytesUploaded: bytesUploaded,
-            bytesTotal: bytesTotal
-          }
-        }))
-      },
-      onSuccess: function () {
-        console.log('Upload finished:', upload.url)
-        wss.emit('google:' + token, JSON.stringify({
-          action: 'progress',
-          payload: {
-            fileId: 'foo',
-            complete: true
-          }
-        }))
-      }
-    }
+    //       wss.emit('google:' + token, JSON.stringify({
+    //         action: 'progress',
+    //         payload: {
+    //           progress: percentage,
+    //           bytesUploaded: bytesUploaded,
+    //           bytesTotal: bytesTotal
+    //         }
+    //       }))
+    //     },
+    //     onSuccess: function () {
+    //       console.log('Upload finished:', upload.url)
+    //       wss.emit('google:' + token, JSON.stringify({
+    //         action: 'progress',
+    //         payload: {
+    //           fileId: 'foo',
+    //           complete: true
+    //         }
+    //       }))
+    //     }
+    //   }
 
-    var upload = new tus.Upload(file, options)
-    upload.start()
-    self.body = {
-      token: token
-    }
-    self.status = 200
-    return cb()
+    //   var upload = new tus.Upload(file, options)
+    //   upload.start()
+    //   self.body = {
+    //     token: token
+    //   }
+    //   self.status = 200
+    //   return cb()
     // }
 
     // fs.readFile(opts.fileName, function (err, data) {

@@ -38,7 +38,7 @@ module.exports = function * (next) {
       self.body = {
         isAuthenticated: true
       }
-      cb()
+      return cb()
     })
   }
 }

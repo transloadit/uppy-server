@@ -183,7 +183,7 @@ module.exports = function (data) {
         }
 
         opts = {
-          fileName: './output/' + file.title + extension,
+          fileName: process.env.UPPYSERVER_DATADIR + '/' + file.title + extension,
           target: target,
           protocol: data.protocol
         }
@@ -199,12 +199,12 @@ module.exports = function (data) {
             return err
           }
 
-          console.log('Saving exported file with content-type: `' + res.headers['content-type'] + '` as export mimeType `' + mimeType + '` to `./output/' + file.title + extension + '`')
+          console.log('Saving exported file with content-type: `' + res.headers['content-type'] + '` as export mimeType `' + mimeType + '` to ' + process.env.UPPYSERVER_DATADIR + '/' + file.title + extension + '`')
         })
         .pipe(writer)
       } else {
         opts = {
-          fileName: './output/' + file.title,
+          fileName: process.env.UPPYSERVER_DATADIR + '/' + file.title,
           target: target,
           protocol: data.protocol
         }
@@ -220,7 +220,7 @@ module.exports = function (data) {
             return
           }
 
-          console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `./output/' + file.title + '`')
+          console.log('Saving regular file with content-type: `' + res.headers['content-type'] + '` to `' + process.env.UPPYSERVER_DATADIR + '/' + file.title + '`')
         })
         .pipe(writer)
       }

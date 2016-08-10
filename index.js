@@ -6,7 +6,7 @@ var mount = require('koa-mount')
 var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
-var wss = require('./WebsocketServer')
+var SocketServer = require('ws').Server
 
 var app = koa()
 
@@ -37,6 +37,14 @@ app.use(cors({
 
 require('./server/routes')(app)
 
+var server = app.listen(3020)
+
+var wss = new SocketServer({
+  server: server
+})
+
+var emitter = require('./WebsocketEmitter')
+
 wss.on('connection', function (ws) {
   var fullPath = ws.upgradeReq.url
   console.log(fullPath)
@@ -53,14 +61,12 @@ wss.on('connection', function (ws) {
     })
   }
 
-  wss.on('google:' + token, sendProgress)
+  emitter.on('google:' + token, sendProgress)
 
   ws.on('close', function () {
-    wss.removeListener('google:' + token, sendProgress)
+    emitter.removeListener('google:' + token, sendProgress)
     console.log('Client disconnected')
   })
 })
-
-app.listen(3020)
 
 console.log('Uppy-server ' + version + ' Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020 servicing ' + process.env.UPPY_ENDPOINT)

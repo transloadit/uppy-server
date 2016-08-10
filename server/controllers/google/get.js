@@ -2,7 +2,7 @@ var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
-var wss = require('../../../WebsocketServer')
+var emitter = require('../../../WebsocketEmitter')
 var generateUUID = require('../../../utils/generateUUID')
 
 var googleFileTypes = {
@@ -50,6 +50,7 @@ function getUploadStream (opts, cb, self) {
 
     if (opts.protocol === 'tus') {
       var token = generateUUID()
+      console.log('TOKEN: ', token)
       console.log('tus upload')
       var filePath = opts.fileName
       var file = fs.createReadStream(filePath)
@@ -68,7 +69,7 @@ function getUploadStream (opts, cb, self) {
           var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
           console.log(bytesUploaded, bytesTotal, percentage + '%')
 
-          wss.emit('google:' + token, JSON.stringify({
+          emitter.emit('google:' + token, JSON.stringify({
             action: 'progress',
             payload: {
               progress: percentage,
@@ -79,7 +80,7 @@ function getUploadStream (opts, cb, self) {
         },
         onSuccess: function () {
           console.log('Upload finished:', upload.url)
-          wss.emit('google:' + token, JSON.stringify({
+          emitter.emit('google:' + token, JSON.stringify({
             action: 'progress',
             payload: {
               fileId: 'foo',

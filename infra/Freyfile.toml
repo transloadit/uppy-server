@@ -146,7 +146,7 @@
     name     = "uppy-server | Set hostname"
 
   [[setup.playbooks.tasks]]
-    file = "path=/mnt/uppy-server-data state=directory owner=www-data group=www-data mode=0755 recurse=yes"
+    file = "path=/mnt/uppy-server-data state=directory owner=www-data group=www-data mode=0755 mode=u=rwX,g=rwX,o-rwx recurse=yes"
     name = "uppy-server | Create uppy data dir"
 
 [[deploy.playbooks]]
@@ -157,7 +157,7 @@
     role                     = "{{{init.paths.roles_dir}}}/deploy/v1.3.0"
     ansistrano_deploy_from   = "{{{init.cliargs.projectDir}}}"
     ansistrano_deploy_to     = "/srv/uppy-server"
-    ansistrano_shared_paths  = [ "logs", "data" ]
+    ansistrano_shared_paths  = [ "logs" ]
     ansistrano_deploy_via    = "git"
     ansistrano_keep_releases = 10
     ansistrano_git_repo      = "https://github.com/transloadit/uppy-server.git"
@@ -165,10 +165,6 @@
   [[deploy.playbooks.tasks]]
     file = "path=/srv/uppy-server/shared/logs state=directory owner=ubuntu group=syslog mode=u=rwX,g=rwX,o-rwx recurse=yes"
     name = "uppy-server | Create and chown shared log dir"
-
-  [[deploy.playbooks.tasks]]
-    file = "path=/srv/uppy-server/shared/data state=directory owner=www-data mode=u=rwX,g=rwX,o-rwx recurse=yes"
-    name = "uppy-server | Create and chown shared data dir"
 
   [[deploy.playbooks.tasks]]
     copy = "src=../env.sh dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"

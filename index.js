@@ -62,6 +62,7 @@ wss.on('connection', function (ws) {
   }
 
   emitter.on('google:' + token, sendProgress)
+  emitter.emit('google:connection:' + token)
 
   ws.on('close', function () {
     emitter.removeListener('google:' + token, sendProgress)

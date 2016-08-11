@@ -68,15 +68,20 @@ function getUploadStream (opts, cb, self) {
         onProgress: function (bytesUploaded, bytesTotal) {
           var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
           console.log(bytesUploaded, bytesTotal, percentage + '%')
-
-          emitter.emit('google:' + token, JSON.stringify({
+          const emitData = JSON.stringify({
             action: 'progress',
             payload: {
               progress: percentage,
               bytesUploaded: bytesUploaded,
               bytesTotal: bytesTotal
             }
-          }))
+          })
+
+          emitter.on('google:connection:' + token, function () {
+            emitter.emit('google:' + token, emitData)
+          })
+
+          emitter.emit('google:' + token, emitData)
         },
         onSuccess: function () {
           console.log('Upload finished:', upload.url)

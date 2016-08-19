@@ -6,13 +6,15 @@ module.exports = function * (next) {
   var Purest = require('purest')
   var google = new Purest({provider: 'google', api: 'drive'})
 
+  var token = self.query.demo ? process.env.UPPY_DEMO_TOKEN : self.session.google.token
+
   yield function listFiles (cb) {
     // Query filters based on a file's parents
     var query = `'${self.query.dir}' in parents and trashed=false`
 
     google.get('files', {
       auth: {
-        bearer: self.session.google.token
+        bearer: token
       },
       qs: {
         q: query

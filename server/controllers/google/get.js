@@ -88,7 +88,6 @@ function getUploadStream (opts, cb, self) {
           emitter.emit('google:' + token, JSON.stringify({
             action: 'progress',
             payload: {
-              fileId: 'foo',
               complete: true
             }
           }))
@@ -167,13 +166,14 @@ function getUploadStream (opts, cb, self) {
  */
 module.exports = function * (next) {
   var self = this
+  var token = this.query.demo ? process.env.UPPY_DEMO_TOKEN : this.session.google.token
   var Purest = require('purest')
   var google = new Purest({
     provider: 'google',
     api: 'drive',
     defaults: {
       auth: {
-        bearer: this.session.google.token
+        bearer: token
       }
     }
   })

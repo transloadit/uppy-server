@@ -5,6 +5,9 @@ var tus = require('tus-js-client')
 var emitter = require('../../../WebsocketEmitter')
 var generateUUID = require('../../../utils/generateUUID')
 
+/**
+ * Used to figure out the export file type and extension for Google Apps files.
+ */
 var googleFileTypes = {
   document: {
     mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -20,10 +23,18 @@ var googleFileTypes = {
   }
 }
 
+/**
+ * Determines if file is a Google Apps file.
+ * @param  {Object}  file File data
+ * @return {Boolean}      Is it a Google Apps file?
+ */
 function isGoogleFile (file) {
   return file.mimeType.indexOf('application/vnd.google-apps.') !== -1
 }
 
+/**
+ * Determine what file extension an exported Google Apps file will use.
+ */
 function getFileExtension (type) {
   var fileType = googleFileTypes[type.replace('application/vnd.google-apps.', '')]
   if (!fileType) return
@@ -31,6 +42,11 @@ function getFileExtension (type) {
   return fileType.extension
 }
 
+/**
+ * Determine the Mime type for an exported Google Apps file.
+ * @param  {[type]} type [description]
+ * @return {[type]}      [description]
+ */
 function getFileMimeType (type) {
   var fileType = googleFileTypes[type.replace('application/vnd.google-apps.', '')]
   if (!fileType) return
@@ -38,6 +54,10 @@ function getFileMimeType (type) {
   return fileType.mimeType
 }
 
+/**
+ * Creates and returns a write stream to write the file to hard disk,
+ * then upload it using either regular protocol or the tus protocol.
+ */
 function getUploadStream (opts, cb, self) {
   var writer = fs.createWriteStream(opts.fileName)
 
@@ -190,6 +210,8 @@ module.exports = function * (next) {
       return cb()
     }
 
+    // Initial query to get file data and figure out if it's a regular file
+    // or a Google Apps file.
     google.query()
       .get('files/' + fileId)
       .request((err, res, file) => {
@@ -202,6 +224,7 @@ module.exports = function * (next) {
           return cb()
         }
 
+        // Downloading Google Apps files requires a different process than regular files
         if (isGoogleFile(file)) {
           var mimeType = getFileMimeType(file.mimeType)
           var extension = getFileExtension(file.mimeType)
@@ -220,6 +243,7 @@ module.exports = function * (next) {
 
           writer = getUploadStream(opts, cb, self)
 
+          // Fetch the file and pipe it to our write stream to hard disk.
           google.get('files/' + fileId + '/export', {
             qs: {
               mimeType: mimeType
@@ -235,6 +259,7 @@ module.exports = function * (next) {
           })
           .pipe(writer)
         } else {
+          // If file is not a Google Apps file, we do this:
           opts = {
             fileName: process.env.UPPYSERVER_DATADIR + file.title,
             target: target,
@@ -243,6 +268,7 @@ module.exports = function * (next) {
 
           writer = getUploadStream(opts, cb, self)
 
+          // Fetch the file and pipe it to our write stream to hard disk.
           google.get('files/' + fileId, {
             qs: {
               alt: 'media'

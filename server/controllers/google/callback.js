@@ -7,7 +7,10 @@ var atob = require('atob')
 
 module.exports = function * (next) {
   this.session.google.token = this.query.access_token
-  console.log(this.session.google.token)
-  var state = JSON.parse(atob(this.session.grant.state))
-  this.redirect(`${state.redirect}?state=${this.session.grant.state}`)
+  if (this.session.grant.state) {
+    var state = JSON.parse(atob(this.session.grant.state))
+    this.redirect(`${state.redirect}?state=${this.session.grant.state}`)
+  } else {
+    this.redirect('http://localhost:4000')
+  }
 }

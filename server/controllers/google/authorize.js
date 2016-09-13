@@ -29,12 +29,14 @@ module.exports = function * (next) {
           self.session.google.token = null
         }
 
+        self.status = 200
         self.body = {
           isAuthenticated: false
         }
         return cb()
       }
 
+      self.status = 200
       self.body = {
         isAuthenticated: true
       }

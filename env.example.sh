@@ -1,12 +1,5 @@
 # Rename this file to env.sh, it will be kept out of Git.
 # So suitable for adding secret keys and such
-
-# Set magic variables for current FILE & DIR
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
-__base="$(basename ${__file} .sh)"
-__rootdir="${__dir}"
-
 export NODE_ENV="${NODE_ENV:-development}"
 export DEPLOY_ENV="${DEPLOY_ENV:-production}"
 export DEBUG="frey:*"

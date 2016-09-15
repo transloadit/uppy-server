@@ -3,4 +3,5 @@
 # export FREY_AWS_SECRET_KEY="xyz123"
 # export FREY_AWS_ZONE_ID="Z123"
 
-source env.sh
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${__dir}/env.sh"

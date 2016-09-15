@@ -35,3 +35,4 @@ env.sh
 env.infra.sh
 
 output/
+.DS_Store

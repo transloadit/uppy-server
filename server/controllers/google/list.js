@@ -21,7 +21,8 @@ module.exports = function * (next) {
       }
     }, function (err, res, body) {
       if (err) {
-        console.log('error time!')
+        var error = err.error
+        console.log('[google.list] Error ' + error.code + ' ' + error.message)
         self.body = 'Error: ' + err
         return cb()
       }

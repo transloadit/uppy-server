@@ -1,46 +1,41 @@
 'use strict'
 
 var Storage = require('../Storage')
-var getUploader = require('../getUploader')
 var config = require('@purest/providers')
+var Uploader = require('../Uploader')
 
 function * get (next) {
-  if (!this.session || !this.request || !this.request.body) {
-    // throw error
+  if (!this.params.id) {
+    // handle no id error
+    return yield next
   }
 
-  var body = this.request.body
+  var provider = this.params.provider
   var id = this.params.id
-  var endpoint = body.endpoint
-  var protocol = body.protocol
-  var provider = body.provider
+  var body = this.request.body
+  var endpoint = 'api2.transloadit.com'
+  var protocol = 'whatever'
   var token = this.session[provider] ? this.session[provider].token : body.token
-
-  if (!provider || !id) {
-    // throw error
-  }
 
   // config for keys and stuff somewhere here, maybe
 
-  var storage = new Storage({ provider: this.params.provider, config: config })
+  var storage = new Storage({ provider, config })
+  var uploader = new Uploader({
+    endpoint: endpoint,
+    protocol: protocol
+  })
 
-  yield (cb) => {
-    var req = storage.download({ 
-      id, 
-      token 
-    }, (err, res, body) => {
-      if (err) console.log(err)
-      console.log(body)
+  yield new Promise((resolve, reject) => {
+    uploader.on('finish', (data) => {
+      // add response data (body, status, etc) to 'this' context
+      resolve(Object.assign(this, data))
     })
 
-    var uploader = getUploader({
-      path: './data/' + id,
-      endpoint,
-      protocol
-    }, cb, this)
-
-    req.pipe(uploader)
-  }
+    storage.download({ id, token })
+      .then((response) => {
+        response.pipe(uploader.upload({ path: './data/' + id }))
+      })
+  })
 }
 
 exports = module.exports = get

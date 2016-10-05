@@ -13,14 +13,17 @@ function * list (next) {
 
   var storage = new Storage({ provider: provider, config: config })
 
-  yield storage.list({
-    token: token
-  }, (err, res, body) => {
-    if (err) { 
-      // throw error 
-    }
+  yield new Promise((resolve, reject) => {
+    storage.list({
+      token: token
+    }, (err, res, body) => {
+      if (err) {
+        // throw error
+      }
 
-    self.body = body
+      this.body = body
+      resolve()
+    })
   })
 }
 

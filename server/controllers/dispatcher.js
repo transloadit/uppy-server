@@ -8,6 +8,13 @@ var handlers = {
 }
 
 function * routeDispatcher (next) {
+  // if (!this.session || !this.request || !this.request.body) {
+  //   return yield next
+  // }
+  if (!this.params.provider) {
+    return yield next
+  }
+
   var action = this.params.action
 
   if (!handlers[action]) {

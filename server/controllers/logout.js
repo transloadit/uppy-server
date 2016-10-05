@@ -2,15 +2,16 @@
 
 function * logout (next) {
   try {
+    var session = this.session
     var provider = this.params.provider
 
-    if (this.session[provider]) {
-      this.session[provider].token = null
+    if (session[provider]) {
+      session[provider].token = null
     }
 
-    if (this.session.grant) {
-      this.session.grant.state = null
-      this.session.grant.dynamic = null
+    if (session.grant) {
+      session.grant.state = null
+      session.grant.dynamic = null
     }
 
     this.status = 200
@@ -20,9 +21,9 @@ function * logout (next) {
   } catch (err) {
     this.status = 500
     this.body = {
-      ok: false
+      ok: false,
+      error: err
     }
-
     // throw error
     console.log(err)
   }

@@ -1,29 +1,41 @@
+var EventEmitter = require('events')
 var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
 
-function getUploader (options, cb, self) {
+function Uploader (options) {
+  var uploader = Object.create(Uploader.prototype)
+  EventEmitter.call(uploader)
+  uploader.options = options
+  return uploader
+}
+
+Uploader.prototype = Object.create(EventEmitter.prototype)
+
+Uploader.prototype.upload = function (options) {
   var fpath = options.path
   var fname = options.name || path.basename(fpath)
 
   var writer = fs.createWriteStream(fpath)
 
-  writer.on('finish', function () {
-    if (!options.endpoint) {
-      self.status = 200
-      self.statusText = 'File written to uppy server local storage'
-      return cb()
+  writer.on('finish', () => {
+    if (!this.options.endpoint) {
+      return this.emit('finish', {
+        body: 'no endpoint',
+        status: 200,
+        statusText: 'File written to uppy server local storage'
+      })
     }
 
-    if (options.protocol === 'tus') {
+    if (this.options.protocol === 'tus') {
       var token = generateUUID()
 
       var file = fs.createReadStream(fpath)
       var size = fs.statSync(fpath).size
 
-      var options = {
-        endpoint: options.endpoint,
+      var upload = new tus.Upload(file, {
+        endpoint: this.options.endpoint,
         resume: true,
         metadata: {
           filename: fname
@@ -60,24 +72,23 @@ function getUploader (options, cb, self) {
           //   }
           // }))
         }
-      }
-
-      var upload = new tus.Upload(file, options)
+      })
 
       upload.start()
 
-      self.body = {
-        token: token
-      }
-
-      self.status = 200
-      return cb()
+      return this.emit('finish', {
+        body: {
+          token
+        },
+        status: 200
+      })
     }
 
-    fs.readFile(fpath, function (err, data) {
+    fs.readFile(fpath, (err, data) => {
       if (err) {
-        console.log(err)
-        return
+        return this.emit('finish', {
+          body: err
+        })
       }
 
       var req = http.request({
@@ -86,42 +97,54 @@ function getUploader (options, cb, self) {
         'Content-Type': 'multipart/form-data',
         'Content-Length': data.length
       }, (res) => {
-        console.log('STATUS:', res.statusCode)
-        console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
+        // console.log('STATUS:', res.statusCode)
+        // console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
 
         res.on('data', (chunk) => {
-          console.log('BODY:', chunk)
+          // console.log('BODY:', chunk)
         })
 
         res.on('end', () => {
-          console.log('No more data in response.')
+          var status
 
           if (res.status) {
-            self.status = res.status
+            status = res.status
+          }
+
+          if (res.statusCode < 200 || res.statusCode > 300) {
+            // Server logging
+            console.log('Status Code was not between 200-300.  There was an error: ')
+            console.log('response status code:', res.statusCode)
+            console.log('response status:')
+            console.log(res.status)
+
+            return this.emit('finish', {
+              status: res.statusCode,
+              statusText: 'error',
+              body: 'no bueno'
+            })
           }
 
           if (res.statusCode >= 200 && res.statusCode <= 300) {
             // Server logging
-            console.log('Transfer to server `' + options.endpoint + '` was successful.')
+            console.log('Transfer to server `' + this.options.endpoint + '` was successful.')
             console.log('Status code: ', res.statusCode)
 
-            self.status = res.statusCode
-            return cb()
+            status = res.statusCode
+            return this.emit('finish', {
+              status: status,
+              body: 'good job'
+            })
           }
-
-          // Server logging
-          console.log('Status Code was not between 200-300.  There was an error: ')
-          console.log('response status code:', res.statusCode)
-          console.log('response status:')
-          console.log(res.status)
-
-          self.status = res.statusCode
-          return cb()
         })
       })
 
-      req.on('error', (e) => {
-        console.log(`problem with request: ${e.message}`)
+      req.on('error', (error) => {
+        console.log('problem with request: ' + error.message)
+        this.emit('finish', {
+          status: 500,
+          body: error
+        })
       })
 
       req.write(data)
@@ -132,4 +155,4 @@ function getUploader (options, cb, self) {
   return writer
 }
 
-exports = module.exports = getUploader
+exports = module.exports = Uploader

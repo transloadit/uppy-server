@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@purest/providers": "^1.0.0",
+    "commander": "^2.9.0",
     "grant-koa": "^3.6.5",
     "koa": "^1.2.4",
     "koa-bodyparser": "^2.2.0",

@@ -9,4 +9,7 @@ module.exports = function (app) {
       ''
     ].join('\n')
   })
+
+  app.use(router.routes())
+  app.use(router.allowedMethods())
 }

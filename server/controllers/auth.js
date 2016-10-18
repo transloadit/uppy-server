@@ -4,14 +4,15 @@ var Storage = require('../Storage')
 var config = require('@purest/providers')
 
 function * auth (next) {
+  console.log(this.session)
   var provider = this.params.provider
 
-  // if (!this.session[provider] || !this.session[provider].token) {
-  //   console.log('error up here')
-  //   this.body = 'theres an error up here'
-  //   // handle error
-  //   return
-  // }
+  if (!this.session[provider] || !this.session[provider].token) {
+    console.log('error up here')
+    this.body = { authed: false }
+    // handle error
+    return
+  }
 
   var storage = new Storage({ provider: provider, config: config })
   var token = process.env.DRIVE_TOKEN

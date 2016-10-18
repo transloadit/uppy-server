@@ -1,7 +1,8 @@
 'use strict'
 
 var handlers = {
-  auth: require('./auth'),
+  authorize: require('./auth'),
+  callback: require('./callback'),
   get: require('./get'),
   list: require('./list'),
   logout: require('./logout')
@@ -21,6 +22,8 @@ function * routeDispatcher (next) {
     // throw error
     console.log(action + 'handler not found')
   }
+
+  console.log('here we go')
 
   yield handlers[action]
 }

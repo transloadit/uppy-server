@@ -1,12 +1,12 @@
 var fs = require('fs')
 var path = require('path')
 var request = require('request')
-var purest = require('purest')({ request: request })
+var purest = require('purest')
 
 function DropBox (options) {
   options.provider = 'dropbox'
 
-  this.client = purest(options)
+  this.client = purest(Object.assign({}, options, { request }))
 }
 
 DropBox.prototype.list = function (options, done) {

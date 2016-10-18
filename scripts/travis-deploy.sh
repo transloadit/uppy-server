@@ -4,5 +4,9 @@ set -o errexit
 set -o nounset
 # set -o xtrace
 
+# http://stackoverflow.com/questions/39829473/cryptography-assertionerror-sorry-but-this-version-only-supports-100-named-gro
+# There is a bug with PyCParser - See https://github.com/pyca/cryptography/issues/3187
+yes w |sudo -HE pip install git+https://github.com/eliben/pycparser@release_v2.14
+
 # because a Travis deploy script has to be a real file
 npm run deploy:travis

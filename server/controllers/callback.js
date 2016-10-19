@@ -7,7 +7,15 @@ var atob = require('atob')
 
 module.exports = function * (next) {
   var provider = this.params.provider
+
+  if (!this.session[provider]) {
+    this.session[provider] = {}
+  }
+
   this.session[provider].token = this.query.access_token
+
+  console.log(this.session)
+
   if (this.session.grant.state) {
     var state = JSON.parse(atob(this.session.grant.state))
     this.redirect(`${state.redirect}?state=${this.session.grant.state}`)

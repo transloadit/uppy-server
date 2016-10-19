@@ -1,7 +1,7 @@
 'use strict'
 
 var handlers = {
-  authorize: require('./auth'),
+  auth: require('./auth'),
   callback: require('./callback'),
   get: require('./get'),
   list: require('./list'),

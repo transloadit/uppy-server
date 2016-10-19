@@ -17,21 +17,21 @@ app.keys = ['grant']
 app.use(bodyParser())
 app.use(session(app))
 app.use(mount(grant))
-// app.use(cors({
-//   methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
-//   origin: function (req) {
-//     // You cannot allow multiple domains besides *
-//     // http://stackoverflow.com/a/1850482/151666
-//     // so we make it dynamic, depending on who is asking
-//     var originWhiteList = [ process.env.UPPY_ENDPOINT ]
-//     var origin = req.header.origin
-//     if (originWhiteList.indexOf(origin) !== -1) {
-//       return origin
-//     }
-//     return process.env.UPPY_ENDPOINT
-//   },
-//   credentials: true
-// }))
+app.use(cors({
+  methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
+  origin: function (req) {
+    // You cannot allow multiple domains besides *
+    // http://stackoverflow.com/a/1850482/151666
+    // so we make it dynamic, depending on who is asking
+    var originWhiteList = [ process.env.UPPY_ENDPOINT ]
+    var origin = req.header.origin
+    if (originWhiteList.indexOf(origin) !== -1) {
+      return origin
+    }
+    return process.env.UPPY_ENDPOINT
+  },
+  credentials: true
+}))
 
 // Routes
 router.get('/:provider/:action', dispatcher)
@@ -42,4 +42,4 @@ router.post('/:provider/:action/:id', dispatcher)
 app.use(router.routes())
 
 // Start server
-app.listen(1111)
+app.listen(3020)

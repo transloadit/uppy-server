@@ -4,18 +4,16 @@ var Storage = require('../Storage')
 var config = require('@purest/providers')
 
 function * auth (next) {
-  console.log(this.session)
   var provider = this.params.provider
 
   if (!this.session[provider] || !this.session[provider].token) {
-    console.log('error up here')
-    this.body = { authed: false }
+    this.body = { authenticated: false }
     // handle error
     return
   }
 
   var storage = new Storage({ provider: provider, config: config })
-  var token = process.env.DRIVE_TOKEN
+  var token = this.session[provider].token
 
   yield new Promise((resolve, reject) => {
     storage.list({
@@ -23,12 +21,18 @@ function * auth (next) {
     }, (err, res, body) => {
       if (err) {
         // handle error
-        this.status = 401
+        console.log(err)
         this.body = {
-          authed: false
+          authenticated: false
         }
         return resolve()
       }
+
+      this.status = 200
+      this.body = {
+        authenticated: true
+      }
+
       resolve()
     })
   })

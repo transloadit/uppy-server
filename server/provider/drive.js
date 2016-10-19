@@ -1,14 +1,14 @@
 var fs = require('fs')
 var path = require('path')
 var request = require('request')
-var purest = require('purest')
+var purest = require('purest')({ request })
 var mime = require('mime-types').lookup
 
 function Drive (options) {
   options.provider = 'google'
   options.alias = 'drive'
 
-  this.client = purest(Object.assign({}, options, { request }))
+  this.client = purest(options)
 }
 
 Drive.prototype.list = function (options, done) {

@@ -3,6 +3,7 @@
 var Storage = require('../Storage')
 var config = require('@purest/providers')
 var Uploader = require('../Uploader')
+var emitter = require('../../WebsocketEmitter')
 
 function * get (next) {
   if (!this.params.id) {

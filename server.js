@@ -6,6 +6,8 @@ var mount = require('koa-mount')
 var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
+var SocketServer = require('ws').Server
+
 var dispatcher = require('./server/controllers/dispatcher')
 
 // Server setup
@@ -41,5 +43,36 @@ router.post('/:provider/:action/:id', dispatcher)
 
 app.use(router.routes())
 
-// Start server
-app.listen(3020)
+var server = app.listen(3020)
+
+var wss = new SocketServer({
+  server: server
+})
+
+var emitter = require('./WebsocketEmitter')
+
+wss.on('connection', function (ws) {
+  var fullPath = ws.upgradeReq.url
+  console.log(fullPath)
+
+  var token = fullPath.replace(/\/api\//, '')
+  console.log(token)
+
+  console.log('Client connected')
+
+  function sendProgress (data) {
+    console.log(data)
+    ws.send(data, function (err) {
+      console.log('Error: ' + err)
+    })
+  }
+
+  emitter.on('google:' + token, sendProgress)
+  emitter.emit('google:connection:' + token)
+
+  ws.on('close', function () {
+    emitter.removeListener('google:' + token, sendProgress)
+    console.log('Client disconnected')
+  })
+})
+

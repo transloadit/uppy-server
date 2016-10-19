@@ -23,8 +23,6 @@ function * routeDispatcher (next) {
     console.log(action + 'handler not found')
   }
 
-  console.log('here we go')
-
   yield handlers[action]
 }
 

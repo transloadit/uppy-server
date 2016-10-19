@@ -49,29 +49,29 @@ Uploader.prototype.upload = function (options) {
           var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
           console.log(bytesUploaded, bytesTotal, percentage + '%')
 
-          // var emitData = JSON.stringify({
-          //   action: 'progress',
-          //   payload: {
-          //     progress: percentage,
-          //     bytesUploaded: bytesUploaded,
-          //     bytesTotal: bytesTotal
-          //   }
-          // })
+          var emitData = JSON.stringify({
+            action: 'progress',
+            payload: {
+              progress: percentage,
+              bytesUploaded: bytesUploaded,
+              bytesTotal: bytesTotal
+            }
+          })
 
-          // emitter.on('google:connection:' + token, function () {
-          //   emitter.emit('google:' + token, emitData)
-          // })
+          emitter.on('connection:' + token, function () {
+            emitter.emit(token, emitData)
+          })
 
-          // emitter.emit('google:' + token, emitData)
+          emitter.emit(token, emitData)
         },
         onSuccess: function () {
           console.log('Upload finished:', upload.url)
-          // emitter.emit('google:' + token, JSON.stringify({
-          //   action: 'progress',
-          //   payload: {
-          //     complete: true
-          //   }
-          // }))
+          emitter.emit(token, JSON.stringify({
+            action: 'progress',
+            payload: {
+              complete: true
+            }
+          }))
         }
       })
 

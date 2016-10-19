@@ -3,6 +3,7 @@ var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
+var generateUUID = require('../utils/generateUUID')
 
 function Uploader (options) {
   var uploader = Object.create(Uploader.prototype)

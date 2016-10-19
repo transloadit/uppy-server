@@ -2,7 +2,7 @@
   "name": "uppyserver",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "author": "",
   "license": "ISC",
   "devDependencies": {

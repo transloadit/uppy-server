@@ -23,11 +23,12 @@ Uploader.prototype.upload = function (options) {
 
   writer.on('finish', () => {
     if (!this.options.endpoint) {
-      return this.emit('finish', {
+      this.emit('finish', {
         body: 'no endpoint',
         status: 200,
         statusText: 'File written to uppy server local storage'
       })
+      return
     }
 
     if (this.options.protocol === 'tus') {
@@ -78,12 +79,13 @@ Uploader.prototype.upload = function (options) {
 
       upload.start()
 
-      return this.emit('finish', {
+      this.emit('finish', {
         body: {
           token
         },
         status: 200
       })
+      return
     }
 
     fs.readFile(fpath, (err, data) => {

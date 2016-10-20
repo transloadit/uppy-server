@@ -8,6 +8,10 @@ function * list (next) {
     // throw error
   }
 
+  if (!this.params.id) {
+    // throw error
+  }
+
   var provider = this.params.provider
   var token = this.session[provider].token
 
@@ -15,7 +19,8 @@ function * list (next) {
 
   yield new Promise((resolve, reject) => {
     storage.list({
-      token: token
+      token: token,
+      directory: this.params.id
     }, (err, res, body) => {
       if (err) {
         // throw error

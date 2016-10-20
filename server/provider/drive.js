@@ -12,8 +12,12 @@ function Drive (options) {
 }
 
 Drive.prototype.list = function (options, done) {
+  var directory = options.directory || 'root'
+  var trashed = options.trashed || false
+
   return this.client.query()
     .get('files')
+    .where({ q: '\'' + directory + '\' in parents and trashed=' + trashed })
     .auth(options.token)
     .request(done)
 }

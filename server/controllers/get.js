@@ -13,8 +13,8 @@ function * get (next) {
   var provider = this.params.provider
   var id = this.params.id
   var body = this.request.body
-  var endpoint = 'api2.transloadit.com'
-  var protocol = 'whatever'
+  var endpoint = body.endpoint
+  var protocol = body.protocol
   var token = this.session[provider] ? this.session[provider].token : body.token
 
   // config for keys and stuff somewhere here, maybe

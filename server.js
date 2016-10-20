@@ -67,11 +67,11 @@ wss.on('connection', function (ws) {
     })
   }
 
-  emitter.on('google:' + token, sendProgress)
-  emitter.emit('google:connection:' + token)
+  emitter.on(token, sendProgress)
+  emitter.emit('connection:' + token)
 
   ws.on('close', function () {
-    emitter.removeListener('google:' + token, sendProgress)
+    emitter.removeListener(token, sendProgress)
     console.log('Client disconnected')
   })
 })

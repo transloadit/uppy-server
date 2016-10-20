@@ -96,7 +96,7 @@ Uploader.prototype.upload = function (options) {
       }
 
       var req = http.request({
-        host: 'api2.transloadit.com',
+        host: this.options.endpoint,
         method: 'POST',
         'Content-Type': 'multipart/form-data',
         'Content-Length': data.length

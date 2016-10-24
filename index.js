@@ -29,11 +29,16 @@ app.use(cors({
       process.env.UPPY_ENDPOINT
     ]
     var origin = req.header.origin
-    var originDomain = origin.replace(/^https?:\/\//i, '')
 
-    if (originWhiteList.indexOf(originDomain) !== -1) {
-      return origin
+    if (origin) {
+      // Not everyone supplies an origin. Such as Pingdom
+      var originDomain = (origin + '').replace(/^https?:\/\//i, '')
+
+      if (originWhiteList.indexOf(originDomain) !== -1) {
+        return origin
+      }
     }
+
     return req.protocol + '://' + process.env.UPPY_ENDPOINT
   },
   credentials: true

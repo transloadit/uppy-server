@@ -25,12 +25,21 @@ app.use(cors({
     // You cannot allow multiple domains besides *
     // http://stackoverflow.com/a/1850482/151666
     // so we make it dynamic, depending on who is asking
-    var originWhiteList = [ process.env.UPPY_ENDPOINT ]
+    var originWhiteList = [
+      process.env.UPPY_ENDPOINT
+    ]
     var origin = req.header.origin
-    if (originWhiteList.indexOf(origin) !== -1) {
-      return origin
+
+    if (origin) {
+      // Not everyone supplies an origin. Such as Pingdom
+      var originDomain = (origin + '').replace(/^https?:\/\//i, '')
+
+      if (originWhiteList.indexOf(originDomain) !== -1) {
+        return origin
+      }
     }
-    return process.env.UPPY_ENDPOINT
+
+    return req.protocol + '://' + process.env.UPPY_ENDPOINT
   },
   credentials: true
 }))

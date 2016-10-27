@@ -97,9 +97,9 @@ infra resource aws_security_group "fw-uppy-server" {
   }
   ingress {
     cidr_blocks = ["${var.ip_all}"]
-    from_port   = 3020
+    from_port   = 80
     protocol    = "tcp"
-    to_port     = 3020
+    to_port     = 80
   }
 }
 
@@ -196,6 +196,10 @@ restart {
   playbooks {
     hosts = "uppy-server"
     name  = "Restart uppy-server"
+    tasks {
+      shell = "iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3020"
+      name  = "uppy-server | Redirect HTTP traffic to uppy-server"
+    }
     tasks {
       action = "service name=uppy-server state=restarted"
       name   = "uppy-server | Restart"

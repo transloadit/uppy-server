@@ -10,6 +10,6 @@ module.exports = {
       'https://www.googleapis.com/auth/drive',
       'https://www.googleapis.com/auth/drive.file'
     ],
-    callback: '/google/callback'
+    callback: '/drive/callback'
   }
 }

@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+// uppy-server init
+
+var program = require('commander')
+
+var version = require('../package.json').version
+
+program
+  .version(version)
+  .option('-t, --template', 'specify project template', 'default')
+  .action(init)
+  .parse(process.argv)

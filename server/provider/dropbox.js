@@ -1,15 +1,16 @@
-'use strict'
-
 var fs = require('fs')
 var path = require('path')
-var Purest = require('../../../')
+var request = require('request')
+var purest = require('purest')({ request })
 
 function DropBox (options) {
-  this.client = new Purest(options)
+  options.provider = 'dropbox'
+
+  this.client = purest(options)
 }
 
 DropBox.prototype.list = function (options, done) {
-  this.stats(options, done)
+  return this.stats(options, done)
 }
 
 DropBox.prototype.stats = function (options, done) {

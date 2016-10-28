@@ -1,5 +1,5 @@
-#!/usr/bin/env node
 var koa = require('koa')
+var router = require('koa-router')()
 var session = require('koa-session')
 var cors = require('koa-cors')
 var mount = require('koa-mount')
@@ -8,16 +8,16 @@ var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 var SocketServer = require('ws').Server
 
-var app = koa()
+var dispatcher = require('./server/controllers/dispatcher')
 
-var version = require('./package.json').version
+// Server setup
+var app = koa()
 
 require('koa-qs')(app)
 
 app.keys = ['grant']
-app.use(session(app))
-
 app.use(bodyParser())
+app.use(session(app))
 app.use(mount(grant))
 app.use(cors({
   methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
@@ -25,26 +25,23 @@ app.use(cors({
     // You cannot allow multiple domains besides *
     // http://stackoverflow.com/a/1850482/151666
     // so we make it dynamic, depending on who is asking
-    var originWhiteList = [
-      process.env.UPPY_ENDPOINT
-    ]
+    var originWhiteList = [ process.env.UPPY_ENDPOINT ]
     var origin = req.header.origin
-
-    if (origin) {
-      // Not everyone supplies an origin. Such as Pingdom
-      var originDomain = (origin + '').replace(/^https?:\/\//i, '')
-
-      if (originWhiteList.indexOf(originDomain) !== -1) {
-        return origin
-      }
+    if (originWhiteList.indexOf(origin) !== -1) {
+      return origin
     }
-
-    return req.protocol + '://' + process.env.UPPY_ENDPOINT
+    return process.env.UPPY_ENDPOINT
   },
   credentials: true
 }))
 
-require('./server/routes')(app)
+// Routes
+router.get('/:provider/:action', dispatcher)
+router.get('/:provider/:action/:id', dispatcher)
+router.post('/:provider/:action', dispatcher)
+router.post('/:provider/:action/:id', dispatcher)
+
+app.use(router.routes())
 
 var server = app.listen(3020)
 
@@ -56,12 +53,15 @@ var emitter = require('./WebsocketEmitter')
 
 wss.on('connection', function (ws) {
   var fullPath = ws.upgradeReq.url
+  console.log(fullPath)
 
   var token = fullPath.replace(/\/api\//, '')
+  console.log(token)
 
   console.log('Client connected')
 
   function sendProgress (data) {
+    console.log(data)
     ws.send(data, function (err) {
       console.log('Error: ' + err)
     })
@@ -76,4 +76,3 @@ wss.on('connection', function (ws) {
   })
 })
 
-console.log('Uppy-server ' + version + ' Listening on http://' + process.env.UPPYSERVER_DOMAIN + ':3020 servicing ' + process.env.UPPY_ENDPOINT)

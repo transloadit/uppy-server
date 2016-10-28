@@ -35,7 +35,21 @@
     "ws": "^1.1.1"
   },
   "scripts": {
+    "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
+    "deploy:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey setup --force-yes --project-dir ./infra'",
+    "deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
+    "deploy": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
+    "fix": "eslint . --fix",
+    "install:frey": "source env.sh && ${FREYCMD:-frey} refresh --bail --project-dir ./infra",
+    "launch": "source env.infra.sh && ${FREYCMD:-frey} infra --project-dir ./infra",
     "lint": "eslint .",
+    "logtail:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run logtail",
+    "logtail": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra --remote 'tail -f /srv/uppy-server/shared/logs/uppy-server.log'",
+    "release:major": "env SEMANTIC=major npm run release",
+    "release:minor": "env SEMANTIC=minor npm run release",
+    "release:patch": "env SEMANTIC=patch npm run release",
+    "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
+    "start:production": "node index.js",
     "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost UPPY_ENDPOINT=http://localhost:3452 nodemon ./server.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

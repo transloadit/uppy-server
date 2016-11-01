@@ -17,11 +17,19 @@ set -o nounset
 #       pycparser==2.16
 
 curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/19b1ba86c9ff8080f28253c83cbd5a37568048f7/bin/pyenv-installer | bash
+
+# Load pyenv automatically by adding
+# the following to ~/.bash_profile:
+export PATH="/home/travis/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
 pyenv update || true
 pyenv install 2.7.11 || true
 pyenv global 2.7.11
 pyenv versions || true
 python --version
+
 
 # because a Travis deploy script has to be a real file
 npm run deploy:travis

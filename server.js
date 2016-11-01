@@ -92,4 +92,3 @@ wss.on('connection', function (ws) {
     console.log('Client disconnected')
   })
 })
-

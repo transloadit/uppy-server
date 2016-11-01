@@ -6,6 +6,7 @@ cache:
   directories:
     - node_modules
     - /home/travis/.frey/tools
+    - ~/.pyenv
 node_js:
 - 4.2.2
 addons:

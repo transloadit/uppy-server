@@ -36,6 +36,13 @@ app.use(cors({
 }))
 
 // Routes
+router.get('/', function * (next) {
+  this.body = [
+    'Welcome to Uppy Server',
+    '======================',
+    ''
+  ].join('\n')
+})
 router.get('/:provider/:action', dispatcher)
 router.get('/:provider/:action/:id', dispatcher)
 router.post('/:provider/:action', dispatcher)

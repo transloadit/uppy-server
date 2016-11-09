@@ -44,7 +44,6 @@ app.use(cors({
   credentials: true
 }))
 
-
 // Routes
 router.get('/', function * (next) {
   this.body = [

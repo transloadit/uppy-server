@@ -27,21 +27,8 @@ infra variable {
       "us-east-1" = "ami-37bde352"
     }
   }
-  region {
-    default = "us-east-1"
-  }
-  ip_all {
-    default = "0.0.0.0/0"
-  }
-  ip_kevin {
-    default = "62.163.187.106/32"
-  }
-  ip_marius {
-    default = "84.146.5.70/32"
-  }
-  ip_tim {
-    default = "24.134.75.132/32"
-  }
+  region { default = "us-east-1" }
+  ip_all { default = "0.0.0.0/0" }
 }
 
 infra output public_address {
@@ -67,7 +54,7 @@ infra resource aws_instance "uppy-server" {
     user     = "{{{config.global.ssh.user}}}"
   }
   tags {
-    "Name" = "${var.FREY_DOMAIN}"
+    Name = "${var.FREY_DOMAIN}"
   }
   provisioner "remote-exec" {
     inline = ["sudo pwd"]
@@ -78,7 +65,7 @@ infra resource aws_instance "uppy-server" {
   }
 }
 
-infra resource "aws_route53_record" www {
+infra resource aws_route53_record "www" {
   name    = "${var.FREY_DOMAIN}"
   records = ["${aws_instance.uppy-server.public_dns}"]
   ttl     = "300"
@@ -164,16 +151,30 @@ setup {
       }
     }
     tasks {
-      hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
       name     = "uppy-server | Set hostname"
+      hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
     }
     tasks {
-      file = "path=/mnt/uppy-server-data state=directory owner=www-data group=ubuntu mode=ug+rwX,o= recurse=yes"
       name = "uppy-server | Create uppy data dir"
+      file {
+        dest    = "/mnt/uppy-server-data"
+        state   = "directory"
+        owner   = "www-data"
+        group   = "ubuntu"
+        mode    = "ug+rwX,o="
+        recurse = "yes"
+      }
     }
     tasks {
-      file = "path=/mnt/nginx-www state=directory owner=www-data group=ubuntu mode=ug+rwX,o= recurse=yes"
       name = "uppy-server | Create public www directory"
+      file {
+        dest    = "/mnt/nginx-www"
+        state   = "directory"
+        owner   = "www-data"
+        group   = "ubuntu"
+        mode    = "ug+rwX,o="
+        recurse = "yes"
+      }
     }
     tasks {
       name = "uppy-server | Create nginx HTTP configuration"
@@ -187,8 +188,11 @@ setup {
     }
     tasks {
       name     = "uppy-server | Check if certs where already installed"
-      stat     = "/etc/letsencrypt/live/server.uppy.io/privkey.pem"
       register = "privkey"
+      // @todo Will this need an `ignore_errors = "yes"` for first runs?
+      stat {
+        path = "/etc/letsencrypt/live/server.uppy.io/privkey.pem"
+      }
     }
     tasks {
       // There is a chicken/egg situation where refereing to ssl certs that don't exist yet
@@ -204,7 +208,10 @@ setup {
     tasks {
       name   = "uppy-server | Restart nginx"
       when   = "not privkey.stat.exists"
-      action = "service name = nginx state = restarted"
+      service {
+        name  = "nginx"
+        state = "restarted"
+      }
     }
     tasks {
       name = "uppy-server | Download certbot"
@@ -244,8 +251,11 @@ setup {
       }
     }
     tasks {
-      action = "service name=nginx state=restarted"
-      name   = "uppy-server | Restart nginx"
+      name = "uppy-server | Restart nginx"
+      service {
+        name  = "nginx"
+        state = "restarted"
+      }
     }
   }
 }
@@ -264,31 +274,53 @@ deploy {
       ansistrano_git_repo      = "https://github.com/transloadit/uppy-server.git"
     }
     tasks {
-      file = "path=/srv/uppy-server/shared/logs state=directory owner=syslog group=ubuntu mode=ug+rwX,o= recurse=yes"
       name = "uppy-server | Create and chown shared log dir"
+      file {
+        path    = "/srv/uppy-server/shared/logs"
+        state   = "directory"
+        owner   = "syslog"
+        group   = "ubuntu"
+        mode    = "ug+rwX,o="
+        recurse = "yes"
+      }
     }
     tasks {
-      copy = "src=../env.sh dest=/srv/uppy-server/current/env.sh mode=0600 owner=root group=root"
       name = "uppy-server | Upload environment"
+      copy {
+        src   = "../env.sh"
+        dest  = "/srv/uppy-server/current/env.sh"
+        mode  = "u=rw,go="
+        owner = "root"
+        group = "root"
+      }
     }
     tasks {
-      npm  = "path=/srv/uppy-server/current production=yes"
       name = "uppy-server | Install node modules"
+      npm {
+        path       = "/srv/uppy-server/current"
+        production = "yes"
+      }
     }
   }
 }
 
 restart {
   playbooks {
+    name  = "Restart"
     hosts = "uppy-server"
-    name  = "Restart uppy-server"
     tasks {
-      action = "service name=uppy-server state=restarted"
       name   = "uppy-server | Restart uppy-server"
+      service {
+        name  = "uppy-server"
+        state = "restarted"
+      }
     }
     tasks {
-      action = "service name=nginx state=restarted"
       name   = "uppy-server | Restart nginx"
+      service {
+        name  = "nginx"
+        state = "restarted"
+      }
     }
   }
 }

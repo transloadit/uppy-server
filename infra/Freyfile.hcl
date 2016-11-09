@@ -117,6 +117,10 @@ install {
         dest = "/home/ubuntu/.bashrc"
         line = "alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'"
       }
+      lineinfile {
+        dest = "/home/ubuntu/.bashrc"
+        line = "export LC_ALL=en_US.UTF-8"
+      }
     }
   }
 }

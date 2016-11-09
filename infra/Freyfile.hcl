@@ -101,15 +101,25 @@ infra resource aws_security_group "fw-uppy-server" {
     protocol    = "tcp"
     to_port     = 80
   }
+  ingress {
+    cidr_blocks = ["${var.ip_all}"]
+    from_port   = 443
+    protocol    = "tcp"
+    to_port     = 443
+  }
 }
 
 install {
   playbooks {
     hosts = "uppy-server"
     name  = "Install uppy-server"
+    pre_tasks {
+      name           = "nginx | Add nginx PPA"
+      apt_repository = "repo='ppa:nginx/stable'"
+    }
     roles {
       role         = "{{{init.paths.roles_dir}}}/apt/v1.0.0"
-      apt_packages = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "psmisc", "telnet", "vim", "wget"]
+      apt_packages = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
     }
     roles {
       role = "{{{init.paths.roles_dir}}}/unattended-upgrades/v1.2.0"
@@ -158,8 +168,84 @@ setup {
       name     = "uppy-server | Set hostname"
     }
     tasks {
-      file = "path=/mnt/uppy-server-data state=directory owner=www-data group=ubuntu mode=0755 mode=ug+rwX,o= recurse=yes"
+      file = "path=/mnt/uppy-server-data state=directory owner=www-data group=ubuntu mode=ug+rwX,o= recurse=yes"
       name = "uppy-server | Create uppy data dir"
+    }
+    tasks {
+      file = "path=/mnt/nginx-www state=directory owner=www-data group=ubuntu mode=ug+rwX,o= recurse=yes"
+      name = "uppy-server | Create public www directory"
+    }
+    tasks {
+      name = "uppy-server | Create nginx HTTP configuration"
+      template {
+        src   = "./templates/default.conf"
+        dest  = "/etc/nginx/sites-enabled/default"
+        mode  = "ug+rwX,o="
+        owner = "root"
+        group = "ubuntu"
+      }
+    }
+    tasks {
+      name     = "uppy-server | Check if certs where already installed"
+      stat     = "/etc/letsencrypt/live/server.uppy.io/privkey.pem"
+      register = "privkey"
+    }
+    tasks {
+      // There is a chicken/egg situation where refereing to ssl certs that don't exist yet
+      // prevent Nginx to boot, but Nginx is needed to get the certs. So we separate between HTTP/HTTPS here
+      // and enable/boot HTTPS later on
+      name = "uppy-server | Disable nginx HTTPS configuration"
+      when = "not privkey.stat.exists"
+      file {
+        state = "absent"
+        dest  = "/etc/nginx/sites-enabled/https"
+      }
+    }
+    tasks {
+      name   = "uppy-server | Restart nginx"
+      when   = "not privkey.stat.exists"
+      action = "service name = nginx state = restarted"
+    }
+    tasks {
+      name = "uppy-server | Download certbot"
+      when = "not privkey.stat.exists"
+      get_url {
+        url      = "https://raw.githubusercontent.com/certbot/certbot/469b5fd441cae085e922c8e66815b5094747a7c5/certbot-auto"
+        dest     = "/opt/certbot-auto"
+        checksum = "sha256:6249576909473ffddd945f8574b4035fd4a2be0323f748a650565ae32b9d4971"
+        mode     = "ug+rwx,o="
+        owner    = "root"
+        group    = "ubuntu"
+      }
+    }
+    tasks {
+      name  = "uppy-server | Install certbot"
+      when  = "not privkey.stat.exists"
+      shell = "/opt/certbot-auto certonly --no-self-upgrade --non-interactive --webroot --agree-tos --email 'letsencrypt@uppy.io' -w /mnt/nginx-www --domain server.uppy.io"
+    }
+    tasks {
+      name = "uppy-server | Install certbot cronjob"
+      when = "not privkey.stat.exists"
+      cron {
+        name         = "cert-renew"
+        special_time = "weekly"
+        user         = "ubuntu"
+        job          = "/opt/certbot-auto renew --quiet --no-self-upgrade"
+      }
+    }
+    tasks {
+      name = "uppy-server | Create nginx HTTPS configuration"
+      template {
+        src   = "./templates/https.conf"
+        dest  = "/etc/nginx/sites-enabled/https"
+        mode  = "ug+rwX,o="
+        owner = "root"
+        group = "ubuntu"
+      }
+    }
+    tasks {
+      action = "service name=nginx state=restarted"
+      name   = "uppy-server | Restart nginx"
     }
   }
 }
@@ -197,12 +283,12 @@ restart {
     hosts = "uppy-server"
     name  = "Restart uppy-server"
     tasks {
-      shell = "iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3020"
-      name  = "uppy-server | Redirect HTTP traffic to uppy-server"
+      action = "service name=uppy-server state=restarted"
+      name   = "uppy-server | Restart uppy-server"
     }
     tasks {
-      action = "service name=uppy-server state=restarted"
-      name   = "uppy-server | Restart"
+      action = "service name=nginx state=restarted"
+      name   = "uppy-server | Restart nginx"
     }
   }
 }

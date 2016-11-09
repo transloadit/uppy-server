@@ -226,9 +226,9 @@ setup {
       }
     }
     tasks {
-      name  = "uppy-server | Install certbot"
-      when  = "not privkey.stat.exists"
-      shell = "/opt/certbot-auto certonly --no-self-upgrade --non-interactive --webroot --agree-tos --email 'letsencrypt@uppy.io' -w /mnt/nginx-www --domain server.uppy.io"
+      name    = "uppy-server | Install certbot"
+      when    = "not privkey.stat.exists"
+      command = "/opt/certbot-auto certonly --no-self-upgrade --non-interactive --webroot --agree-tos --email 'letsencrypt@uppy.io' -w /mnt/nginx-www --domain server.uppy.io"
     }
     tasks {
       name = "uppy-server | Install certbot cronjob"

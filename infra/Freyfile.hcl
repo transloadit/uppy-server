@@ -145,7 +145,7 @@ setup {
       upstart_user          = "www-data"
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.1"
+      role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.2"
       rsyslog_rsyslog_d_files "49-uppy-server" {
         directives = ["& stop"]
         rules {

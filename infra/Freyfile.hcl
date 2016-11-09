@@ -189,7 +189,6 @@ setup {
     tasks {
       name     = "uppy-server | Check if certs where already installed"
       register = "privkey"
-      // @todo Will this need an `ignore_errors = "yes"` for first runs?
       stat {
         path = "/etc/letsencrypt/live/server.uppy.io/privkey.pem"
       }

@@ -117,6 +117,9 @@ install {
         dest = "/home/ubuntu/.bashrc"
         line = "alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'"
       }
+    }
+    tasks {
+      name = "Common | Add utf8 local to bashrc to avoid perl warnings"
       lineinfile {
         dest = "/home/ubuntu/.bashrc"
         line = "export LC_ALL=en_US.UTF-8"

@@ -191,6 +191,10 @@ setup {
       }
     }
     tasks {
+      name    = "uppy-server | Create DH parameters"
+      command = "openssl dhparam -out /etc/nginx/dhparams.pem 2048 creates=/etc/nginx/dhparams.pem"
+    }
+    tasks {
       name     = "uppy-server | Check if certs where already installed"
       register = "privkey"
       stat {

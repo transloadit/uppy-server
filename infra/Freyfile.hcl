@@ -117,6 +117,9 @@ install {
         dest = "/home/ubuntu/.bashrc"
         line = "alias wtf='sudo tail -f /var/log/*{log,err} /var/log/{dmesg,messages,*{,/*}{log,err}}'"
       }
+    }
+    tasks {
+      name = "Common | Add utf8 local to bashrc to avoid perl warnings"
       lineinfile {
         dest = "/home/ubuntu/.bashrc"
         line = "export LC_ALL=en_US.UTF-8"
@@ -145,11 +148,11 @@ setup {
       upstart_user          = "www-data"
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.2"
+      role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.1"
       rsyslog_rsyslog_d_files "49-uppy-server" {
         directives = ["& stop"]
         rules {
-          rule    = ":programname, startswith, '{{{config.global.appname}}}'"
+          rule    = ":programname, startswith, \"{{{config.global.appname}}}\""
           logpath = "{{{config.global.approot}}}/shared/logs/{{{config.global.appname}}}.log"
         }
       }

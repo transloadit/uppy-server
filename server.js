@@ -59,6 +59,8 @@ router.post('/:provider/:action/:id', dispatcher)
 
 app.use(router.routes())
 
+console.log('Welcome to Uppy Server!')
+console.log('Listening on http://0.0.0.0:3020')
 var server = app.listen(3020)
 
 var wss = new SocketServer({

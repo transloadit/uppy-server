@@ -6,7 +6,7 @@
   dependencies:
     extend "^3.0.0"
 
-"@purest/providers@^1.0.0":
+"@purest/providers@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@purest/providers/-/providers-1.0.0.tgz#8847582c302f12609af8f4c8d1974dc1b034c317"
 
@@ -171,7 +171,7 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-atob@^2.0.3:
+atob@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.0.3.tgz#19c7a760473774468f20b2d2d03372ad7d4cbf5d"
 
@@ -378,7 +378,7 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@^2.9.0:
+commander@^2.9.0, commander@2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
   dependencies:
@@ -510,7 +510,7 @@ deep-copy@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/deep-copy/-/deep-copy-1.1.2.tgz#75360b1080b3eb5b9e6f0f0ba2cf159bb5a28b04"
 
-deep-equal@^1.0.0, deep-equal@~1.0.0:
+deep-equal@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
 
@@ -693,9 +693,9 @@ eslint-config-standard@5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-5.1.0.tgz#670bf3c90d99d04b8a705cfeea7096a67d17a661"
 
-eslint-plugin-promise@^1.0.8:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-1.3.2.tgz#fce332d6f5ff523200a537704863ec3c2422ba7c"
+eslint-plugin-promise@1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-1.0.8.tgz#80ec3b6d4da040a0c1ec9e182c66bc646d4993ac"
 
 eslint-plugin-standard@1.3.2:
   version "1.3.2"
@@ -948,21 +948,13 @@ form-data@~2.0.0:
     combined-stream "^1.0.5"
     mime-types "^2.1.11"
 
-form-data@~2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-2.1.1.tgz#4adf0342e1a79afa1e84c8c320a9ffc82392a1f3"
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "^1.0.5"
-    mime-types "^2.1.12"
-
 fresh@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.3.0.tgz#651f838e22424e7566de161d8358caa199f83d4f"
 
-frey@0.3.25:
-  version "0.3.25"
-  resolved "https://registry.yarnpkg.com/frey/-/frey-0.3.25.tgz#b06130c6c1896ad6b8d3974b80527616a81a1a25"
+frey@0.3.26:
+  version "0.3.26"
+  resolved "https://registry.yarnpkg.com/frey/-/frey-0.3.26.tgz#7c9f7e31e62b1efb47f16c97ef453d78237be7a0"
   dependencies:
     async "1.5.2"
     babel-polyfill "6.13.0"
@@ -1204,7 +1196,7 @@ graceful-fs@~1.2.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-grant-koa@^3.6.5:
+grant-koa@3.6.5:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/grant-koa/-/grant-koa-3.6.5.tgz#ba7ca2d7c5b8f6e7e2aaa7949c03da8e246ea3ea"
   dependencies:
@@ -1664,7 +1656,7 @@ klaw@^1.0.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/klaw/-/klaw-1.3.0.tgz#8857bfbc1d824badf13d3d0241d8bbe46fb12f73"
 
-koa-bodyparser@^2.2.0:
+koa-bodyparser@2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/koa-bodyparser/-/koa-bodyparser-2.2.0.tgz#22c56cde53781dea0df7f075ddd20fe0a7c53037"
   dependencies:
@@ -1683,21 +1675,21 @@ koa-is-json@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
 
-koa-mount@^1.3.0:
+koa-mount@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/koa-mount/-/koa-mount-1.3.0.tgz#de6ab775ec4b71ba6e67f2925a3d40dd5fab3ed0"
   dependencies:
     debug "*"
     koa-compose "^2.2.0"
 
-koa-qs@^2.0.0:
+koa-qs@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/koa-qs/-/koa-qs-2.0.0.tgz#18d16b43508a541f092e514351dc09563a48819f"
   dependencies:
     merge-descriptors "~0.0.2"
     qs "~2.3.3"
 
-koa-route@^2.4.2, koa-route@2.4.2:
+koa-route@2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/koa-route/-/koa-route-2.4.2.tgz#0de227989e6aa7334768abbfb16c519ad9a7fa71"
   dependencies:
@@ -1705,7 +1697,7 @@ koa-route@^2.4.2, koa-route@2.4.2:
     methods "~1.1.0"
     path-to-regexp "^1.2.0"
 
-koa-router@^5.4.0:
+koa-router@5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-5.4.0.tgz#2c4e67b0126b97263fdf24493ab2efb4c4c661c3"
   dependencies:
@@ -1714,14 +1706,14 @@ koa-router@^5.4.0:
     methods "^1.0.1"
     path-to-regexp "^1.1.1"
 
-koa-session@^3.3.1:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/koa-session/-/koa-session-3.4.0.tgz#ce270291a4fcfbafe199abb64ccd9830e8c787bf"
+koa-session@3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/koa-session/-/koa-session-3.3.1.tgz#37e48f74a8b248df7da32ab5d133faaf71efd893"
   dependencies:
-    debug "^2.2.0"
-    deep-equal "^1.0.0"
+    debug "~2.2.0"
+    deep-equal "~1.0.0"
 
-koa@^1.2.4:
+koa@1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/koa/-/koa-1.2.4.tgz#6ef6d17a7bea8ec778a8572b55a0d0562e488654"
   dependencies:
@@ -1926,7 +1918,7 @@ mime-db@~1.24.0:
   version "1.24.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.24.0.tgz#e2d13f939f0016c6e4e9ad25a8652f126c467f0c"
 
-mime-types, mime-types@^2.0.7, mime-types@^2.1.11, mime-types@^2.1.12, mime-types@~2.1.11, mime-types@~2.1.7:
+mime-types, mime-types@^2.0.7, mime-types@^2.1.11, mime-types@~2.1.11, mime-types@~2.1.7:
   version "2.1.12"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.12.tgz#152ba256777020dd4663f54c2e7bc26381e71729"
   dependencies:
@@ -2276,7 +2268,7 @@ ps-tree@^1.0.1:
   dependencies:
     event-stream "~3.3.0"
 
-purest@^3.0.0:
+purest@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/purest/-/purest-3.0.0.tgz#cc2b4c304045c7f8a9b5ff24e69808da9a76a5dc"
   dependencies:
@@ -2295,10 +2287,6 @@ qs@~4.0.0:
 qs@~6.2.0, qs@6.2.1:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.1.tgz#ce03c5ff0935bc1d9d69a9f14cbd18e568d67625"
-
-qs@~6.3.0:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
 randomatic@^1.1.3:
   version "1.1.5"
@@ -2443,31 +2431,6 @@ replace@0.3.0:
     minimatch "~0.2.9"
     nomnom "1.6.x"
 
-request@^2.75.0:
-  version "2.76.0"
-  resolved "https://registry.yarnpkg.com/request/-/request-2.76.0.tgz#be44505afef70360a0436955106be3945d95560e"
-  dependencies:
-    aws-sign2 "~0.6.0"
-    aws4 "^1.2.1"
-    caseless "~0.11.0"
-    combined-stream "~1.0.5"
-    extend "~3.0.0"
-    forever-agent "~0.6.1"
-    form-data "~2.1.1"
-    har-validator "~2.0.6"
-    hawk "~3.1.3"
-    http-signature "~1.1.0"
-    is-typedarray "~1.0.0"
-    isstream "~0.1.2"
-    json-stringify-safe "~5.0.1"
-    mime-types "~2.1.7"
-    node-uuid "~1.4.7"
-    oauth-sign "~0.8.1"
-    qs "~6.3.0"
-    stringstream "~0.0.4"
-    tough-cookie "~2.3.0"
-    tunnel-agent "~0.4.1"
-
 request@2.74.0:
   version "2.74.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.74.0.tgz#7693ca768bbb0ea5c8ce08c084a45efa05b892ab"
@@ -2494,7 +2457,7 @@ request@2.74.0:
     tough-cookie "~2.3.0"
     tunnel-agent "~0.4.1"
 
-request@2.x:
+request@2.75.0, request@2.x:
   version "2.75.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.75.0.tgz#d2b8268a286da13eaa5d01adf5d18cc90f657d93"
   dependencies:
@@ -2801,7 +2764,7 @@ tunnel-agent@~0.4.1:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.4.3.tgz#6373db76909fe570e08d73583365ed828a74eeeb"
 
-tus-js-client@^1.4.1:
+tus-js-client@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/tus-js-client/-/tus-js-client-1.4.1.tgz#ad5e49c10c6602267fac2858065f6cd3565f0a24"
   dependencies:
@@ -2908,9 +2871,13 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
 
-uuid@^2.0.1, uuid@^2.0.2:
+uuid@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
+
+uuid@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.2.tgz#48bd5698f0677e3c7901a1c46ef15b1643794726"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
@@ -2977,7 +2944,7 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^1.1.1:
+ws@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.1.tgz#082ddb6c641e85d4bb451f03d52f06eabdb1f018"
   dependencies:

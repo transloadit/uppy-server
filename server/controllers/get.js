@@ -33,7 +33,7 @@ function * get (next) {
 
     storage.download({ id, token })
       .then((response) => {
-        response.pipe(uploader.upload({ path: './data/' + id }))
+        response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + id }))
       })
   })
 }

@@ -50,7 +50,7 @@
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
     "start:production": "node server.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost UPPY_ENDPOINT=http://localhost:3452 nodemon ./server.js'",
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPY_ENDPOINT=http://localhost:3452 nodemon ./server.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

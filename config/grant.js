@@ -1,6 +1,6 @@
 module.exports = {
   server: {
-    host: process.env.UPPYSERVER_DOMAIN + ':3020',
+    host: process.env.UPPYSERVER_DOMAIN,
     protocol: 'http'
   },
   google: {

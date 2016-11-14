@@ -52,7 +52,7 @@ Drive.prototype.download = function (options) {
     this.client.query()
       .get('files/' + options.id)
       .where({ alt: 'media' })
-      .auth(process.env.DRIVE_TOKEN)
+      .auth(options.token)
       .request()
       .on('response', (response) => {
         response.pause()

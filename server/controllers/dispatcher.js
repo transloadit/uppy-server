@@ -13,15 +13,10 @@ function * routeDispatcher (next) {
     return yield next
   }
 
-  if (!this.params.provider) {
-    return yield next
-  }
-
   var action = this.params.action
 
-  if (!handlers[action]) {
-    // throw error
-    console.log(action + 'handler not found')
+  if (!this.params.provider || !handlers[action]) {
+    return yield next
   }
 
   yield handlers[action]

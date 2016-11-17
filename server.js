@@ -21,7 +21,7 @@ app.use(session(app))
 app.use(mount(grant))
 app.use(cors({
   methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
-  origin: function (req) {
+  origin: function(req) {
     // You cannot allow multiple domains besides *
     // http://stackoverflow.com/a/1850482/151666
     // so we make it dynamic, depending on who is asking
@@ -45,7 +45,7 @@ app.use(cors({
 }))
 
 // Routes
-router.get('/', function * (next) {
+router.get('/', function*(next) {
   this.body = [
     'Welcome to Uppy Server',
     '======================',
@@ -59,6 +59,14 @@ router.post('/:provider/:action/:id', dispatcher)
 
 app.use(router.routes())
 
+app.use(function * notFound(next) {
+  yield next;
+
+  if (404 !== this.status) return;
+
+  this.status = 404;
+});
+
 console.log('Welcome to Uppy Server!')
 console.log('Listening on http://0.0.0.0:3020')
 var server = app.listen(3020)
@@ -69,7 +77,7 @@ var wss = new SocketServer({
 
 var emitter = require('./WebsocketEmitter')
 
-wss.on('connection', function (ws) {
+wss.on('connection', function(ws) {
   var fullPath = ws.upgradeReq.url
   console.log(fullPath)
 
@@ -78,9 +86,9 @@ wss.on('connection', function (ws) {
 
   console.log('Client connected')
 
-  function sendProgress (data) {
+  function sendProgress(data) {
     console.log(data)
-    ws.send(data, function (err) {
+    ws.send(data, function(err) {
       console.log('Error: ' + err)
     })
   }
@@ -88,7 +96,7 @@ wss.on('connection', function (ws) {
   emitter.on(token, sendProgress)
   emitter.emit('connection:' + token)
 
-  ws.on('close', function () {
+  ws.on('close', function() {
     emitter.removeListener(token, sendProgress)
     console.log('Client disconnected')
   })

@@ -3,10 +3,10 @@
 function * logout (next) {
   try {
     var session = this.session
-    var provider = this.params.provider
+    var providerName = this.params.providerName
 
-    if (session[provider]) {
-      session[provider].token = null
+    if (session[providerName]) {
+      session[providerName].token = null
     }
 
     if (session.grant) {

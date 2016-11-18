@@ -1,10 +1,10 @@
 'use strict'
 
-var Storage = require('../Storage')
+var utils = require('../utils')
 var config = require('@purest/providers')
 
 function * list (next) {
-  if (!this.session || !this.request || !this.request.body || !this.params.provider) {
+  if (!this.session || !this.request || !this.request.body || !this.params.providerName) {
     // throw error
   }
 
@@ -12,13 +12,13 @@ function * list (next) {
     // throw error
   }
 
-  var provider = this.params.provider
-  var token = this.session[provider].token
+  var providerName = this.params.providerName
+  var token = this.session[providerName].token
 
-  var storage = new Storage({ provider: provider, config: config })
+  var provider = utils.getProvider({ providerName, config })
 
   yield new Promise((resolve, reject) => {
-    storage.list({
+    provider.list({
       token: token,
       directory: this.params.id
     }, (err, res, body) => {

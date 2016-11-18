@@ -1,22 +1,22 @@
 'use strict'
 
-var Storage = require('../Storage')
+var utils = require('../utils')
 var config = require('@purest/providers')
 
 function * auth (next) {
-  var provider = this.params.provider
+  var providerName = this.params.providerName
 
-  if (!this.session[provider] || !this.session[provider].token) {
+  if (!this.session[providerName] || !this.session[providerName].token) {
     this.body = { authenticated: false }
     // handle error
     return
   }
 
-  var storage = new Storage({ provider: provider, config: config })
-  var token = this.session[provider].token
+  var provider = utils.getProvider({ providerName, config })
+  var token = this.session[providerName].token
 
   yield new Promise((resolve, reject) => {
-    storage.list({
+    provider.list({
       token: token
     }, (err, res, body) => {
       if (err) {

@@ -15,7 +15,7 @@ function * routeDispatcher (next) {
 
   var action = this.params.action
 
-  if (!this.params.provider || !handlers[action]) {
+  if (!this.params.providerName || !handlers[action]) {
     return yield next
   }
 

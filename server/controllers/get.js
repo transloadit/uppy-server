@@ -1,6 +1,6 @@
 'use strict'
 
-var Storage = require('../Storage')
+var utils = require('../utils')
 var config = require('@purest/providers')
 var Uploader = require('../Uploader')
 
@@ -10,16 +10,16 @@ function * get (next) {
     return yield next
   }
 
-  var provider = this.params.provider
+  var providerName = this.params.providerName
   var id = this.params.id
   var body = this.request.body
   var endpoint = body.endpoint
   var protocol = body.protocol
-  var token = this.session[provider] ? this.session[provider].token : body.token
+  var token = this.session[providerName] ? this.session[providerName].token : body.token
 
   // config for keys and stuff somewhere here, maybe
 
-  var storage = new Storage({ provider, config })
+  var provider = utils.getProvider({ providerName, config })
   var uploader = new Uploader({
     endpoint: endpoint,
     protocol: protocol
@@ -31,7 +31,7 @@ function * get (next) {
       resolve(Object.assign(this, data))
     })
 
-    storage.download({ id, token })
+    provider.download({ id, token })
       .then((response) => {
         response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + id }))
       })

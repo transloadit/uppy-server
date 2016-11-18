@@ -52,10 +52,10 @@ router.get('/', function * (next) {
     ''
   ].join('\n')
 })
-router.get('/:provider/:action', dispatcher)
-router.get('/:provider/:action/:id', dispatcher)
-router.post('/:provider/:action', dispatcher)
-router.post('/:provider/:action/:id', dispatcher)
+router.get('/:providerName/:action', dispatcher)
+router.get('/:providerName/:action/:id', dispatcher)
+router.post('/:providerName/:action', dispatcher)
+router.post('/:providerName/:action/:id', dispatcher)
 
 app.use(router.routes())
 

@@ -60,10 +60,6 @@ Uploader.prototype.upload = function (options) {
             }
           })
 
-          emitter.on('connection:' + token, function () {
-            emitter.emit(token, emitData)
-          })
-
           emitter.emit(token, emitData)
         },
         onSuccess: function () {
@@ -80,9 +76,7 @@ Uploader.prototype.upload = function (options) {
       upload.start()
 
       this.emit('finish', {
-        body: {
-          token
-        },
+        body: { token },
         status: 200
       })
       return
@@ -90,9 +84,7 @@ Uploader.prototype.upload = function (options) {
 
     fs.readFile(fpath, (err, data) => {
       if (err) {
-        return this.emit('finish', {
-          body: err
-        })
+        return this.emit('finish', { body: err })
       }
 
       var req = http.request({
@@ -101,9 +93,6 @@ Uploader.prototype.upload = function (options) {
         'Content-Type': 'multipart/form-data',
         'Content-Length': data.length
       }, (res) => {
-        // console.log('STATUS:', res.statusCode)
-        // console.log('HEADERS:', JSON.stringify(res.headers, null, '\t'))
-
         res.on('data', (chunk) => {
           // console.log('BODY:', chunk)
         })

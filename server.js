@@ -79,25 +79,17 @@ var emitter = require('./WebsocketEmitter')
 
 wss.on('connection', function (ws) {
   var fullPath = ws.upgradeReq.url
-  console.log(fullPath)
-
   var token = fullPath.replace(/\/api\//, '')
-  console.log(token)
-
-  console.log('Client connected')
 
   function sendProgress (data) {
-    console.log(data)
     ws.send(data, function (err) {
-      console.log('Error: ' + err)
+      if (err) console.log('Error: ' + err)
     })
   }
 
   emitter.on(token, sendProgress)
-  emitter.emit('connection:' + token)
 
   ws.on('close', function () {
     emitter.removeListener(token, sendProgress)
-    console.log('Client disconnected')
   })
 })

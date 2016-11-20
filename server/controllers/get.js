@@ -5,11 +5,6 @@ var config = require('@purest/providers')
 var Uploader = require('../Uploader')
 
 function * get (next) {
-  if (!this.params.id) {
-    // handle no id error
-    return yield next
-  }
-
   var providerName = this.params.providerName
   var id = this.params.id
   var body = this.request.body

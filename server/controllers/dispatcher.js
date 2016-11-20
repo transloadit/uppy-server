@@ -1,11 +1,11 @@
 'use strict'
 
 var handlers = {
-  auth: require('./auth'),
-  callback: require('./callback'),
-  get: require('./get'),
-  list: require('./list'),
-  logout: require('./logout')
+  auth: { self: require('./auth') },
+  callback: { self: require('./callback') },
+  get: { self: require('./get'), requiresAuth: true },
+  list: { self: require('./list'), requiresAuth: true },
+  logout: { self: require('./logout') }
 }
 
 function * routeDispatcher (next) {
@@ -19,7 +19,21 @@ function * routeDispatcher (next) {
     return yield next
   }
 
-  yield handlers[action]
+  var handler = handlers[action]
+
+  if (handler.requiresAuth) {
+    var providerName = this.params.providerName
+    if (!this.session[providerName] || !this.session[providerName].token) {
+      this.status = 401
+      return yield next
+    }
+  }
+
+  if (handler.requiresId && !this.params.id) {
+    return yield next
+  }
+
+  yield handler.self
 }
 
 exports = module.exports = routeDispatcher

@@ -4,14 +4,6 @@ var utils = require('../utils')
 var config = require('@purest/providers')
 
 function * list (next) {
-  if (!this.session || !this.request || !this.request.body || !this.params.providerName) {
-    // throw error
-  }
-
-  if (!this.params.id) {
-    // throw error
-  }
-
   var providerName = this.params.providerName
   var token = this.session[providerName].token
 

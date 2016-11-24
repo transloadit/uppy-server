@@ -36,3 +36,6 @@ env.infra.sh
 
 output/
 .DS_Store
+
+# Transpiled
+lib/

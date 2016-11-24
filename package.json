@@ -5,18 +5,27 @@
   "main": "server.js",
   "author": "",
   "license": "ISC",
+  "lint-staged": {
+    "*.js": "eslint"
+  },
+  "pre-commit": "lint-staged",
   "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "eslint": "2.4.0",
     "eslint-config-standard": "5.1.0",
     "eslint-plugin-promise": "1.0.8",
     "eslint-plugin-standard": "1.3.2",
     "fakefile": "0.0.8",
     "frey": "0.3.26",
-    "nodemon": "1.8.1"
+    "lint-staged": "^3.2.1",
+    "nodemon": "1.8.1",
+    "pre-commit": "^1.1.3"
   },
   "dependencies": {
     "@purest/providers": "1.0.0",
     "atob": "2.0.3",
+    "babel-polyfill": "^6.16.0",
     "commander": "2.9.0",
     "grant-koa": "3.6.5",
     "koa": "1.2.4",
@@ -34,7 +43,11 @@
     "uuid": "2.0.2",
     "ws": "1.1.1"
   },
+  "files": [
+    "lib/"
+  ],
   "scripts": {
+    "build": "babel --presets es2015 src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
     "deploy:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey setup --force-yes --project-dir ./infra'",
     "deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
@@ -43,14 +56,16 @@
     "install:frey": "source env.sh && ${FREYCMD:-frey} refresh --bail --project-dir ./infra",
     "launch": "source env.infra.sh && ${FREYCMD:-frey} infra --project-dir ./infra",
     "lint": "eslint .",
+    "lint-staged": "lint-staged",
     "logtail:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run logtail",
     "logtail": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra --remote 'tail -f /srv/uppy-server/shared/logs/uppy-server.log'",
+    "prepublish": "npm run build",
     "release:major": "env SEMANTIC=major npm run release",
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "start:production": "node server.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPY_ENDPOINT=localhost:3452 nodemon ./server.js'",
+    "start:production": "npm run build && node --require babel-polyfill ./lib/server.js",
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPY_ENDPOINT=localhost:3452 nodemon ./src/server.js --exec babel-node --presets es2015'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

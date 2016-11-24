@@ -276,13 +276,12 @@ deploy {
     name  = "Deploy uppy-server"
     roles {
       role                          = "{{{init.paths.roles_dir}}}/deploy/v1.3.0"
-      ansistrano_deploy_from        = "{{{init.cliargs.projectDir}}}"
+      ansistrano_deploy_from        = "{{{init.cliargs.projectDir}}}/.."
       ansistrano_deploy_to          = "/srv/uppy-server"
       ansistrano_shared_paths       = ["logs"]
       ansistrano_deploy_via         = "rsync"
       ansistrano_rsync_extra_params = "--exclude=.git* --exclude=.DS_Store --exclude=env.* --exclude=node_modules"
       ansistrano_keep_releases      = 10
-      ansistrano_git_repo           = "https://github.com/transloadit/uppy-server.git"
     }
     tasks {
       name = "uppy-server | Create and chown shared log dir"

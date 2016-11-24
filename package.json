@@ -10,6 +10,8 @@
   },
   "pre-commit": "lint-staged",
   "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "eslint": "2.4.0",
     "eslint-config-standard": "5.1.0",
     "eslint-plugin-promise": "1.0.8",
@@ -17,14 +19,11 @@
     "fakefile": "0.0.8",
     "frey": "0.3.26",
     "lint-staged": "^3.2.1",
-    "nodemon": "1.8.1",
-    "pre-commit": "^1.1.3"
+    "nodemon": "1.8.1"
   },
   "dependencies": {
     "@purest/providers": "1.0.0",
     "atob": "2.0.3",
-    "babel-cli": "^6.18.0",
-    "babel-preset-es2015": "^6.18.0",
     "babel-polyfill": "^6.16.0",
     "commander": "2.9.0",
     "grant-koa": "3.6.5",
@@ -64,7 +63,7 @@
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "start:production": "npm run build && node --require babel-polyfill ./lib/server.js",
+    "start:production": "node --require babel-polyfill ./lib/server.js",
     "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPY_ENDPOINT=localhost:3452 nodemon ./src/server.js --exec babel-node --presets es2015'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

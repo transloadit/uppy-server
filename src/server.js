@@ -1,4 +1,4 @@
-var koa = require('koa')
+const koa = require('koa')
 var router = require('koa-router')()
 var session = require('koa-session')
 var cors = require('koa-cors')

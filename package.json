@@ -24,7 +24,6 @@
   "dependencies": {
     "@purest/providers": "1.0.0",
     "atob": "2.0.3",
-    "babel-polyfill": "^6.16.0",
     "commander": "2.9.0",
     "grant-koa": "3.6.5",
     "koa": "1.2.4",
@@ -46,7 +45,7 @@
     "lib/"
   ],
   "scripts": {
-    "build": "babel --presets es2015 src --out-dir lib",
+    "build": "babel src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
     "deploy:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey setup --force-yes --project-dir ./infra'",
     "deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
@@ -63,7 +62,7 @@
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "start:production": "node --require babel-polyfill ./lib/server.js",
+    "start:production": "node ./lib/server.js",
     "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPY_ENDPOINT=localhost:3452 nodemon ./src/server.js --exec babel-node --presets es2015'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

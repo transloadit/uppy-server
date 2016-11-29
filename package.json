@@ -1,10 +1,11 @@
 {
-  "name": "uppyserver",
+  "name": "uppy-server",
   "version": "0.1.0",
-  "description": "",
+  "description": "Almost as cute as a Puppy :dog:",
   "main": "server.js",
-  "author": "",
+  "author": "Transloadit.com",
   "license": "ISC",
+  "homepage": "https://github.com/transloadit/uppy-server#readme",
   "lint-staged": {
     "*.js": "eslint"
   },

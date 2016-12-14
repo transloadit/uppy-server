@@ -109,7 +109,7 @@ install {
       apt_packages = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.3.0"
+      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.4.0"
     }
     tasks {
       name = "Common | Add convenience shortcut wtf"

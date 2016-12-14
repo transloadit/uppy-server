@@ -109,7 +109,7 @@ install {
       apt_packages = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/v1.2.0"
+      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.4.0"
     }
     tasks {
       name = "Common | Add convenience shortcut wtf"
@@ -133,11 +133,11 @@ setup {
     hosts = "uppy-server"
     name  = "Setup uppy-server"
     roles {
-      role           = "{{{init.paths.roles_dir}}}/nodejs/v2.1.1"
+      role           = "{{{init.paths.roles_dir}}}/nodejs/2.1.1"
       nodejs_version = "4.x"
     }
     roles {
-      role                  = "{{{init.paths.roles_dir}}}/upstart/v1.0.0"
+      role                  = "{{{init.paths.roles_dir}}}/upstart/1.0.0"
       upstart_command       = "npm run start:production"
       upstart_description   = "uppy-server"
       upstart_name          = "{{{config.global.appname}}}"
@@ -148,7 +148,7 @@ setup {
       upstart_user          = "www-data"
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/rsyslog/v3.0.1"
+      role = "{{{init.paths.roles_dir}}}/rsyslog/3.1.0"
       rsyslog_rsyslog_d_files "49-uppy-server" {
         directives = ["& stop"]
         rules {
@@ -275,7 +275,7 @@ deploy {
     hosts = "uppy-server"
     name  = "Deploy uppy-server"
     roles {
-      role                          = "{{{init.paths.roles_dir}}}/deploy/v1.3.0"
+      role                          = "{{{init.paths.roles_dir}}}/deploy/1.3.0"
       ansistrano_deploy_from        = "{{{init.cliargs.projectDir}}}/.."
       ansistrano_deploy_to          = "/srv/uppy-server"
       ansistrano_shared_paths       = ["logs"]

@@ -15,6 +15,15 @@ Ideas that will be planned and find their way into a release at one point
 - [ ] Deploy on Lambda via Apex
 - [x] Steal locutus' Travis deploy method. Currently fatals still deploy.
 
+## 0.2.0
+
+- [x] server: re-do build setup: building at `deploy` and `prepublish` when typing `npm run release:patch` 0.0.1 -> 0.0.2 (@ifedapoolarewaju)
+- [x] server: re-do build setup: es6 `src` -> es5 `lib` (use plugin packs from Uppy)
+- [x] server: re-do build setup: `eslint --fix ./src` via http://standardjs.com (@ifedapoolarewaju)
+- [x] server: re-do build setup: `babel-node` or `babel-require` could do realtime transpiling for development (how does that hook in with e.g. `nodemon`?) (@ifedapoolarewaju)
+- [x] server: refacor: remove/reduce file redundancy (@ifedapoolarewaju)
+- [x] server: error handling: 404 and 401 error handler (@ifedapoolarewaju)
+
 ## 0.0.7
 
 - [x] Better version of: Make `env.sh` not being available non-fatal

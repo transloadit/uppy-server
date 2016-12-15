@@ -11,5 +11,10 @@ module.exports = {
       'https://www.googleapis.com/auth/drive.file'
     ],
     callback: '/drive/callback'
+  },
+  dropbox: {
+    key: process.env.UPPYSERVER_DROPBOX_KEY,
+    secret: process.env.UPPYSERVER_DROPBOX_SECRET,
+    callback: '/dropbox/callback'
   }
 }

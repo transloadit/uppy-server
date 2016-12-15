@@ -17,7 +17,6 @@ function * list (next) {
       if (err) {
         // throw error
       }
-
       this.body = body
       resolve()
     })

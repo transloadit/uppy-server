@@ -28,7 +28,7 @@ function * get (next) {
 
     provider.download({ id, token })
       .then((response) => {
-        response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + id }))
+        response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + encodeURIComponent(id) }))
       })
   })
 }

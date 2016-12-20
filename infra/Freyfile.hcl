@@ -112,7 +112,7 @@ install {
       apt_install_state       = "present"
     }
     roles {
-      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.4.0"
+      role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.3.0"
     }
     tasks {
       name = "Common | Add convenience shortcut wtf"
@@ -278,7 +278,7 @@ deploy {
     hosts = "uppy-server"
     name  = "Deploy uppy-server"
     roles {
-      role                          = "{{{init.paths.roles_dir}}}/deploy/1.3.0"
+      role                          = "{{{init.paths.roles_dir}}}/deploy/1.4.0"
       ansistrano_deploy_from        = "{{{init.cliargs.projectDir}}}/.."
       ansistrano_deploy_to          = "/srv/uppy-server"
       ansistrano_shared_paths       = ["logs"]

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/transloadit/uppy-server.svg?branch=master)](https://travis-ci.org/transloadit/uppy-server)
+
 # uppy-server
 
 ## Install
@@ -24,10 +26,11 @@ npm run start
 In production
 
 ```bash
-# As a privileged user
+# As a privileged user run:
 source env.sh
-# As an non-privileged user
+# Then as a an non-privileged user run:
 npm run start:production
+# this effectively injects secrets into the non-priviliged process' memory, without giving it file access to the secrets
 ```
 
 An example server is running at http://server.uppy.io, which is deployed via 

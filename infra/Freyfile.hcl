@@ -105,11 +105,8 @@ install {
       apt_repository = "repo='ppa:nginx/stable'"
     }
     roles {
-      role                    = "{{{init.paths.roles_dir}}}/apt/1.3.0"
-      apt_manage_sources_list = true
-      apt_src_enable          = false
-      apt_install             = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
-      apt_install_state       = "present"
+      role        = "{{{init.paths.roles_dir}}}/apt/1.3.0"
+      apt_install = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
     }
     roles {
       role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.3.0"

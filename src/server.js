@@ -1,4 +1,4 @@
-const koa = require('koa')
+var koa = require('koa')
 var router = require('koa-router')()
 var session = require('koa-session')
 var cors = require('koa-cors')
@@ -7,8 +7,10 @@ var bodyParser = require('koa-bodyparser')
 var Grant = require('grant-koa')
 var grant = new Grant(require('./config/grant'))
 var SocketServer = require('ws').Server
-
+var emitter = require('./WebsocketEmitter')
 var dispatcher = require('./server/controllers/dispatcher')
+
+var PORT = 3020
 
 // Server setup
 var app = koa()
@@ -68,14 +70,13 @@ app.use(function * notFound (next) {
 })
 
 console.log('Welcome to Uppy Server!')
-console.log('Listening on http://0.0.0.0:3020')
-var server = app.listen(3020)
+console.log('Listening on http://0.0.0.0:' + PORT)
+
+var server = app.listen(PORT)
 
 var wss = new SocketServer({
   server: server
 })
-
-var emitter = require('./WebsocketEmitter')
 
 wss.on('connection', function (ws) {
   var fullPath = ws.upgradeReq.url

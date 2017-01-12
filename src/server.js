@@ -83,15 +83,24 @@ wss.on('connection', function (ws) {
   var fullPath = ws.upgradeReq.url
   var token = fullPath.replace(/\/api\//, '')
 
+  emitter.setOpenChannel(token)
+  var queuedMessages = emitter.queues[token].queue
+
   function sendProgress (data) {
     ws.send(data, function (err) {
       if (err) console.log('Error: ' + err)
     })
   }
 
+  while (queuedMessages.length) {
+    sendProgress(...queuedMessages[0])
+    queuedMessages.splice(1)
+  }
+
   emitter.on(token, sendProgress)
 
   ws.on('close', function () {
+    emitter.removeChannel(token)
     emitter.removeListener(token, sendProgress)
   })
 })

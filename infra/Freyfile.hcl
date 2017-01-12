@@ -9,7 +9,11 @@ global {
       become = true
     }
     defaults {
-      host_key_checking = "False"
+      host_key_checking = false
+      ansible_managed = "Ansible managed"
+    }
+    ssh_connection {
+      pipelining = true
     }
   }
 }

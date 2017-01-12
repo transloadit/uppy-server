@@ -79,6 +79,7 @@ var wss = new SocketServer({
 })
 
 wss.on('connection', function (ws) {
+  console.log('socket connection made')
   var fullPath = ws.upgradeReq.url
   var token = fullPath.replace(/\/api\//, '')
 

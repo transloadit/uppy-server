@@ -73,7 +73,9 @@ Uploader.prototype.upload = function (options) {
         }
       })
 
-      upload.start()
+      emitter.on(`connection:${token}`, () => {
+        upload.start()
+      })
 
       this.emit('finish', {
         body: { token },

@@ -79,12 +79,8 @@ var wss = new SocketServer({
 })
 
 wss.on('connection', function (ws) {
-  console.log('new socket connection made')
   var fullPath = ws.upgradeReq.url
   var token = fullPath.replace(/\/api\//, '')
-
-  emitter.setOpenChannel(token)
-  var queuedMessages = emitter.queues[token].queue
 
   function sendProgress (data) {
     ws.send(data, function (err) {
@@ -92,16 +88,10 @@ wss.on('connection', function (ws) {
     })
   }
 
-  while (queuedMessages.length) {
-    sendProgress(...queuedMessages[0])
-    queuedMessages.splice(1)
-  }
-
+  emitter.emit(`connection:${token}`)
   emitter.on(token, sendProgress)
 
   ws.on('close', function () {
-    console.log('new socket connectio closed')
-    emitter.removeChannel(token)
     emitter.removeListener(token, sendProgress)
   })
 })

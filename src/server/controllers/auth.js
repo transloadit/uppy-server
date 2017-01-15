@@ -3,38 +3,19 @@
 var utils = require('../utils')
 var config = require('@purest/providers')
 
-function * auth (next) {
-  var providerName = this.params.providerName
+function auth (req, res) {
+  var providerName = req.params.providerName
 
-  if (!this.session[providerName] || !this.session[providerName].token) {
-    this.body = { authenticated: false }
-    // handle error
-    return
+  if (!req.session[providerName] || !req.session[providerName].token) {
+    return res.json({ authenticated: false })
   }
 
   var provider = utils.getProvider({ providerName, config })
-  var token = this.session[providerName].token
+  var token = req.session[providerName].token
 
-  yield new Promise((resolve, reject) => {
-    provider.list({
-      token: token
-    }, (err, res, body) => {
-      if (err) {
-        // handle error
-        console.log(err)
-        this.body = {
-          authenticated: false
-        }
-        return resolve()
-      }
-
-      this.status = 200
-      this.body = {
-        authenticated: true
-      }
-
-      resolve()
-    })
+  provider.list({token: token}, (err, response, body) => {
+    var notAuthenticated = Boolean(err)
+    return res.json({ authenticated: !notAuthenticated })
   })
 }
 

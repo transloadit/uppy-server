@@ -3,23 +3,17 @@
 var utils = require('../utils')
 var config = require('@purest/providers')
 
-function * list (next) {
-  var providerName = this.params.providerName
-  var token = this.session[providerName].token
+function list (req, res, next) {
+  var providerName = req.params.providerName
+  var token = req.session[providerName].token
 
   var provider = utils.getProvider({ providerName, config })
 
-  yield new Promise((resolve, reject) => {
-    provider.list({
-      token: token,
-      directory: this.params.id
-    }, (err, res, body) => {
-      if (err) {
-        // throw error
-      }
-      this.body = body
-      resolve()
-    })
+  provider.list({ token, directory: req.params.id }, (err, resp, body) => {
+    if (err) {
+      return next(err)
+    }
+    return res.json(body)
   })
 }
 

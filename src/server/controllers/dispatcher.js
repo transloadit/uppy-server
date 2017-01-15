@@ -12,32 +12,30 @@ var handlers = {
   logout: { self: require('./logout') }
 }
 
-function * routeDispatcher (next) {
-  if (!this.session || !this.request || !this.request.body) {
-    return yield next
+function routeDispatcher (req, res, next) {
+  if (!req.session || !req.body) {
+    return next()
   }
 
-  var action = this.params.action
-
-  if (!this.params.providerName || !handlers[action]) {
-    return yield next
-  }
-
+  var action = req.params.action
   var handler = handlers[action]
 
+  if (!req.params.providerName || !handler) {
+    return next()
+  }
+
   if (handler.requiresAuth) {
-    var providerName = this.params.providerName
-    if (!this.session[providerName] || !this.session[providerName].token) {
-      this.status = 401
-      return yield next
+    var providerName = req.params.providerName
+    if (!req.session[providerName] || !req.session[providerName].token) {
+      return res.sendStatus(401)
     }
   }
 
-  if (handler.requiresId && !this.params.id) {
-    return yield next
+  if (handler.requiresId && !req.params.id) {
+    return next()
   }
 
-  yield handler.self
+  return handler.self(req, res, next)
 }
 
 exports = module.exports = routeDispatcher

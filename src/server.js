@@ -1,72 +1,54 @@
-var koa = require('koa')
-var router = require('koa-router')()
-var session = require('koa-session')
-var cors = require('koa-cors')
-var mount = require('koa-mount')
-var bodyParser = require('koa-bodyparser')
-var Grant = require('grant-koa')
-var grant = new Grant(require('./config/grant'))
-var SocketServer = require('ws').Server
-var emitter = require('./WebsocketEmitter')
-var dispatcher = require('./server/controllers/dispatcher')
+var express = require('express')
+var uppy = require('./index')
+var helmet = require('helmet')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
+var expressValidator = require('express-validator')
 
 var PORT = 3020
 
-// Server setup
-var app = koa()
+var app = express()
 
-require('koa-qs')(app)
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(expressValidator())
+app.use(cookieParser())
 
-app.keys = ['grant']
-app.use(bodyParser())
-app.use(session(app))
-app.use(mount(grant))
-app.use(cors({
-  methods: 'GET,HEAD,PUT,POST,DELETE,OPTIONS',
-  origin: function (req) {
-    // You cannot allow multiple domains besides *
-    // http://stackoverflow.com/a/1850482/151666
-    // so we make it dynamic, depending on who is asking
-    var originWhiteList = [
-      process.env.UPPY_ENDPOINT
-    ]
-    var origin = req.header.origin
+// Use helmet to secure Express headers
+app.use(helmet.frameguard())
+app.use(helmet.xssFilter())
+app.use(helmet.noSniff())
+app.use(helmet.ieNoOpen())
+app.disable('x-powered-by')
 
-    if (origin) {
-      // Not everyone supplies an origin. Such as Pingdom
-      var originDomain = (origin + '').replace(/^https?:\/\//i, '')
-
-      if (originWhiteList.indexOf(originDomain) !== -1) {
-        return origin
-      }
-    }
-
-    return req.protocol + '://' + process.env.UPPY_ENDPOINT
-  },
-  credentials: true
-}))
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + process.env.UPPY_ENDPOINT)
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, Content-Type, Accept')
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  next()
+})
 
 // Routes
-router.get('/', function * (next) {
-  this.body = [
+app.get('/', function (req, res) {
+  res.setHeader('Content-Type', 'text/plain')
+  res.send([
     'Welcome to Uppy Server',
     '======================',
     ''
-  ].join('\n')
+  ].join('\n'))
 })
-router.get('/:providerName/:action', dispatcher)
-router.get('/:providerName/:action/:id', dispatcher)
-router.post('/:providerName/:action', dispatcher)
-router.post('/:providerName/:action/:id', dispatcher)
 
-app.use(router.routes())
+app.use(uppy.app())
 
-app.use(function * notFound (next) {
-  yield next
+app.use(function (req, res, next) {
+  var err = new Error('Not Found')
+  err.status = 404
+  next(err)
+})
 
-  if (this.status !== 404) return
-
-  this.status = 404
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500).json({message: err.message, error: err})
 })
 
 console.log('Welcome to Uppy Server!')
@@ -74,24 +56,4 @@ console.log('Listening on http://0.0.0.0:' + PORT)
 
 var server = app.listen(PORT)
 
-var wss = new SocketServer({
-  server: server
-})
-
-wss.on('connection', function (ws) {
-  var fullPath = ws.upgradeReq.url
-  var token = fullPath.replace(/\/api\//, '')
-
-  function sendProgress (data) {
-    ws.send(data, function (err) {
-      if (err) console.log('Error: ' + err)
-    })
-  }
-
-  emitter.emit(`connection:${token}`)
-  emitter.on(token, sendProgress)
-
-  ws.on('close', function () {
-    emitter.removeListener(token, sendProgress)
-  })
-})
+uppy.socket(server)

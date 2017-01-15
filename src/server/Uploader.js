@@ -4,7 +4,7 @@ var http = require('http')
 var path = require('path')
 var tus = require('tus-js-client')
 var generateUUID = require('./utils').generateUUID
-var emitter = require('../WebsocketEmitter')
+var emitter = require('./WebsocketEmitter')
 
 function Uploader (options) {
   var uploader = Object.create(Uploader.prototype)
@@ -77,10 +77,7 @@ Uploader.prototype.upload = function (options) {
         upload.start()
       })
 
-      this.emit('finish', {
-        body: { token },
-        status: 200
-      })
+      this.emit('finish', { token })
       return
     }
 

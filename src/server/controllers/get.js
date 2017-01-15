@@ -4,33 +4,24 @@ var utils = require('../utils')
 var config = require('@purest/providers')
 var Uploader = require('../Uploader')
 
-function * get (next) {
-  var providerName = this.params.providerName
-  var id = this.params.id
-  var body = this.request.body
+function get (req, res) {
+  var providerName = req.params.providerName
+  var id = req.params.id
+  var body = req.body
   var endpoint = body.endpoint
   var protocol = body.protocol
-  var token = this.session[providerName] ? this.session[providerName].token : body.token
-
-  // config for keys and stuff somewhere here, maybe
-
+  var token = req.session[providerName] ? req.session[providerName].token : body.token
   var provider = utils.getProvider({ providerName, config })
-  var uploader = new Uploader({
-    endpoint: endpoint,
-    protocol: protocol
+  var uploader = new Uploader({ endpoint, protocol })
+
+  uploader.on('finish', (data) => {
+    return res.json(Object.assign(this, data))
   })
 
-  yield new Promise((resolve, reject) => {
-    uploader.on('finish', (data) => {
-      // add response data (body, status, etc) to 'this' context
-      resolve(Object.assign(this, data))
+  provider.download({ id, token })
+    .then((response) => {
+      response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + encodeURIComponent(id) }))
     })
-
-    provider.download({ id, token })
-      .then((response) => {
-        response.pipe(uploader.upload({ path: process.env.UPPYSERVER_DATADIR + '/' + encodeURIComponent(id) }))
-      })
-  })
 }
 
 exports = module.exports = get

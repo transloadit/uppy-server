@@ -24,9 +24,8 @@ Uploader.prototype.upload = function (options) {
   writer.on('finish', () => {
     if (!this.options.endpoint) {
       this.emit('finish', {
-        body: 'no endpoint',
-        status: 200,
-        statusText: 'File written to uppy server local storage'
+        body: 'No endpoint, file written to uppy server local storage',
+        status: 200
       })
       return
     }
@@ -77,13 +76,13 @@ Uploader.prototype.upload = function (options) {
         upload.start()
       })
 
-      this.emit('finish', { token })
+      this.emit('finish', { body: { token }, status: 200 })
       return
     }
 
     fs.readFile(fpath, (err, data) => {
       if (err) {
-        return this.emit('finish', { body: err })
+        return this.emit('finish', { body: err, status: 500 })
       }
 
       var req = http.request({

@@ -15,7 +15,7 @@ function get (req, res) {
   var uploader = new Uploader({ endpoint, protocol })
 
   uploader.on('finish', (data) => {
-    return res.json(Object.assign(this, data))
+    return res.status(data.status).json(data.body)
   })
 
   provider.download({ id, token })

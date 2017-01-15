@@ -22,8 +22,11 @@ app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
 app.use((req, res, next) => {
-  var protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
+  var protocol = req.protocol
 
+  if (req.headers.origin) {
+    protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
+  }
   res.setHeader('Access-Control-Allow-Origin', protocol + '://' + process.env.UPPY_ENDPOINT)
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, Content-Type, Accept')

@@ -21,7 +21,7 @@ app.use(helmet.noSniff())
 app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + process.env.UPPY_ENDPOINT)
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, Content-Type, Accept')
@@ -30,7 +30,7 @@ app.use(function (req, res, next) {
 })
 
 // Routes
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/plain')
   res.send([
     'Welcome to Uppy Server',
@@ -41,13 +41,13 @@ app.get('/', function (req, res) {
 
 app.use(uppy.app())
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   var err = new Error('Not Found')
   err.status = 404
   next(err)
 })
 
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   res.status(err.status || 500).json({message: err.message, error: err})
 })
 

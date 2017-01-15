@@ -6,7 +6,7 @@ var dispatcher = require('./server/controllers/dispatcher')
 var SocketServer = require('ws').Server
 var emitter = require('./server/WebsocketEmitter')
 
-module.exports.app = function () {
+module.exports.app = () => {
   var app = express()
   app.use(session({
     secret: 'grant',
@@ -23,23 +23,23 @@ module.exports.app = function () {
   return app
 }
 
-module.exports.socket = function (server) {
+module.exports.socket = (server) => {
   var wss = new SocketServer({server: server})
 
-  wss.on('connection', function (ws) {
+  wss.on('connection', (ws) => {
     var fullPath = ws.upgradeReq.url
     var token = fullPath.replace(/\/api\//, '')
 
     function sendProgress (data) {
-      ws.send(data, function (err) {
-        if (err) console.log('Error: ' + err)
+      ws.send(data, (err) => {
+        if (err) console.log(`Error: ${err}`)
       })
     }
 
     emitter.emit(`connection:${token}`)
     emitter.on(token, sendProgress)
 
-    ws.on('close', function () {
+    ws.on('close', () => {
       emitter.removeListener(token, sendProgress)
     })
   })

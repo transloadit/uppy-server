@@ -15,7 +15,7 @@ cp env.example.sh env.sh
 $EDITOR env.sh
 ```
 
-## Run
+## Run as standalone server
 
 For local development:
 
@@ -39,6 +39,31 @@ An example server is running at http://server.uppy.io, which is deployed via
 All the secrets are stored in `env.infra.sh`, so using `env.infra.example.sh`, you could
 use the same Freyfile but target a different cloud vendor with different secrets, and run your own
 uppy-server.
+
+## Plug to already existing server
+
+```javascript
+
+var express = require('express')
+var bodyParser = require('body-parser')
+var uppy = require('uppy-server')
+
+var app = express()
+app.use(bodyParser.json())
+...
+app.use(uppy.app())
+
+```
+
+To enable uppy socket for realtime feed to the client while upload is going on, you call the `socket` method like so.
+
+```javascript
+...
+var server = app.listen(PORT)
+
+uppy.socket(server)
+
+```
 
 ## Logging
 

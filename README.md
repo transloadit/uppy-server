@@ -51,6 +51,7 @@ var uppy = require('uppy-server')
 var app = express()
 app.use(bodyParser.json())
 ...
+// be sure to place this anywhere after app.use(bodyParser.json())
 app.use(uppy.app())
 
 ```

@@ -1,7 +1,7 @@
-var fs = require('fs')
-var path = require('path')
-var request = require('request')
-var purest = require('purest')({ request })
+const fs = require('fs')
+const path = require('path')
+const request = require('request')
+const purest = require('purest')({ request })
 
 class DropBox {
   constructor (options) {
@@ -13,32 +13,35 @@ class DropBox {
     return this.stats(options, done)
   }
 
-  stats (options, done) {
-    this.client.query()
-      .select('metadata/auto/' + (options.directory || ''))
-      .where(options.query)
-      .auth(options.token)
+  stats ({ directory, query, token }, done) {
+    this.client
+      .query()
+      .select(`metadata/auto/${directory || ''}`)
+      .where(query)
+      .auth(token)
       .request(done)
   }
 
   upload (options, done) {
-    var name = options.name || path.basename(options.path)
+    const name = options.name || path.basename(options.path)
 
-    var request = this.client.query('files')
-      .put('files_put/auto/' + name)
+    const request = this.client
+      .query('files')
+      .put(`files_put/auto/${name}`)
       .auth(options.token)
       .request(done)
 
-    return (options.name)
+    return options.name
       ? request
       : fs.createReadStream(options.path).pipe(request)
   }
 
-  download (options, done) {
+  download ({ id, token }, done) {
     return new Promise((resolve, reject) => {
-      this.client.query('files')
-        .get('files/auto/' + options.id)
-        .auth(options.token)
+      this.client
+        .query('files')
+        .get(`files/auto/${id}`)
+        .auth(token)
         .request()
         .on('response', (response) => {
           response.pause()

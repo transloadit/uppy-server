@@ -1,20 +1,18 @@
-'use strict'
+const utils = require('../utils')
+const config = require('@purest/providers')
 
-var utils = require('../utils')
-var config = require('@purest/providers')
+function auth ({ params, session }, res) {
+  const providerName = params.providerName
 
-function auth (req, res) {
-  var providerName = req.params.providerName
-
-  if (!req.session[providerName] || !req.session[providerName].token) {
+  if (!session[providerName] || !session[providerName].token) {
     return res.json({ authenticated: false })
   }
 
-  var provider = utils.getProvider({ providerName, config })
-  var token = req.session[providerName].token
+  const provider = utils.getProvider({ providerName, config })
+  const token = session[providerName].token
 
-  provider.list({token: token}, (err, response, body) => {
-    var notAuthenticated = Boolean(err)
+  provider.list({ token }, (err, response, body) => {
+    const notAuthenticated = Boolean(err)
     return res.json({ authenticated: !notAuthenticated })
   })
 }

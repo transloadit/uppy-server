@@ -1,18 +1,14 @@
-var express = require('express')
-var session = require('express-session')
-var Grant = require('grant-express')
-var grant = new Grant(require('./config/grant'))
-var dispatcher = require('./server/controllers/dispatcher')
-var SocketServer = require('ws').Server
-var emitter = require('./server/WebsocketEmitter')
+const express = require('express')
+const session = require('express-session')
+const Grant = require('grant-express')
+const grant = new Grant(require('./config/grant'))
+const dispatcher = require('./server/controllers/dispatcher')
+const SocketServer = require('ws').Server
+const emitter = require('./server/WebsocketEmitter')
 
 module.exports.app = () => {
-  var app = express()
-  app.use(session({
-    secret: 'grant',
-    resave: true,
-    saveUninitialized: true
-  }))
+  const app = express()
+  app.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
   app.use(grant)
 
   app.get('/:providerName/:action', dispatcher)
@@ -24,15 +20,17 @@ module.exports.app = () => {
 }
 
 module.exports.socket = (server) => {
-  var wss = new SocketServer({server: server})
+  const wss = new SocketServer({ server })
 
   wss.on('connection', (ws) => {
-    var fullPath = ws.upgradeReq.url
-    var token = fullPath.replace(/\/api\//, '')
+    const fullPath = ws.upgradeReq.url
+    const token = fullPath.replace(/\/api\//, '')
 
     function sendProgress (data) {
       ws.send(data, (err) => {
-        if (err) console.log(`Error: ${err}`)
+        if (err) {
+          console.log(`Error: ${err}`)
+        }
       })
     }
 

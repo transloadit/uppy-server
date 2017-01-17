@@ -1,8 +1,8 @@
-var fs = require('fs')
-var path = require('path')
-var request = require('request')
-var purest = require('purest')({ request })
-var mime = require('mime-types').lookup
+const fs = require('fs')
+const path = require('path')
+const request = require('request')
+const purest = require('purest')({ request })
+const mime = require('mime-types').lookup
 
 class Drive {
   constructor (options) {
@@ -13,27 +13,26 @@ class Drive {
   }
 
   list (options, done) {
-    var directory = options.directory || 'root'
-    var trashed = options.trashed || false
+    const directory = options.directory || 'root'
+    const trashed = options.trashed || false
 
-    return this.client.query()
+    return this.client
+      .query()
       .get('files')
       .where({ q: `'${directory}' in parents and trashed=${trashed}` })
       .auth(options.token)
       .request(done)
   }
 
-  stats (options, done) {
-    return this.client.query()
-      .get('files/' + options.id)
-      .auth(options.token)
-      .request()
+  stats ({ id, token }, done) {
+    return this.client.query().get(`files/${id}`).auth(token).request()
   }
 
   upload (options, done) {
-    return this.client.query('upload-drive')
+    return this.client
+      .query('upload-drive')
       .update('files')
-      .where({uploadType: 'multipart'})
+      .where({ uploadType: 'multipart' })
       .upload([
         {
           'Content-Type': 'application/json',
@@ -48,12 +47,13 @@ class Drive {
       .request(done)
   }
 
-  download (options) {
+  download ({ id, token }) {
     return new Promise((resolve, reject) => {
-      this.client.query()
-        .get('files/' + options.id)
+      this.client
+        .query()
+        .get(`files/${id}`)
         .where({ alt: 'media' })
-        .auth(options.token)
+        .auth(token)
         .request()
         .on('response', (response) => {
           response.pause()

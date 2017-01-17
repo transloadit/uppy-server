@@ -1,13 +1,7 @@
-'use strict'
-
-var handlers = {
+const handlers = {
   auth: { self: require('./auth') },
   callback: { self: require('./callback') },
-  get: {
-    self: require('./get'),
-    requiresAuth: true,
-    requiresId: true
-  },
+  get: { self: require('./get'), requiresAuth: true, requiresId: true },
   list: { self: require('./list'), requiresAuth: true },
   logout: { self: require('./logout') }
 }
@@ -17,15 +11,15 @@ function routeDispatcher (req, res, next) {
     return next()
   }
 
-  var action = req.params.action
-  var handler = handlers[action]
+  const action = req.params.action
+  const handler = handlers[action]
 
   if (!req.params.providerName || !handler) {
     return next()
   }
 
   if (handler.requiresAuth) {
-    var providerName = req.params.providerName
+    const providerName = req.params.providerName
     if (!req.session[providerName] || !req.session[providerName].token) {
       return res.sendStatus(401)
     }

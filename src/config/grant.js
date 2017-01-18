@@ -1,5 +1,5 @@
 module.exports = {
-  server: { host: process.env.UPPYSERVER_DOMAIN, protocol: 'http' },
+  server: { host: process.env.UPPYSERVER_DOMAIN, protocol: process.env.UPPYSERVER_PROTOCOL },
   google: {
     key: process.env.UPPYSERVER_GOOGLE_KEY,
     secret: process.env.UPPYSERVER_GOOGLE_SECRET,

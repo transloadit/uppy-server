@@ -4,7 +4,7 @@
  * such as the Google Drive 'get' controller, along to the client.
  */
 
-var EventEmitter = require('events').EventEmitter
-var emitter = new EventEmitter()
+const EventEmitter = require('events').EventEmitter
+const emitter = new EventEmitter()
 
 module.exports = emitter

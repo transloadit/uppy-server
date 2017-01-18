@@ -1,15 +1,13 @@
-'use strict'
+const utils = require('../utils')
+const config = require('@purest/providers')
 
-var utils = require('../utils')
-var config = require('@purest/providers')
+function list ({ params, session }, res, next) {
+  const providerName = params.providerName
+  const token = session[providerName].token
 
-function list (req, res, next) {
-  var providerName = req.params.providerName
-  var token = req.session[providerName].token
+  const provider = utils.getProvider({ providerName, config })
 
-  var provider = utils.getProvider({ providerName, config })
-
-  provider.list({ token, directory: req.params.id }, (err, resp, body) => {
+  provider.list({ token, directory: params.id }, (err, resp, body) => {
     if (err) {
       return next(err)
     }

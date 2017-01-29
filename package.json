@@ -1,8 +1,8 @@
 {
   "name": "uppy-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Almost as cute as a Puppy :dog:",
-  "main": "server.js",
+  "main": "lib/index.js",
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
@@ -44,7 +44,6 @@
   "files": [
     "lib/"
   ],
-  "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",

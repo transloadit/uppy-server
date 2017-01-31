@@ -110,7 +110,24 @@ install {
     }
     roles {
       role        = "{{{init.paths.roles_dir}}}/apt/1.4.0"
-      apt_install = ["apg", "build-essential", "curl", "git-core", "htop", "iotop", "libpcre3", "logtail", "mlocate", "mtr", "mysql-client", "nginx-light", "psmisc", "telnet", "vim", "wget"]
+      apt_install = [
+        "apg",
+        "build-essential",
+        "curl",
+        "git-core",
+        "htop",
+        "iotop",
+        "libpcre3",
+        "logtail",
+        "mlocate",
+        "mtr",
+        "mysql-client",
+        "nginx-light",
+        "psmisc",
+        "telnet",
+        "vim",
+        "wget"
+      ]
     }
     roles {
       role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.3.1"
@@ -161,9 +178,8 @@ setup {
         }
       }
     }
-    tasks {
-      name     = "uppy-server | Set hostname"
-      hostname = "name={{lookup('env', 'FREY_DOMAIN')}}"
+    roles {
+      role = "{{{init.paths.roles_dir}}}/fqdn/1.2.1"
     }
     tasks {
       name = "uppy-server | Create uppy data dir"
@@ -282,10 +298,8 @@ deploy {
       role                          = "{{{init.paths.roles_dir}}}/deploy/2.0.0"
       ansistrano_deploy_from        = "{{{init.cliargs.projectDir}}}/.."
       ansistrano_deploy_to          = "/srv/uppy-server"
-      ansistrano_shared_paths       = ["logs"]
       ansistrano_deploy_via         = "rsync"
       ansistrano_rsync_extra_params = "--exclude=.git* --exclude=.DS_Store --exclude=env.* --exclude=node_modules"
-      ansistrano_keep_releases      = 10
     }
     tasks {
       name = "uppy-server | Create and chown shared log dir"

@@ -8,7 +8,7 @@ apt_upgrade: false
 apt_dpkg_configure: true
 apt_install_state: present
 apt_clean: true
-apt_autoremove: true
+apt_autoremove: false
 
 # ansistrano roles
 ansistrano_shared_paths:
@@ -24,3 +24,11 @@ ansistrano_remove_rolled_back: no
 # fqdn
 fqdn: "{{ lookup('env', 'FREY_DOMAIN') }}"
 hostname: "{{ fqdn.split('.')[0] }}"
+
+# nodejs
+nodejs_yarn: false
+nodejs_npm_global_packages:
+  - name: yarn
+
+# unattended-upgrades
+unattended_remove_unused_dependencies: true

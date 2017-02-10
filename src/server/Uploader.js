@@ -53,12 +53,11 @@ class Uploader extends EventEmitter {
             emitter.emit(token, emitData)
           },
           onSuccess () {
-            console.log('Upload finished:', upload.url)
             emitter.emit(
               token,
               JSON.stringify({
-                action: 'progress',
-                payload: { complete: true }
+                action: 'success',
+                payload: { complete: true, url: upload.url }
               })
             )
           }

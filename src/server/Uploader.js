@@ -67,6 +67,14 @@ class Uploader extends EventEmitter {
           upload.start()
         })
 
+        emitter.on(`pause:${token}`, () => {
+          upload.abort()
+        })
+
+        emitter.on(`resume:${token}`, () => {
+          upload.start()
+        })
+
         this.emit('finish', { body: { token }, status: 200 })
         return
       }

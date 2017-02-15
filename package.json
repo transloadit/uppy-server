@@ -37,7 +37,7 @@
     "mime-types": "2.1.12",
     "purest": "3.0.0",
     "request": "2.75.0",
-    "tus-js-client": "1.4.1",
+    "tus-js-client": "tus/tus-js-client#412cb4692038e3545ff6f358782648ade228d4e2",
     "uuid": "2.0.2",
     "ws": "1.1.1"
   },

@@ -37,6 +37,11 @@ module.exports.socket = (server) => {
     emitter.emit(`connection:${token}`)
     emitter.on(token, sendProgress)
 
+    ws.on('message', (jsonData) => {
+      const data = JSON.parse(jsonData)
+      emitter.emit(`${data.action}:${token}`)
+    })
+
     ws.on('close', () => {
       emitter.removeListener(token, sendProgress)
     })

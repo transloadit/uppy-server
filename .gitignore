@@ -31,8 +31,7 @@ config/auth.js
 
 Frey-residu-*
 *.pem
-env.sh
-env.infra.sh
+env.*
 
 output/
 .DS_Store

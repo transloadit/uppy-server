@@ -154,8 +154,11 @@ setup {
     hosts = "uppy-server"
     name  = "Setup uppy-server"
     roles {
-      role           = "{{{init.paths.roles_dir}}}/nodejs/3.0.0"
-      nodejs_version = "4.x"
+      role           = "{{{init.paths.roles_dir}}}/nodejs/4.0.0"
+      nodejs_version = "nodejs-v6x"
+    }
+    roles {
+      role = "{{{init.paths.roles_dir}}}/yarn/1.0.3"
     }
     roles {
       role                  = "{{{init.paths.roles_dir}}}/upstart/1.0.0"

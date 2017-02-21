@@ -22,14 +22,18 @@ app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
 app.use((req, res, next) => {
-  let protocol = req.protocol
+  // let protocol = req.protocol
 
-  if (req.headers.origin) {
-    protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
-  }
+  // if (req.headers.origin) {
+  //   protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
+  // }
+  // res.setHeader(
+  //   'Access-Control-Allow-Origin',
+  //   `${protocol}://${process.env.UPPY_ENDPOINT}`
+  // )
   res.setHeader(
     'Access-Control-Allow-Origin',
-    `${protocol}://${process.env.UPPY_ENDPOINT}`
+    '*'
   )
   res.setHeader(
     'Access-Control-Allow-Methods',

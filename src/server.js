@@ -28,7 +28,7 @@ app.use((req, res, next) => {
     protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
   }
 
-  if (req.headers.origin.startsWith('http://localhost:')) {
+  if (req.headers.origin && req.headers.origin.startsWith('http://localhost:')) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3452')
   } else {
     res.setHeader(

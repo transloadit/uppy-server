@@ -22,19 +22,17 @@ app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
 app.use((req, res, next) => {
-  let protocol = req.protocol
+  const protocol = process.env.UPPYSERVER_PROTOCOL
+  const whitelist = [
+    'http://localhost:3452',
+    `${protocol}://${process.env.UPPY_ENDPOINT}`,
+    `${protocol}://codepen.io`
+  ]
 
-  if (req.headers.origin) {
-    protocol = req.headers.origin.startsWith('https') ? 'https' : 'http'
-  }
-
-  if (req.headers.origin && req.headers.origin.startsWith('http://localhost:')) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3452')
+  if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
   } else {
-    res.setHeader(
-      'Access-Control-Allow-Origin',
-      `${protocol}://${process.env.UPPY_ENDPOINT}`
-    )
+    res.setHeader('Access-Control-Allow-Origin', `${protocol}://${process.env.UPPY_ENDPOINT}`)
   }
   res.setHeader(
     'Access-Control-Allow-Methods',

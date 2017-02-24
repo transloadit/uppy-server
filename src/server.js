@@ -26,7 +26,8 @@ app.use((req, res, next) => {
   const whitelist = [
     'http://localhost:3452',
     `${protocol}://${process.env.UPPY_ENDPOINT}`,
-    `${protocol}://codepen.io`
+    `${protocol}://codepen.io`,
+    `${protocol}://s.codepen.io`
   ]
 
   if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {

@@ -132,6 +132,12 @@ install {
     roles {
       role = "{{{init.paths.roles_dir}}}/unattended-upgrades/1.3.1"
     }
+    roles {
+      role = "{{{init.paths.roles_dir}}}/fqdn/1.2.1"
+    }
+    roles {
+      role = "{{{init.paths.roles_dir}}}/timezone/1.0.0"
+    }
     tasks {
       name = "Common | Add convenience shortcut wtf"
       lineinfile {
@@ -180,9 +186,6 @@ setup {
           logpath = "{{{config.global.approot}}}/shared/logs/{{{config.global.appname}}}.log"
         }
       }
-    }
-    roles {
-      role = "{{{init.paths.roles_dir}}}/fqdn/1.2.1"
     }
     tasks {
       name = "uppy-server | Create uppy data dir"

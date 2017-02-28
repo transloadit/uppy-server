@@ -51,7 +51,7 @@ class Uploader extends EventEmitter {
             })
 
             // avoid flooding the client with progress events.
-            if (Math.floor(percentage) % 2 === 0) emitter.emit(token, emitData)
+            if (Math.round(percentage) % 2 === 0) emitter.emit(token, emitData)
           },
           onSuccess () {
             emitter.emit(

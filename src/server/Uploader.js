@@ -32,6 +32,7 @@ class Uploader extends EventEmitter {
 
         const file = fs.createReadStream(fpath)
         const size = fs.statSync(fpath).size
+        let emittedProgress = 0
 
         const upload = new tus.Upload(file, {
           endpoint: this.options.endpoint,
@@ -51,7 +52,11 @@ class Uploader extends EventEmitter {
             })
 
             // avoid flooding the client with progress events.
-            if (Math.round(percentage) % 2 === 0) emitter.emit(token, emitData)
+            const roundedPercentage = Math.round(percentage)
+            if (emittedProgress !== roundedPercentage) {
+              emittedProgress = roundedPercentage
+              emitter.emit(token, emitData)
+            }
           },
           onSuccess () {
             emitter.emit(

@@ -50,7 +50,8 @@ class Uploader extends EventEmitter {
               payload: { progress: percentage, bytesUploaded, bytesTotal }
             })
 
-            emitter.emit(token, emitData)
+            // avoid flooding the client with progress events.
+            if (Math.floor(percentage) % 2 === 0) emitter.emit(token, emitData)
           },
           onSuccess () {
             emitter.emit(

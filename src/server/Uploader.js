@@ -52,7 +52,7 @@ class Uploader extends EventEmitter {
             })
 
             // avoid flooding the client with progress events.
-            const roundedPercentage = Math.round(percentage)
+            const roundedPercentage = Math.floor(percentage)
             if (emittedProgress !== roundedPercentage) {
               emittedProgress = roundedPercentage
               emitter.emit(token, emitData)

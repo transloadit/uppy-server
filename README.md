@@ -81,3 +81,7 @@ npm run logtail
 ```
 
 This requires at least the `FREY_ENCRYPTION_SECRET` key present in your `./env.sh`.
+
+## Changelog
+
+Uppy-server's changelog is merged together with uppy client's changelog [here](https://github.com/transloadit/uppy/blob/master/CHANGELOG.md)

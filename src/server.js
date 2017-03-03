@@ -24,7 +24,6 @@ app.disable('x-powered-by')
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL
   const whitelist = [
-    'http://localhost:3452',
     `${protocol}://${process.env.UPPY_ENDPOINT}`,
     `${protocol}://codepen.io`,
     `${protocol}://s.codepen.io`

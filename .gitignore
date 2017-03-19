@@ -33,8 +33,7 @@ Frey-residu-*
 *.pem
 env.*
 
-output/
-test/output/
+output/*
 !test/output/.keep
 .DS_Store
 

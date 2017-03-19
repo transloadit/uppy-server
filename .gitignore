@@ -35,6 +35,7 @@ env.*
 
 output/
 test/output/
+!test/output/.keep
 .DS_Store
 
 # Transpiled

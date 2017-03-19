@@ -1,4 +1,6 @@
 {
   "testEnvironment": "node",
-  "automock": false
+  "automock": false,
+  "collectCoverage": true,
+  "collectCoverageFrom": ["src/**"]
 }

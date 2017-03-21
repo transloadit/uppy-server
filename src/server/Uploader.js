@@ -66,6 +66,8 @@ class Uploader extends EventEmitter {
                 payload: { complete: true, url: upload.url }
               })
             )
+
+            fs.unlink(fpath)
           }
         })
 

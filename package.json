@@ -47,6 +47,12 @@
   "files": [
     "lib/"
   ],
+  "jest": {
+    "testEnvironment": "node",
+    "automock": false,
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/**"]
+  },
   "scripts": {
     "build": "babel src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
@@ -67,6 +73,7 @@
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
     "start:production": "node ./lib/start-standalone.js",
     "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
-    "test": "npm run lint && env UPPYSERVER_DATADIR=./test/output jest --config=test/conf.json"
+    "test": "npm run lint && env UPPYSERVER_DATADIR=./test/output jest",
+    "test:watch": "npm test -- --watch"
   }
 }

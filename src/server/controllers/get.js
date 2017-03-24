@@ -19,7 +19,9 @@ function get (req, res) {
     path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`
   })
 
-  provider.download({ id, token }, uploader.handleChunk.bind(uploader))
+  uploader.onSocketReady(() => {
+    provider.download({ id, token }, uploader.handleChunk.bind(uploader))
+  })
   const response = uploader.getResponse()
   return res.status(response.status).json(response.body)
 }

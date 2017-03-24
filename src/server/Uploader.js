@@ -12,6 +12,12 @@ class Uploader {
     this.token = generateUUID()
   }
 
+  onSocketReady (callback) {
+    emitter.on(`connection:${this.token}`, () => {
+      callback()
+    })
+  }
+
   handleChunk (chunk) {
     this.writer.write(chunk, () => {
       if (!this.options.endpoint) {

@@ -67,7 +67,7 @@ class Uploader {
           emitter.emit(uploader.token, emitData)
         }
       },
-      onChunkComplete (bytesUploaded, bytesTotal) {
+      onChunkComplete (chunkSize, bytesUploaded, bytesTotal) {
         uploader.tus.options.chunkSize = uploader.writer.bytesWritten - bytesUploaded
       },
       onSuccess () {

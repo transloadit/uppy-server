@@ -2587,7 +2587,7 @@ lodash.restparam@^3.0.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
 
-lodash@4.17.4:
+lodash@4.17.4, lodash@^4.14.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -2595,7 +2595,7 @@ lodash@4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.6.1.tgz#df00c1164ad236b183cfc3887a5e8d38cc63cbbc"
 
-lodash@^4.0.0, lodash@^4.14.0, lodash@^4.16.0, lodash@^4.2.0, lodash@^4.3.0:
+lodash@^4.0.0, lodash@^4.16.0, lodash@^4.2.0, lodash@^4.3.0:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.4.tgz#01ce306b9bad1319f2a5528674f88297aeb70127"
 
@@ -2933,13 +2933,9 @@ ora@^0.2.3:
     cli-spinners "^0.1.2"
     object-assign "^4.0.1"
 
-os-homedir@1.0.1:
+os-homedir@1.0.1, os-homedir@^1.0.0, os-homedir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.1.tgz#0d62bdf44b916fd3bbdcf2cab191948fb094f007"
-
-os-homedir@^1.0.0, os-homedir@^1.0.1:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
 
 os-locale@^1.4.0:
   version "1.4.0"
@@ -3466,11 +3462,11 @@ semver-diff@^2.0.0:
   dependencies:
     semver "^5.0.3"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.3, semver@^5.1.0, semver@~5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.1.0, semver@~5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
 
-semver@5.1.0:
+semver@5.1.0, semver@^5.0.3:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.1.0.tgz#85f2cf8550465c4df000cf7d86f6b054106ab9e5"
 
@@ -3762,9 +3758,9 @@ tunnel-agent@~0.4.1:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.4.3.tgz#6373db76909fe570e08d73583365ed828a74eeeb"
 
-tus-js-client@tus/tus-js-client#412cb4692038e3545ff6f358782648ade228d4e2:
-  version "1.4.2"
-  resolved "https://codeload.github.com/tus/tus-js-client/tar.gz/412cb4692038e3545ff6f358782648ade228d4e2"
+tus-js-client@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/tus-js-client/-/tus-js-client-1.4.3.tgz#e43375e9a1a42b6fa8da96cf59ab38bea40bc1d9"
   dependencies:
     extend "^3.0.0"
     resolve-url "^0.2.1"

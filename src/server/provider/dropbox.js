@@ -36,21 +36,16 @@ class DropBox {
       : fs.createReadStream(options.path).pipe(request)
   }
 
-  download ({ id, token }, done) {
-    return new Promise((resolve, reject) => {
-      this.client
-        .query('files')
-        .get(`files/auto/${id}`)
-        .auth(token)
-        .request()
-        .on('response', (response) => {
-          response.pause()
-          resolve(response)
-        })
-        .on('error', (err) => {
-          console.log('there was an error:', err)
-        })
-    })
+  download ({ id, token }, onData) {
+    return this.client
+      .query('files')
+      .get(`files/auto/${id}`)
+      .auth(token)
+      .request()
+      .on('data', onData)
+      .on('error', (err) => {
+        console.log('there was an error:', err)
+      })
   }
 }
 

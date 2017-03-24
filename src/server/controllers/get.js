@@ -12,19 +12,16 @@ function get (req, res) {
     ? req.session[providerName].token
     : body.token
   const provider = utils.getProvider({ providerName, config })
-  const uploader = new Uploader({ endpoint, protocol })
-
-  uploader.on('finish', (data) => {
-    return res.status(data.status).json(data.body)
+  const uploader = new Uploader({
+    endpoint,
+    protocol,
+    size: body.size,
+    path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`
   })
 
-  provider.download({ id, token }).then((response) => {
-    response.pipe(
-      uploader.upload({
-        path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`
-      })
-    )
-  })
+  provider.download({ id, token }, uploader.handleChunk.bind(uploader))
+  const response = uploader.getResponse()
+  return res.status(response.status).json(response.body)
 }
 
 exports = module.exports = get

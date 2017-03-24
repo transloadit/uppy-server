@@ -25,7 +25,7 @@ class Drive {
   }
 
   stats ({ id, token }, done) {
-    return this.client.query().get(`files/${id}`).auth(token).request()
+    return this.client.query().get(`files/${id}`).auth(token).request(done)
   }
 
   upload (options, done) {
@@ -47,22 +47,17 @@ class Drive {
       .request(done)
   }
 
-  download ({ id, token }) {
-    return new Promise((resolve, reject) => {
-      this.client
-        .query()
-        .get(`files/${id}`)
-        .where({ alt: 'media' })
-        .auth(token)
-        .request()
-        .on('response', (response) => {
-          response.pause()
-          resolve(response)
-        })
-        .on('error', (err) => {
-          console.log('there was an error:', err)
-        })
-    })
+  download ({ id, token }, onData) {
+    return this.client
+      .query()
+      .get(`files/${id}`)
+      .where({ alt: 'media' })
+      .auth(token)
+      .request()
+      .on('data', onData)
+      .on('error', (err) => {
+        console.log('there was an error:', err)
+      })
   }
 }
 

@@ -1,11 +1,9 @@
 const express = require('express')
-const uppy = require('./index')
+const uppy = require('./pluggable')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
-
-const PORT = 3020
 
 const app = express()
 
@@ -66,9 +64,4 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message, error: err })
 })
 
-console.log('Welcome to Uppy Server!')
-console.log(`Listening on http://0.0.0.0:${PORT}`)
-
-const server = app.listen(PORT)
-
-uppy.socket(server)
+module.exports = app

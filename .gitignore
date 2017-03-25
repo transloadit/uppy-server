@@ -33,7 +33,9 @@ Frey-residu-*
 *.pem
 env.*
 
-output/
+output/*
+test/output/*
+!test/output/.keep
 .DS_Store
 
 # Transpiled

@@ -2,7 +2,7 @@
   "name": "uppy-server",
   "version": "0.4.0",
   "description": "Almost as cute as a Puppy :dog:",
-  "main": "lib/index.js",
+  "main": "lib/pluggable.js",
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
@@ -12,6 +12,7 @@
   "pre-commit": "lint-staged",
   "devDependencies": {
     "babel-cli": "6.18.0",
+    "babel-jest": "19.0.0",
     "babel-preset-es2015": "6.18.0",
     "eslint": "2.4.0",
     "eslint-config-standard": "5.1.0",
@@ -19,21 +20,23 @@
     "eslint-plugin-standard": "1.3.2",
     "fakefile": "0.0.8",
     "frey": "0.3.31",
+    "jest": "19.0.2",
     "lint-staged": "3.2.1",
     "nodemon": "1.8.1",
-    "pre-commit": "1.1.3"
+    "pre-commit": "1.1.3",
+    "supertest": "3.0.0"
   },
   "dependencies": {
     "@purest/providers": "1.0.0",
     "atob": "2.0.3",
-    "body-parser": "^1.15.2",
+    "body-parser": "1.15.2",
     "commander": "2.9.0",
-    "cookie-parser": "^1.4.3",
-    "express": "^4.14.0",
-    "express-session": "^1.14.2",
-    "express-validator": "^3.1.2",
-    "grant-express": "^3.7.0",
-    "helmet": "^3.3.0",
+    "cookie-parser": "1.4.3",
+    "express": "4.14.0",
+    "express-session": "1.14.2",
+    "express-validator": "3.1.2",
+    "grant-express": "3.7.0",
+    "helmet": "3.3.0",
     "mime-types": "2.1.12",
     "purest": "3.0.0",
     "request": "2.75.0",
@@ -44,6 +47,12 @@
   "files": [
     "lib/"
   ],
+  "jest": {
+    "testEnvironment": "node",
+    "automock": false,
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/**"]
+  },
   "scripts": {
     "build": "babel src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
@@ -62,8 +71,9 @@
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "start:production": "node ./lib/server.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 nodemon ./src/server.js --exec babel-node'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:production": "node ./lib/start-standalone.js",
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
+    "test": "npm run lint && env UPPYSERVER_DATADIR=./test/output jest",
+    "test:watch": "npm test -- --watch"
   }
 }

@@ -2,6 +2,7 @@ const handlers = {
   auth: { self: require('./auth') },
   callback: { self: require('./callback') },
   get: { self: require('./get'), requiresAuth: true, requiresId: true },
+  thumbnail: { self: require('./thumbnail'), requiresAuth: true, requiresId: true },
   list: { self: require('./list'), requiresAuth: true },
   logout: { self: require('./logout') }
 }

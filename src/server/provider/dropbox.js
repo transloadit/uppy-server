@@ -47,6 +47,18 @@ class DropBox {
         console.log('there was an error:', err)
       })
   }
+
+  thumbnail ({id, token}, done) {
+    return this.client
+      .query('files')
+      .get(`thumbnails/auto/${id}`)
+      .auth(token)
+      .request()
+      .on('response', done)
+      .on('error', (err) => {
+        console.log('there was an error:', err)
+      })
+  }
 }
 
 exports = module.exports = DropBox

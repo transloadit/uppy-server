@@ -59,6 +59,15 @@ class Drive {
         console.log('there was an error:', err)
       })
   }
+
+  thumbnail ({id, token}, done) {
+    return this.stats({id, token}, (err, resp, body) => {
+      if (err) {
+        console.log('there was an error:', err)
+      }
+      done(body.thumbnailLink ? request(body.thumbnailLink) : null)
+    })
+  }
 }
 
 exports = module.exports = Drive

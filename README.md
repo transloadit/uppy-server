@@ -4,13 +4,16 @@
 
 [![Build Status](https://travis-ci.org/transloadit/uppy-server.svg?branch=master)](https://travis-ci.org/transloadit/uppy-server)
 
-Uppy-server is a server integration for [Uppy](https://github.com/transloadit/uppy) file uploader. It handles the server-to-server
-communication between your server and file storage providers such as Google Drive, Dropbox, Instagram, etc.
+Uppy-server is a server integration for [Uppy](https://github.com/transloadit/uppy) file uploader.
+
+It handles the server-to-server communication between your server and file storage providers such as Google Drive, Dropbox,
+Instagram, etc.
 
 As of now uppy-server is integrated to work with:
 
 - Google Drive
 - Dropbox
+- Local disk
 
 ## Install
 
@@ -44,6 +47,8 @@ export UPPYSERVER_DATADIR="PATH/TO/UPLOAD/DIRECTORY "
 ```
 
 ## Usage
+
+Please ensure that the required env varaibles are set before runnning/using uppy-server. [See](#configure).
 
 ### Plug to already existing server
 
@@ -84,8 +89,6 @@ directory
 npm run start:production
 ```
 
-Please ensure that the required env varaibles are set before runnning/using uppy-server. [See](#configure).
-
 ## Development
 
 1. To setup uppy-server for local development, please clone the repo and install like so:
@@ -94,12 +97,14 @@ Please ensure that the required env varaibles are set before runnning/using uppy
 git clone https://github.com/transloadit/uppy-server && cd upppy-server && npm install
 ```
 
+
 2. Configure your enviorment variables by copying the `env.example.sh` file to `env.sh` and edit it to its correct values.
 
 ```bash
 cp env.example.sh env.sh
 $EDITOR env.sh
 ```
+
 
 3. To start the server simply run:
 

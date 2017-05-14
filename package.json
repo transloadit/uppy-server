@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Almost as cute as a Puppy :dog:",
   "main": "lib/pluggable.js",
   "author": "Transloadit.com",
@@ -51,7 +51,9 @@
     "testEnvironment": "node",
     "automock": false,
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**"]
+    "collectCoverageFrom": [
+      "src/**"
+    ]
   },
   "scripts": {
     "build": "babel src --out-dir lib",

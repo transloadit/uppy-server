@@ -13,6 +13,7 @@ function get (req, res) {
   const uploader = new Uploader({
     endpoint: body.endpoint,
     protocol: body.protocol,
+    metadata: body.metadata,
     size: body.size,
     path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`
   })

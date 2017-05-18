@@ -44,6 +44,7 @@ class Uploader {
 
   uploadTus () {
     const fname = this.options.name || path.basename(this.options.path)
+    const metadata = Object.assign({ filename: fname }, this.options.metadata || {})
     const file = fs.createReadStream(this.options.path)
     const uploader = this
     let emittedProgress = 0
@@ -52,7 +53,7 @@ class Uploader {
       endpoint: this.options.endpoint,
       resume: true,
       uploadSize: this.options.size,
-      metadata: { filename: fname },
+      metadata,
       chunkSize: this.writer.bytesWritten,
       onError (error) {
         throw error

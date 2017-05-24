@@ -15,6 +15,7 @@ function get (req, res) {
     protocol: body.protocol,
     metadata: body.metadata,
     size: body.size,
+    fieldname: body.fieldname,
     path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`
   })
 

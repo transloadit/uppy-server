@@ -10,12 +10,11 @@ class Uploader {
     this.options = options
     this.writer = fs.createWriteStream(options.path)
     this.token = generateUUID()
+    this.emittedProgress = 0
   }
 
   onSocketReady (callback) {
-    emitter.on(`connection:${this.token}`, () => {
-      callback()
-    })
+    emitter.on(`connection:${this.token}`, () => callback())
   }
 
   handleChunk (chunk) {
@@ -42,12 +41,29 @@ class Uploader {
     return { body, status: 200 }
   }
 
+  emitProgress (bytesUploaded, bytesTotal) {
+    bytesTotal = bytesTotal || this.options.size
+    const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
+    console.log(bytesUploaded, bytesTotal, `${percentage}%`)
+
+    const emitData = JSON.stringify({
+      action: 'progress',
+      payload: { progress: percentage, bytesUploaded, bytesTotal }
+    })
+
+    // avoid flooding the client with progress events.
+    const roundedPercentage = Math.floor(percentage)
+    if (this.emittedProgress !== roundedPercentage) {
+      this.emittedProgress = roundedPercentage
+      emitter.emit(this.token, emitData)
+    }
+  }
+
   uploadTus () {
     const fname = this.options.name || path.basename(this.options.path)
     const metadata = Object.assign({ filename: fname }, this.options.metadata || {})
     const file = fs.createReadStream(this.options.path)
     const uploader = this
-    let emittedProgress = 0
 
     this.tus = new tus.Upload(file, {
       endpoint: this.options.endpoint,
@@ -59,20 +75,7 @@ class Uploader {
         throw error
       },
       onProgress (bytesUploaded, bytesTotal) {
-        const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
-        console.log(bytesUploaded, bytesTotal, `${percentage}%`)
-
-        const emitData = JSON.stringify({
-          action: 'progress',
-          payload: { progress: percentage, bytesUploaded, bytesTotal }
-        })
-
-        // avoid flooding the client with progress events.
-        const roundedPercentage = Math.floor(percentage)
-        if (emittedProgress !== roundedPercentage) {
-          emittedProgress = roundedPercentage
-          emitter.emit(uploader.token, emitData)
-        }
+        uploader.emitProgress(bytesUploaded, bytesTotal)
       },
       onChunkComplete (chunkSize, bytesUploaded, bytesTotal) {
         uploader.tus.options.chunkSize = uploader.writer.bytesWritten - bytesUploaded
@@ -102,33 +105,29 @@ class Uploader {
   }
 
   uploadMultipart () {
-    fs.readFile(this.options.path, (err, data) => {
-      if (err) {
-        // socket send error message
-        const emitData = JSON.stringify({
-          action: 'error',
-          payload: { error: 'bad file' }
-        })
+    const file = fs.createReadStream(this.options.path)
 
-        fs.unlink(this.options.path)
-        return emitter.emit(this.token, emitData)
+    // upload progress
+    let bytesUploaded = 0
+    file.on('data', (data) => {
+      bytesUploaded += data.length
+      this.emitProgress(bytesUploaded)
+    })
+
+    const formData = { [this.options.fieldname]: file }
+    request.post({ url: this.options.endpoint, formData }, (err, response, body) => {
+      let emitData = {}
+
+      if (err) {
+        emitData.action = 'error'
+        emitData.payload = { error: err }
+      } else {
+        emitData.action = 'success'
+        emitData.payload = { complete: true }
       }
 
-      // file key should be configurable
-      request.post({ url: this.options.endpoint, file: data }, (err, response, body) => {
-        let emitData = {}
-
-        if (err) {
-          emitData.action = 'error'
-          emitData.payload = { error: err }
-        } else {
-          emitData.action = 'success'
-          emitData.payload = { complete: true }
-        }
-
-        fs.unlink(this.options.path)
-        return emitter.emit(this.token, JSON.stringify(emitData))
-      })
+      fs.unlink(this.options.path)
+      return emitter.emit(this.token, JSON.stringify(emitData))
     })
   }
 }

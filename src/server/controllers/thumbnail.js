@@ -1,6 +1,3 @@
-const utils = require('../utils')
-const config = require('@purest/providers')
-
 function thumbnail (req, res) {
   const providerName = req.params.providerName
   const id = req.params.id
@@ -8,7 +5,7 @@ function thumbnail (req, res) {
   const token = req.session[providerName]
     ? req.session[providerName].token
     : body.token
-  const provider = utils.getProvider({ providerName, config })
+  const provider = req.uppyProvider
 
   provider.thumbnail({ id, token }, (response) => response ? response.pipe(res) : res.sendStatus(404))
 }

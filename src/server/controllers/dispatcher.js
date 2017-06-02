@@ -15,7 +15,7 @@ function routeDispatcher (req, res, next) {
   const action = req.params.action
   const handler = handlers[action]
 
-  if (!req.params.providerName || !handler) {
+  if (!req.params.providerName || !handler || !req.uppyProvider) {
     return next()
   }
 

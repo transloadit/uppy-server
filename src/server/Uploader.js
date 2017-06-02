@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const tus = require('tus-js-client')
-const generateUUID = require('./utils').generateUUID
+const uuid = require('uuid')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
 
@@ -9,7 +9,7 @@ class Uploader {
   constructor (options) {
     this.options = options
     this.writer = fs.createWriteStream(options.path)
-    this.token = generateUUID()
+    this.token = uuid.v4()
     this.emittedProgress = 0
   }
 

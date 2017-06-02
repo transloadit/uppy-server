@@ -1,14 +1,11 @@
-const utils = require('../utils')
-const config = require('@purest/providers')
-
-function auth ({ params, session }, res) {
+function auth ({ params, session, uppyProvider }, res) {
   const providerName = params.providerName
 
   if (!session[providerName] || !session[providerName].token) {
     return res.json({ authenticated: false })
   }
 
-  const provider = utils.getProvider({ providerName, config })
+  const provider = uppyProvider
   const token = session[providerName].token
 
   provider.list({ token }, (err, response, body) => {

@@ -1,20 +1,41 @@
 const express = require('express')
 const session = require('express-session')
 const Grant = require('grant-express')
-const grant = new Grant(require('./config/grant'))
+const grantConfig = require('./config/grant')
+const providerManager = require('./server/provider')
 const dispatcher = require('./server/controllers/dispatcher')
 const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
 
-module.exports.app = () => {
+const providers = providerManager.getDefaultProviders()
+
+/**
+ * @param {Object} options - configurations for the uppy app.
+ * Valid configuration options include:
+ *  customProviders - an object of the format:
+ *    {[providerName]: {
+ *        config: provider config,
+ *        module: provider module
+ *      }
+ *    }
+ * @return express js pluggagle app.
+ */
+module.exports.app = (options = {}) => {
+  const customProviders = options.customProviders
+  if (customProviders) {
+    providerManager.addCustomProviders(customProviders, providers, grantConfig)
+  }
+
   const app = express()
   app.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
-  app.use(grant)
+  app.use(new Grant(grantConfig))
 
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)
   app.post('/:providerName/:action', dispatcher)
   app.post('/:providerName/:action/:id', dispatcher)
+
+  app.param('providerName', providerManager.getProviderMiddleware(providers))
 
   return app
 }

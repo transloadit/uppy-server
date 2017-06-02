@@ -1,11 +1,8 @@
-const utils = require('../utils')
-const config = require('@purest/providers')
-
-function list ({ params, session }, res, next) {
+function list ({ params, session, uppyProvider }, res, next) {
   const providerName = params.providerName
   const token = session[providerName].token
 
-  const provider = utils.getProvider({ providerName, config })
+  const provider = uppyProvider
 
   provider.list({ token, directory: params.id }, (err, resp, body) => {
     if (err) {

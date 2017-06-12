@@ -89,7 +89,7 @@ directory
 npm run start:production
 ```
 
-## Adding Custom Providers
+### Adding Custom Providers
 
 As of now, uppy-server supports both Google Drive and Dropbox out of the box, but you may also 
 choose to add your custom providers. You can do this by passing the `customPrivders` option

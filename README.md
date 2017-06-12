@@ -89,6 +89,35 @@ directory
 npm run start:production
 ```
 
+## Adding Custom Providers
+
+As of now, uppy-server supports both Google Drive and Dropbox out of the box, but you may also 
+choose to add your custom providers. You can do this by passing the `customPrivders` option
+when calling the uppy `app` method.
+
+```javascript
+let options = {
+    customProviders: {
+        myprovidername: {
+            config: {
+                authorize_url: "https://mywebsite.com/authorize",
+                access_url: "https://mywebsite.com/token",
+                oauth: 2,
+                key: "[CLIENT_ID]",
+                secret: "[CLIENT_SECRET]",
+                scope: ["read", "write"]
+            },
+            module: require('/path/to/provider/module')
+        }
+    }
+}
+
+uppy.app(options)
+```
+
+The `customProviders` option should be an object containing each custom provider.
+Each custom provider would in turn be an object with two keys, `config` and `module`. The `config` option would contain Oauth API settings, while the `module` would point to the provider module.
+
 ## Development
 
 1. To setup uppy-server for local development, please clone the repo and install like so:

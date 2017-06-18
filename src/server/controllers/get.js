@@ -18,7 +18,9 @@ function get (req, res) {
   })
 
   uploader.onSocketReady(() => {
-    provider.download({ id, token }, uploader.handleChunk.bind(uploader))
+    provider.download({ id, token },
+    body.size ? uploader.handleChunk.bind(uploader) : null,
+    !body.size ? uploader.handleResponse.bind(uploader) : null)
   })
   const response = uploader.getResponse()
   return res.status(response.status).json(response.body)

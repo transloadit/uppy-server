@@ -13,5 +13,10 @@ module.exports = {
     key: process.env.UPPYSERVER_DROPBOX_KEY,
     secret: process.env.UPPYSERVER_DROPBOX_SECRET,
     callback: '/dropbox/callback'
+  },
+  instagram: {
+    key: process.env.UPPYSERVER_INSTAGRAM_KEY,
+    secret: process.env.UPPYSERVER_INSTAGRAM_SECRET,
+    callback: '/instagram/callback'
   }
 }

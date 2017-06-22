@@ -42,6 +42,7 @@
     "helmet": "3.3.0",
     "mime-types": "2.1.12",
     "morgan": "1.8.2",
+    "ms": "^2.0.0",
     "prom-client": "^10.0.2",
     "purest": "3.0.0",
     "request": "^2.81.0",

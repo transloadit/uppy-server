@@ -6,6 +6,7 @@ export DEBUG="frey:*"
 
 export FREY_DOMAIN="server.uppy.io"
 # export FREY_ENCRYPTION_SECRET="***"
+export PORT=3020
 export UPPY_ENDPOINT="uppy.io"
 export UPPYSERVER_DATADIR="/mnt/uppy-server-data"
 export UPPYSERVER_DOMAIN="server.uppy.io"

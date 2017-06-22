@@ -7,11 +7,12 @@ class Instagram {
     this.client = purest(options)
   }
 
-  list ({ query, token }, done) {
+  list ({ directory, token, query }, done) {
+    directory = directory || 'recent'
+    const max_id = query && query.max_id ? `?max_id=${query.max_id}` : ''
     this.client
       .query()
-      .select('users/self/media/recent')
-      .where(query)
+      .select(`users/self/media/${directory}${max_id}`)
       .auth(token)
       .request(done)
   }

@@ -1,6 +1,6 @@
 const uppy = require('./pluggable')
 const app = require('./standalone')
-const PORT = process.env.PORT || 3020
+const PORT = process.env.UPPYSERVER_PORT || 3020
 
 uppy.socket(app.listen(PORT))
 

@@ -21,3 +21,14 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
     grantConfig[providerName] = customProviders[providerName].config
   })
 }
+
+module.exports.addProviderOptions = (options, grantConfig) => {
+  const keys = Object.keys(options).filter((key) => key !== 'server')
+  keys.forEach((providerName) => {
+    if (grantConfig[providerName]) {
+      // explicitly add options so users don't override other options.
+      grantConfig[providerName].key = options[providerName].key
+      grantConfig[providerName].secret = options[providerName].secret
+    }
+  })
+}

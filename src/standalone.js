@@ -52,7 +52,18 @@ app.get('/', (req, res) => {
   )
 })
 
-app.use(uppy.app())
+app.use(uppy.app({
+  providerOptions: {
+    google: {
+      key: process.env.UPPYSERVER_GOOGLE_KEY,
+      secret: process.env.UPPYSERVER_GOOGLE_SECRET
+    },
+    dropbox: {
+      key: process.env.UPPYSERVER_DROPBOX_KEY,
+      secret: process.env.UPPYSERVER_DROPBOX_SECRET
+    }
+  }
+}))
 
 app.use((req, res, next) => {
   const err = new Error('Not Found')

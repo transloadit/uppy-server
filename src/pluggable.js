@@ -46,7 +46,7 @@ module.exports.app = (options = {}) => {
   app.post('/:providerName/:action', dispatcher)
   app.post('/:providerName/:action/:id', dispatcher)
 
-  if (options.s3) app.use('/s3', s3(options.s3))
+  app.use('/s3', s3(options.s3))
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 

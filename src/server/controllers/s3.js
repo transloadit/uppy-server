@@ -2,7 +2,7 @@ const crypto = require('crypto')
 const router = require('express').Router
 const ms = require('ms')
 
-function hmacSha (key, data) {
+function sha256 (key, data) {
   return crypto.createHmac('sha256', key)
     .update(data)
     .digest()
@@ -42,11 +42,11 @@ function toBase64 (obj) {
 }
 
 function createSignature (config, policy, opts) {
-  let signature = hmacSha(`AWS4${config.secret}`, dateString(opts.date))
-  signature = hmacSha(signature, config.region)
-  signature = hmacSha(signature, 's3')
-  signature = hmacSha(signature, 'aws4_request')
-  signature = hmacSha(signature, toBase64(policy))
+  let signature = sha256(`AWS4${config.secret}`, dateString(opts.date))
+  signature = sha256(signature, config.region)
+  signature = sha256(signature, 's3')
+  signature = sha256(signature, 'aws4_request')
+  signature = sha256(signature, toBase64(policy))
   return signature.toString('hex')
 }
 

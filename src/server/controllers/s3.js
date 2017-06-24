@@ -84,7 +84,7 @@ module.exports = function s3 (config) {
   config = Object.assign({}, defaultConfig, config)
 
   return router()
-    .get('/credentials', (req, res) => {
+    .get('/params', (req, res) => {
       const date = new Date()
       date.setMilliseconds(0)
       const params = createParams(config, {

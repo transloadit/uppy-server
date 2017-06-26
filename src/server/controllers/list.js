@@ -1,10 +1,10 @@
-function list ({ params, session, uppyProvider }, res, next) {
+function list ({ query, params, session, uppyProvider }, res, next) {
   const providerName = params.providerName
   const token = session[providerName].token
 
   const provider = uppyProvider
 
-  provider.list({ token, directory: params.id }, (err, resp, body) => {
+  provider.list({ token, directory: params.id, query }, (err, resp, body) => {
     if (err) {
       return next(err)
     }

@@ -1,6 +1,7 @@
 const config = require('@purest/providers')
 const dropbox = require('./dropbox')
 const drive = require('./drive')
+const instagram = require('./instagram')
 
 module.exports.getProviderMiddleware = (providers) => {
   return (req, res, next, providerName) => {
@@ -12,7 +13,7 @@ module.exports.getProviderMiddleware = (providers) => {
 }
 
 module.exports.getDefaultProviders = () => {
-  return { dropbox, drive }
+  return { dropbox, drive, instagram }
 }
 
 module.exports.addCustomProviders = (customProviders, providers, grantConfig) => {

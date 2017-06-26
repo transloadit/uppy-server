@@ -19,9 +19,7 @@ class Uploader {
 
   handleChunk (chunk) {
     this.writer.write(chunk, () => {
-      if (!this.options.endpoint) {
-        return
-      }
+      if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
         return this.uploadTus()
@@ -30,6 +28,15 @@ class Uploader {
       if (this.options.protocol !== 'tus' && this.writer.bytesWritten === this.options.size) {
         return this.uploadMultipart()
       }
+    })
+  }
+
+  handleResponse (resp) {
+    resp.pipe(this.writer)
+    this.writer.on('finish', () => {
+      if (!this.options.endpoint) return
+
+      this.options.protocol === 'tus' ? this.uploadTus() : this.uploadMultipart()
     })
   }
 
@@ -68,7 +75,7 @@ class Uploader {
     this.tus = new tus.Upload(file, {
       endpoint: this.options.endpoint,
       resume: true,
-      uploadSize: this.options.size,
+      uploadSize: this.options.size || fs.statSync(this.options.path).size,
       metadata,
       chunkSize: this.writer.bytesWritten,
       onError (error) {

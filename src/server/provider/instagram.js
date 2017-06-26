@@ -7,19 +7,17 @@ class Instagram {
     this.client = purest(options)
   }
 
-  list ({ directory, token, query }, done) {
-    directory = directory || 'recent'
-    const max_id = query && query.max_id ? `?max_id=${query.max_id}` : ''
+  list ({ directory = 'recent', token, query = {} }, done) {
+    const qs = query.max_id ? {max_id: query.max_id} : {}
     this.client
-      .query()
-      .select(`users/self/media/${directory}${max_id}`)
+      .select(`users/self/media/${directory}`)
+      .qs(qs)
       .auth(token)
       .request(done)
   }
 
   download ({ id, token }, onData, onResponse) {
     return this.client
-      .query()
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
@@ -35,7 +33,6 @@ class Instagram {
 
   thumbnail ({id, token}, done) {
     return this.client
-      .query()
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {

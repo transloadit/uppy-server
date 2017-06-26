@@ -61,6 +61,10 @@ app.use(uppy.app({
     dropbox: {
       key: process.env.UPPYSERVER_DROPBOX_KEY,
       secret: process.env.UPPYSERVER_DROPBOX_SECRET
+    },
+    instagram: {
+      key: process.env.UPPYSERVER_INSTAGRAM_KEY,
+      secret: process.env.UPPYSERVER_INSTAGRAM_SECRET
     }
   }
 }))

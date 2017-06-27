@@ -5,10 +5,21 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
+const librato = require('librato-node')
 
 const app = express()
 
 app.use(morgan('combined'))
+
+if (process.env.UPPYSERVER_LIBRATO_TOKEN && process.env.UPPYSERVER_LIBRATO_EMAIL) {
+  librato.config({
+    email: process.env.UPPYSERVER_LIBRATO_EMAIL,
+    token: process.env.UPPYSERVER_LIBRATO_TOKEN
+  })
+
+  app.use(librato.middleware())
+}
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())

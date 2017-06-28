@@ -30,6 +30,7 @@
   "dependencies": {
     "@purest/providers": "1.0.0",
     "atob": "2.0.3",
+    "aws-sdk": "^2.77.0",
     "body-parser": "1.15.2",
     "commander": "2.9.0",
     "connect-redis": "^3.3.0",

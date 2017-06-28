@@ -12,7 +12,7 @@ const app = express()
 app.use(morgan('combined'))
 
 if (process.env.UPPYSERVER_LIBRATO_TOKEN && process.env.UPPYSERVER_LIBRATO_EMAIL) {
-  librato.config({
+  librato.configure({
     email: process.env.UPPYSERVER_LIBRATO_EMAIL,
     token: process.env.UPPYSERVER_LIBRATO_TOKEN
   })

@@ -32,8 +32,8 @@ module.exports = function s3 (config) {
           return
         }
         res.json({
-          endpoint: data.url,
-          params: data.fields
+          url: data.url,
+          fields: data.fields
         })
       })
     })

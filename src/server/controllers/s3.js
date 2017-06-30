@@ -4,10 +4,6 @@ const S3 = require('aws-sdk/clients/s3')
 
 const defaultConfig = {
   acl: 'public-read',
-  key: process.env.UPPYSERVER_AWS_KEY,
-  secret: process.env.UPPYSERVER_AWS_SECRET,
-  bucket: process.env.UPPYSERVER_AWS_BUCKET,
-  region: process.env.UPPYSERVER_AWS_REGION,
   conditions: []
 }
 

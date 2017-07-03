@@ -13,6 +13,7 @@ As of now uppy-server is integrated to work with:
 
 - Google Drive
 - Dropbox
+- Instagram
 - Local disk
 
 ## Install
@@ -37,6 +38,10 @@ export UPPYSERVER_DROPBOX_SECRET="YOUR DROPBOX SECRET"
 # If used with Google Drive
 export UPPYSERVER_GOOGLE_KEY="YOUR GOOGLE KEY"
 export UPPYSERVER_GOOGLE_SECRET="YOUR GOOGLE SECRET"
+
+# If used with Instagram Drive
+export UPPYSERVER_INSTAGRAM_KEY="YOUR INSTAGRAM KEY"
+export UPPYSERVER_INSTAGRAM_SECRET="YOUR INSTAGRAM SECRET"
 
 ```
 

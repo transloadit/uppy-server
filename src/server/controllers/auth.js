@@ -4,7 +4,6 @@ function auth ({ params, session, uppyProvider }, res) {
   if (!session[providerName] || !session[providerName].token) {
     return res.json({ authenticated: false })
   }
-
   const provider = uppyProvider
   const token = session[providerName].token
 

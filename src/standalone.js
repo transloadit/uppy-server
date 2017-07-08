@@ -77,8 +77,15 @@ app.use((req, res, next) => {
   next(err)
 })
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({ message: err.message, error: err })
-})
+if (app.get('env') === 'production') {
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({ message: 'Something went wrong' })
+  })
+} else {
+  app.use((err, req, res, next) => {
+    console.error('\x1b[31m', err.stack, '\x1b[0m')
+    res.status(err.status || 500).json({ message: err.message, error: err })
+  })
+}
 
 module.exports = app

@@ -1,12 +1,14 @@
 const express = require('express')
 const uppy = require('./pluggable')
 const helmet = require('helmet')
+const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
 
 const app = express()
 
+app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())

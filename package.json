@@ -38,6 +38,7 @@
     "grant-express": "3.7.0",
     "helmet": "3.3.0",
     "mime-types": "2.1.12",
+    "morgan": "1.8.2",
     "purest": "3.0.0",
     "request": "2.75.0",
     "tus-js-client": "1.4.3",

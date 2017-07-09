@@ -5,20 +5,18 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
-const librato = require('librato-node')
+const metricsMiddleware = require('express-prom-bundle')({
+  includeMethod: true,
+  includePath: true
+})
 
 const app = express()
 
+// log server requests.
 app.use(morgan('combined'))
 
-if (process.env.UPPYSERVER_LIBRATO_TOKEN && process.env.UPPYSERVER_LIBRATO_EMAIL) {
-  librato.configure({
-    email: process.env.UPPYSERVER_LIBRATO_EMAIL,
-    token: process.env.UPPYSERVER_LIBRATO_TOKEN
-  })
-
-  app.use(librato.middleware())
-}
+// make app metrics available at '/metrics'.
+app.use(metricsMiddleware)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))

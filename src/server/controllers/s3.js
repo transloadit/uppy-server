@@ -21,6 +21,7 @@ module.exports = function s3 (config) {
         Bucket: config.bucket,
         Expires: ms('5 minutes') / 1000,
         Fields: {
+          acl: config.acl,
           key: req.query.filename,
           success_action_status: '201',
           'content-type': req.query.type

@@ -1,5 +1,4 @@
 const express = require('express')
-const session = require('express-session')
 const Grant = require('grant-express')
 const grantConfig = require('./config/grant')
 const providerManager = require('./server/provider')
@@ -29,7 +28,6 @@ module.exports.app = (options = {}) => {
   }
 
   const app = express()
-  app.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
   app.use(new Grant(grantConfig))
   app.use('*', (req, res, next) => {
     const { protocol, host, path } = grantConfig.server

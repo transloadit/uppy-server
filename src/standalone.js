@@ -5,6 +5,8 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
 
 const app = express()
 
@@ -20,6 +22,20 @@ app.use(helmet.xssFilter())
 app.use(helmet.noSniff())
 app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
+
+const sessionOptions = {
+  secret: process.env.UPPYSERVER_SECRET,
+  resave: false,
+  saveUninitialized: false
+}
+
+if (process.env.UPPYSERVER_REDIS_URL) {
+  sessionOptions.store = new RedisStore({
+    url: process.env.UPPYSERVER_REDIS_URL
+  })
+}
+
+app.use(session(sessionOptions))
 
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL

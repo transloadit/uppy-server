@@ -21,7 +21,10 @@ class Uploader {
   }
 
   cleanUp () {
-    fs.unlink(this.options.path)
+    if (fs.existsSync(this.options.path)) {
+      fs.unlink(this.options.path)
+    }
+
     while (this._socketConnectionHandlers.length) {
       const handler = this._socketConnectionHandlers.pop()
       emitter.removeListener(`connection:${this.token}`, handler)

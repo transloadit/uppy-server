@@ -39,17 +39,19 @@ app.use(session(sessionOptions))
 
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL
-  const whitelist = [
-    `${protocol}://${process.env.UPPY_ENDPOINT}`,
-    `${protocol}://codepen.io`,
-    `${protocol}://s.codepen.io`
-  ]
 
-  if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+  if (process.env.UPPY_ENDPOINTS) {
+    const whitelist = process.env.UPPY_ENDPOINTS
+      .split(',')
+      .map((domain) => `${protocol}://${domain}`)
+
+    if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
   } else {
-    res.setHeader('Access-Control-Allow-Origin', `${protocol}://${process.env.UPPY_ENDPOINT}`)
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
   }
+
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, OPTIONS, PUT, PATCH, DELETE'

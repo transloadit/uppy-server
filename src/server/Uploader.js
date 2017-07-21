@@ -11,10 +11,21 @@ class Uploader {
     this.writer = fs.createWriteStream(options.path)
     this.token = uuid.v4()
     this.emittedProgress = 0
+    this._socketConnectionHandlers = []
   }
 
   onSocketReady (callback) {
-    emitter.on(`connection:${this.token}`, () => callback())
+    const handler = () => callback()
+    emitter.on(`connection:${this.token}`, handler)
+    this._socketConnectionHandlers.push(handler)
+  }
+
+  cleanUp () {
+    fs.unlink(this.options.path)
+    while (this._socketConnectionHandlers.length) {
+      const handler = this._socketConnectionHandlers.pop()
+      emitter.removeListener(`connection:${this.token}`, handler)
+    }
   }
 
   handleChunk (chunk) {
@@ -79,7 +90,8 @@ class Uploader {
       metadata,
       chunkSize: this.writer.bytesWritten,
       onError (error) {
-        throw error
+        uploader.cleanUp()
+        console.log(error)
       },
       onProgress (bytesUploaded, bytesTotal) {
         uploader.emitProgress(bytesUploaded, bytesTotal)
@@ -96,7 +108,7 @@ class Uploader {
           })
         )
 
-        fs.unlink(uploader.options.path)
+        uploader.cleanUp()
       }
     })
 
@@ -133,8 +145,8 @@ class Uploader {
         emitData.payload = { complete: true }
       }
 
-      fs.unlink(this.options.path)
-      return emitter.emit(this.token, JSON.stringify(emitData))
+      emitter.emit(this.token, JSON.stringify(emitData))
+      this.cleanUp()
     })
   }
 }

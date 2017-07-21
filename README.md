@@ -128,7 +128,7 @@ Each custom provider would in turn be an object with two keys, `config` and `mod
 1. To setup uppy-server for local development, please clone the repo and install like so:
 
 ```bash
-git clone https://github.com/transloadit/uppy-server && cd upppy-server && npm install
+git clone https://github.com/transloadit/uppy-server && cd uppy-server && npm install
 ```
 
 

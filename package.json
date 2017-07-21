@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Almost as cute as a Puppy :dog:",
   "main": "lib/pluggable.js",
   "author": "Transloadit.com",

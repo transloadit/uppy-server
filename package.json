@@ -32,6 +32,7 @@
     "atob": "2.0.3",
     "body-parser": "1.15.2",
     "commander": "2.9.0",
+    "connect-redis": "^3.3.0",
     "cookie-parser": "1.4.3",
     "express": "4.14.0",
     "express-prom-bundle": "^3.1.0",
@@ -78,7 +79,7 @@
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
     "start:production": "node ./lib/start-standalone.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
     "test": "npm run lint && env UPPYSERVER_DATADIR=./test/output jest",
     "test:watch": "npm test -- --watch"
   }

@@ -1,5 +1,4 @@
 const express = require('express')
-const session = require('express-session')
 const Grant = require('grant-express')
 const grantConfig = require('./config/grant')
 const providerManager = require('./server/provider')
@@ -29,8 +28,17 @@ module.exports.app = (options = {}) => {
   }
 
   const app = express()
-  app.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
   app.use(new Grant(grantConfig))
+
+  if (options.sendSelfEndpoint) {
+    app.use('*', (req, res, next) => {
+      const { protocol } = grantConfig.server
+      res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
+      // maybe this should be concatenated with its previously set value.
+      res.header('Access-Control-Expose-Headers', 'i-am')
+      next()
+    })
+  }
 
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)

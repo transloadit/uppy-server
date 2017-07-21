@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
 const promBundle = require('express-prom-bundle')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+
 
 const app = express()
 
@@ -33,19 +36,35 @@ app.use(helmet.noSniff())
 app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
+const sessionOptions = {
+  secret: process.env.UPPYSERVER_SECRET,
+  resave: false,
+  saveUninitialized: false
+}
+
+if (process.env.UPPYSERVER_REDIS_URL) {
+  sessionOptions.store = new RedisStore({
+    url: process.env.UPPYSERVER_REDIS_URL
+  })
+}
+
+app.use(session(sessionOptions))
+
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL
-  const whitelist = [
-    `${protocol}://${process.env.UPPY_ENDPOINT}`,
-    `${protocol}://codepen.io`,
-    `${protocol}://s.codepen.io`
-  ]
 
-  if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+  if (process.env.UPPY_ENDPOINTS) {
+    const whitelist = process.env.UPPY_ENDPOINTS
+      .split(',')
+      .map((domain) => `${protocol}://${domain}`)
+
+    if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
   } else {
-    res.setHeader('Access-Control-Allow-Origin', `${protocol}://${process.env.UPPY_ENDPOINT}`)
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
   }
+
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, OPTIONS, PUT, PATCH, DELETE'
@@ -66,7 +85,7 @@ app.get('/', (req, res) => {
   )
 })
 
-app.use(uppy.app({
+const uppyOptions = {
   providerOptions: {
     google: {
       key: process.env.UPPYSERVER_GOOGLE_KEY,
@@ -81,7 +100,13 @@ app.use(uppy.app({
       secret: process.env.UPPYSERVER_INSTAGRAM_SECRET
     }
   }
-}))
+}
+
+if (process.env.UPPYSERVER_SELF_ENDPOINT) {
+  uppyOptions.sendSelfEndpoint = process.env.UPPYSERVER_SELF_ENDPOINT
+}
+
+app.use(uppy.app(uppyOptions))
 
 app.use((req, res, next) => {
   const err = new Error('Not Found')

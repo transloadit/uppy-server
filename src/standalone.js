@@ -5,10 +5,12 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
-const metricsMiddleware = require('express-prom-bundle')({
-  includeMethod: true,
-  includePath: true
-})
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+const Registry = client.Registry;
+const register = new Registry();
+
+collectDefaultMetrics({ register });
 
 const app = express()
 
@@ -16,7 +18,7 @@ const app = express()
 app.use(morgan('combined'))
 
 // make app metrics available at '/metrics'.
-app.use(metricsMiddleware)
+// app.use(metricsMiddleware)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -61,6 +63,10 @@ app.get('/', (req, res) => {
   res.send(
     [ 'Welcome to Uppy Server', '======================', '' ].join('\n')
   )
+})
+app.get('/metrics', (req, res) => {
+	res.set('Content-Type', register.contentType);
+	res.end(register.metrics());
 })
 
 app.use(uppy.app({

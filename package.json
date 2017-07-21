@@ -34,7 +34,7 @@
     "commander": "2.9.0",
     "cookie-parser": "1.4.3",
     "express": "4.14.0",
-    "prom-client": "^10.0.2",
+    "express-prom-bundle": "^3.1.0",
     "express-session": "1.14.2",
     "express-validator": "3.1.2",
     "grant-express": "3.7.0",

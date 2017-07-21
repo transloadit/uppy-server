@@ -72,7 +72,7 @@ app.get('/', (req, res) => {
   )
 })
 
-app.use(uppy.app({
+const uppyOptions = {
   providerOptions: {
     google: {
       key: process.env.UPPYSERVER_GOOGLE_KEY,
@@ -87,7 +87,13 @@ app.use(uppy.app({
       secret: process.env.UPPYSERVER_INSTAGRAM_SECRET
     }
   }
-}))
+}
+
+if (process.env.UPPYSERVER_SELF_ENDPOINT) {
+  uppyOptions.sendSelfEndpoint = process.env.UPPYSERVER_SELF_ENDPOINT
+}
+
+app.use(uppy.app(uppyOptions))
 
 app.use((req, res, next) => {
   const err = new Error('Not Found')

@@ -32,8 +32,10 @@ module.exports.app = (options = {}) => {
 
   if (options.sendSelfEndpoint) {
     app.use('*', (req, res, next) => {
-      const { protocol, host, path } = grantConfig.server
-      res.header('i-am', `${protocol}://${host}${path || ''}`)
+      const { protocol } = grantConfig.server
+      res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
+      // maybe this should be concatenated with its previously set value.
+      res.header('Access-Control-Expose-Headers', 'i-am')
       next()
     })
   }

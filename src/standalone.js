@@ -9,7 +9,6 @@ const promBundle = require('express-prom-bundle')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 
-
 const app = express()
 
 const metricsMiddleware = promBundle({includeMethod: true, includePath: true})

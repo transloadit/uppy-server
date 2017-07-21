@@ -5,14 +5,19 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
-const client = require('prom-client');
-const collectDefaultMetrics = client.collectDefaultMetrics;
+const promclient = require('prom-client')
+const promBundle = require('express-prom-bundle')
+
+const app = express()
+
+const metricsMiddleware = promBundle({includeMethod: true,includePath: true});
+
+const client = metricsMiddleware.promClient;
+const collectDefaultMetrics = client.collectDefaultMetrics;  
 const Registry = client.Registry;
 const register = new Registry();
 
-collectDefaultMetrics({ register });
-
-const app = express()
+collectDefaultMetrics({ register: client.register });
 
 // log server requests.
 app.use(morgan('combined'))
@@ -64,9 +69,10 @@ app.get('/', (req, res) => {
     [ 'Welcome to Uppy Server', '======================', '' ].join('\n')
   )
 })
-app.get('/metrics', (req, res) => {
-	res.set('Content-Type', register.contentType);
-	res.end(register.metrics());
+
+app.use('/metrics', (req, res) => {
+  res.end([register.metrics(),
+  metricsMiddleware.promClient.register.metrics()].join('\n'))
 })
 
 app.use(uppy.app({

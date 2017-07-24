@@ -33,6 +33,7 @@ module.exports = function s3 (config) {
           return
         }
         res.json({
+          method: 'post',
           url: data.url,
           fields: data.fields
         })

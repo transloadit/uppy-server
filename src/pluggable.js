@@ -50,31 +50,35 @@ module.exports.app = (options = {}) => {
   return app
 }
 
-module.exports.socket = (server) => {
+module.exports.socket = (server, session) => {
   const wss = new SocketServer({ server })
 
   wss.on('connection', (ws) => {
-    const fullPath = ws.upgradeReq.url
-    const token = fullPath.replace(/\/api\//, '')
+    session(ws.upgradeReq, {}, () => {
+      const fullPath = ws.upgradeReq.url
+      const token = fullPath.replace(/\/api\//, '')
 
-    function sendProgress (data) {
-      ws.send(data, (err) => {
-        if (err) {
-          console.log(`Error: ${err}`)
-        }
+      function sendProgress (data) {
+        ws.send(JSON.stringify(data), (err) => {
+          if (err) console.log(`Error: ${err}`)
+        })
+      }
+
+      const uploadState = ws.upgradeReq.session.uploads[token]
+
+      if (uploadState && uploadState.action !== 'start') sendProgress(uploadState)
+      else emitter.emit(`connection:${token}`)
+
+      emitter.on(token, sendProgress)
+
+      ws.on('message', (jsonData) => {
+        const data = JSON.parse(jsonData)
+        emitter.emit(`${data.action}:${token}`)
       })
-    }
 
-    emitter.emit(`connection:${token}`)
-    emitter.on(token, sendProgress)
-
-    ws.on('message', (jsonData) => {
-      const data = JSON.parse(jsonData)
-      emitter.emit(`${data.action}:${token}`)
-    })
-
-    ws.on('close', () => {
-      emitter.removeListener(token, sendProgress)
+      ws.on('close', () => {
+        emitter.removeListener(token, sendProgress)
+      })
     })
   })
 }

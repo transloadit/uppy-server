@@ -11,6 +11,13 @@ class Uploader {
     this.writer = fs.createWriteStream(options.path)
     this.token = uuid.v4()
     this.emittedProgress = 0
+    this.state = {
+      action: 'start',
+      payload: { progress: 0, bytesUploaded: 0 }
+    }
+    this.storage = options.storage
+    this.storage.uploads = this.storage.uploads || {}
+    this.storage.uploads[this.token] = this.state
     this._socketConnectionHandlers = []
   }
 
@@ -62,15 +69,21 @@ class Uploader {
     return { body, status: 200 }
   }
 
+  setState (state) {
+    this.storage.uploads[this.token] = state
+    this.storage.save()
+  }
+
   emitProgress (bytesUploaded, bytesTotal) {
     bytesTotal = bytesTotal || this.options.size
     const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
     console.log(bytesUploaded, bytesTotal, `${percentage}%`)
 
-    const emitData = JSON.stringify({
+    const emitData = {
       action: 'progress',
       payload: { progress: percentage, bytesUploaded, bytesTotal }
-    })
+    }
+    this.setState(emitData)
 
     // avoid flooding the client with progress events.
     const roundedPercentage = Math.floor(percentage)
@@ -103,14 +116,12 @@ class Uploader {
         uploader.tus.options.chunkSize = uploader.writer.bytesWritten - bytesUploaded
       },
       onSuccess () {
-        emitter.emit(
-          uploader.token,
-          JSON.stringify({
-            action: 'success',
-            payload: { complete: true, url: uploader.tus.url }
-          })
-        )
-
+        const emtiData = {
+          action: 'success',
+          payload: { complete: true, url: uploader.tus.url }
+        }
+        uploader.setState(emtiData)
+        emitter.emit(uploader.token, emtiData)
         uploader.cleanUp()
       }
     })
@@ -148,7 +159,8 @@ class Uploader {
         emitData.payload = { complete: true }
       }
 
-      emitter.emit(this.token, JSON.stringify(emitData))
+      this.setState(emitData)
+      emitter.emit(this.token, emitData)
       this.cleanUp()
     })
   }

@@ -25,7 +25,7 @@ app.disable('x-powered-by')
 
 const sessionOptions = {
   secret: process.env.UPPYSERVER_SECRET,
-  resave: false,
+  resave: true,
   saveUninitialized: false
 }
 
@@ -35,7 +35,9 @@ if (process.env.UPPYSERVER_REDIS_URL) {
   })
 }
 
-app.use(session(sessionOptions))
+const sessionMiddleware = session(sessionOptions)
+
+app.use(sessionMiddleware)
 
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL
@@ -112,4 +114,4 @@ if (app.get('env') === 'production') {
   })
 }
 
-module.exports = app
+module.exports = { app, sessionMiddleware }

@@ -5,12 +5,24 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
+const promBundle = require('express-prom-bundle')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 
 const app = express()
 
+const metricsMiddleware = promBundle({includeMethod: true, includePath: true})
+
+const promClient = metricsMiddleware.promClient
+const collectDefaultMetrics = promClient.collectDefaultMetrics
+collectDefaultMetrics({ register: promClient.register })
+
+// log server requests.
 app.use(morgan('combined'))
+
+// make app metrics available at '/metrics'.
+app.use(metricsMiddleware)
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())

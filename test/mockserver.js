@@ -1,4 +1,4 @@
-const app = require('../src/standalone')
+const { app } = require('../src/standalone')
 
 const express = require('express')
 const session = require('express-session')

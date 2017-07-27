@@ -11,13 +11,11 @@ class Uploader {
     this.writer = fs.createWriteStream(options.path)
     this.token = uuid.v4()
     this.emittedProgress = 0
-    this.state = {
-      action: 'start',
-      payload: { progress: 0, bytesUploaded: 0 }
-    }
     this.storage = options.storage
     this.storage.uploads = this.storage.uploads || {}
-    this.storage.uploads[this.token] = this.state
+    this.saveState({
+      payload: { progress: 0, bytesUploaded: 0 }
+    })
     this._socketConnectionHandlers = []
   }
 
@@ -69,7 +67,7 @@ class Uploader {
     return { body, status: 200 }
   }
 
-  setState (state) {
+  saveState (state) {
     this.storage.uploads[this.token] = state
     this.storage.save()
   }
@@ -79,18 +77,27 @@ class Uploader {
     const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
     console.log(bytesUploaded, bytesTotal, `${percentage}%`)
 
-    const emitData = {
+    const dataToEmit = {
       action: 'progress',
       payload: { progress: percentage, bytesUploaded, bytesTotal }
     }
-    this.setState(emitData)
+    this.saveState(dataToEmit)
 
     // avoid flooding the client with progress events.
     const roundedPercentage = Math.floor(percentage)
     if (this.emittedProgress !== roundedPercentage) {
       this.emittedProgress = roundedPercentage
-      emitter.emit(this.token, emitData)
+      emitter.emit(this.token, dataToEmit)
     }
+  }
+
+  emitSuccess (url) {
+    const emtiData = {
+      action: 'success',
+      payload: { complete: true, url }
+    }
+    this.saveState(emtiData)
+    emitter.emit(this.token, emtiData)
   }
 
   uploadTus () {
@@ -116,12 +123,7 @@ class Uploader {
         uploader.tus.options.chunkSize = uploader.writer.bytesWritten - bytesUploaded
       },
       onSuccess () {
-        const emtiData = {
-          action: 'success',
-          payload: { complete: true, url: uploader.tus.url }
-        }
-        uploader.setState(emtiData)
-        emitter.emit(uploader.token, emtiData)
+        uploader.emitSuccess(uploader.tus.url)
         uploader.cleanUp()
       }
     })
@@ -148,19 +150,18 @@ class Uploader {
     })
 
     const formData = { [this.options.fieldname]: file }
-    request.post({ url: this.options.endpoint, formData }, (err, response, body) => {
-      let emitData = {}
-
-      if (err) {
-        emitData.action = 'error'
-        emitData.payload = { error: err }
+    request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
+      if (error) {
+        const dataToEmit = {
+          action: 'error',
+          payload: { error }
+        }
+        this.saveState(dataToEmit)
+        emitter.emit(this.token, dataToEmit)
       } else {
-        emitData.action = 'success'
-        emitData.payload = { complete: true }
+        this.emitSuccess()
       }
 
-      this.setState(emitData)
-      emitter.emit(this.token, emitData)
       this.cleanUp()
     })
   }

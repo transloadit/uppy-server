@@ -67,7 +67,7 @@ module.exports.socket = (server, session) => {
       const uploadState = ws.upgradeReq.session.uploads[token]
 
       if (uploadState && uploadState.action) sendProgress(uploadState)
-      else emitter.emit(`connection:${token}`)
+      else emitter.emit(`initial-connection:${token}`)
 
       emitter.on(token, sendProgress)
 

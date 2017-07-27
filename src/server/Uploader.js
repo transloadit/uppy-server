@@ -21,7 +21,7 @@ class Uploader {
 
   onSocketReady (callback) {
     const handler = () => callback()
-    emitter.on(`connection:${this.token}`, handler)
+    emitter.on(`initial-connection:${this.token}`, handler)
     this._socketConnectionHandlers.push(handler)
   }
 
@@ -32,7 +32,7 @@ class Uploader {
 
     while (this._socketConnectionHandlers.length) {
       const handler = this._socketConnectionHandlers.pop()
-      emitter.removeListener(`connection:${this.token}`, handler)
+      emitter.removeListener(`initial-connection:${this.token}`, handler)
     }
   }
 

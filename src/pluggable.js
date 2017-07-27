@@ -3,6 +3,7 @@ const Grant = require('grant-express')
 const grantConfig = require('./config/grant')
 const providerManager = require('./server/provider')
 const dispatcher = require('./server/controllers/dispatcher')
+const s3 = require('./server/controllers/s3')
 const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
 
@@ -44,6 +45,8 @@ module.exports.app = (options = {}) => {
   app.get('/:providerName/:action/:id', dispatcher)
   app.post('/:providerName/:action', dispatcher)
   app.post('/:providerName/:action/:id', dispatcher)
+
+  app.use('/s3', s3(options.s3))
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 

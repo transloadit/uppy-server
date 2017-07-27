@@ -8,8 +8,9 @@ const request = require('request')
 class Uploader {
   constructor (options) {
     this.options = options
-    this.writer = fs.createWriteStream(options.path)
     this.token = uuid.v4()
+    this.options.path = `${this.options.pathPrefix}/${this.token}-${this.options.pathSuffix}`
+    this.writer = fs.createWriteStream(this.options.path)
     this.emittedProgress = 0
     this.storage = options.storage
     this.storage.uploads = this.storage.uploads || {}

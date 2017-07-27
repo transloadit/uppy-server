@@ -14,7 +14,8 @@ function get (req, res) {
     metadata: body.metadata,
     size: body.size,
     fieldname: body.fieldname,
-    path: `${process.env.UPPYSERVER_DATADIR}/${encodeURIComponent(id)}`,
+    pathPrefix: `${process.env.UPPYSERVER_DATADIR}`,
+    pathSuffix: `${encodeURIComponent(id)}`,
     storage: req.session
   })
 

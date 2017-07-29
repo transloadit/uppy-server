@@ -109,7 +109,13 @@ const uppyOptions = {
       key: process.env.UPPYSERVER_INSTAGRAM_KEY,
       secret: process.env.UPPYSERVER_INSTAGRAM_SECRET
     }
-  }
+  },
+  server: {
+    host: process.env.UPPYSERVER_DOMAIN,
+    protocol: process.env.UPPYSERVER_PROTOCOL,
+    path: process.env.UPPYSERVER_PATH || ''
+  },
+  path: process.env.UPPYSERVER_DATADIR
 }
 
 if (process.env.UPPYSERVER_SELF_ENDPOINT) {

@@ -21,6 +21,7 @@ const providers = providerManager.getDefaultProviders()
  * @return express js pluggagle app.
  */
 module.exports.app = (options = {}) => {
+  grantConfig.server = options.server
   providerManager.addProviderOptions(options.providerOptions, grantConfig)
 
   const customProviders = options.customProviders
@@ -33,7 +34,7 @@ module.exports.app = (options = {}) => {
 
   if (options.sendSelfEndpoint) {
     app.use('*', (req, res, next) => {
-      const { protocol } = grantConfig.server
+      const { protocol } = options.server
       res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
       // maybe this should be concatenated with its previously set value.
       res.header('Access-Control-Expose-Headers', 'i-am')
@@ -41,6 +42,7 @@ module.exports.app = (options = {}) => {
     })
   }
 
+  app.use('*', getOptionsMiddleware(options))
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)
   app.post('/:providerName/:action', dispatcher)
@@ -84,4 +86,11 @@ module.exports.socket = (server, session) => {
       })
     })
   })
+}
+
+const getOptionsMiddleware = (options) => {
+  return (req, res, next) => {
+    req.uppyOptions = options
+    next()
+  }
 }

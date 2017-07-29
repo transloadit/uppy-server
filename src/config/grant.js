@@ -1,9 +1,4 @@
 module.exports = {
-  server: {
-    host: process.env.UPPYSERVER_DOMAIN,
-    protocol: process.env.UPPYSERVER_PROTOCOL,
-    path: process.env.UPPYSERVER_PATH || ''
-  },
   google: {
     scope: [
       'https://www.googleapis.com/auth/drive',

@@ -3,7 +3,7 @@ const purest = require('purest')({ request })
 
 class Instagram {
   constructor (options) {
-    options.provider = 'instagram'
+    this.authProvider = options.provider = 'instagram'
     this.client = purest(options)
   }
 

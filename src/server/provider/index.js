@@ -23,13 +23,18 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
   })
 }
 
-module.exports.addProviderOptions = (options, grantConfig) => {
-  const keys = Object.keys(options).filter((key) => key !== 'server')
+module.exports.addProviderOptions = ({ server, providerOptions, oauthDomain }, grantConfig) => {
+  const keys = Object.keys(providerOptions).filter((key) => key !== 'server')
   keys.forEach((providerName) => {
     if (grantConfig[providerName]) {
-      // explicitly add options so users don't override other options.
-      grantConfig[providerName].key = options[providerName].key
-      grantConfig[providerName].secret = options[providerName].secret
+      // explicitly add providerOptions so users don't override other providerOptions.
+      grantConfig[providerName].key = providerOptions[providerName].key
+      grantConfig[providerName].secret = providerOptions[providerName].secret
+
+      // override grant.js redirect uri with uppy's custom redirect url
+      if (oauthDomain) {
+        grantConfig[providerName].redirect_uri = `${server.protocol}://${oauthDomain}/${providerName}/redirect`
+      }
     }
   })
 }

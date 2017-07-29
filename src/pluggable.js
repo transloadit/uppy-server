@@ -22,7 +22,7 @@ const providers = providerManager.getDefaultProviders()
  */
 module.exports.app = (options = {}) => {
   grantConfig.server = options.server
-  providerManager.addProviderOptions(options.providerOptions, grantConfig)
+  providerManager.addProviderOptions(options, grantConfig)
 
   const customProviders = options.customProviders
   if (customProviders) {
@@ -49,7 +49,6 @@ module.exports.app = (options = {}) => {
   app.post('/:providerName/:action/:id', dispatcher)
 
   app.use('/s3', s3(options.s3))
-
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 
   return app

@@ -4,7 +4,9 @@ const handlers = {
   get: { self: require('./get'), requiresAuth: true, requiresId: true },
   thumbnail: { self: require('./thumbnail'), requiresAuth: true, requiresId: true },
   list: { self: require('./list'), requiresAuth: true },
-  logout: { self: require('./logout') }
+  logout: { self: require('./logout') },
+  connect: { self: require('./connect') },
+  redirect: { self: require('./oauth-redirect') }
 }
 
 function routeDispatcher (req, res, next) {

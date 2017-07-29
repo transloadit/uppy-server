@@ -115,7 +115,8 @@ const uppyOptions = {
     protocol: process.env.UPPYSERVER_PROTOCOL,
     path: process.env.UPPYSERVER_PATH || ''
   },
-  path: process.env.UPPYSERVER_DATADIR
+  path: process.env.UPPYSERVER_DATADIR,
+  oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN
 }
 
 if (process.env.UPPYSERVER_SELF_ENDPOINT) {

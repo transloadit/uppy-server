@@ -14,7 +14,7 @@ function get (req, res) {
     metadata: body.metadata,
     size: body.size,
     fieldname: body.fieldname,
-    pathPrefix: `${req.uppyOptions.path}`,
+    pathPrefix: `${req.uppyOptions.filePath}`,
     pathSuffix: `${encodeURIComponent(id)}`,
     storage: req.session
   })

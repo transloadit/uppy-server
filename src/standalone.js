@@ -117,7 +117,7 @@ const uppyOptions = {
     oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
     validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
   },
-  path: process.env.UPPYSERVER_DATADIR
+  filePath: process.env.UPPYSERVER_DATADIR
 }
 
 if (process.env.UPPYSERVER_SELF_ENDPOINT) {

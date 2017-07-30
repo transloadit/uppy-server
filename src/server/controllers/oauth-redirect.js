@@ -13,7 +13,10 @@ module.exports = function oauthRedirect (req, res, next) {
   })
 
   if (isValidHost) {
-    return res.redirect(`${handler}/connect/${req.uppyProvider.provider}/callback?${qs.stringify(query)}`)
+    const providerName = req.uppyProvider.authProvider
+    const params = qs.stringify(query)
+    const url = `${handler}/connect/${providerName}/callback?${params}`
+    return res.redirect(url)
   }
 
   next(new Error('Invalid Host in state'))

@@ -1,5 +1,5 @@
 const handlers = {
-  auth: { self: require('./auth') },
+  authorized: { self: require('./authorized') },
   callback: { self: require('./callback') },
   get: { self: require('./get'), requiresAuth: true, requiresId: true },
   thumbnail: { self: require('./thumbnail'), requiresAuth: true, requiresId: true },

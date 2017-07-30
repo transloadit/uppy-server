@@ -1,4 +1,4 @@
-function auth ({ params, session, uppyProvider }, res) {
+function authorized ({ params, session, uppyProvider }, res) {
   const providerName = params.providerName
 
   if (!session[providerName] || !session[providerName].token) {
@@ -13,4 +13,4 @@ function auth ({ params, session, uppyProvider }, res) {
   })
 }
 
-exports = module.exports = auth
+exports = module.exports = authorized

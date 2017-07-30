@@ -23,7 +23,14 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
   })
 }
 
-module.exports.addProviderOptions = ({ server, providerOptions, oauthDomain }, grantConfig) => {
+module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) => {
+  grantConfig.server = {
+    host: server.host,
+    protocol: server.protocol,
+    path: server.path
+  }
+
+  const { oauthDomain } = server
   const keys = Object.keys(providerOptions).filter((key) => key !== 'server')
   keys.forEach((providerName) => {
     if (grantConfig[providerName]) {

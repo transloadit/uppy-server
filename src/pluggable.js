@@ -21,7 +21,6 @@ const providers = providerManager.getDefaultProviders()
  * @return express js pluggagle app.
  */
 module.exports.app = (options = {}) => {
-  grantConfig.server = options.server
   providerManager.addProviderOptions(options, grantConfig)
 
   const customProviders = options.customProviders

@@ -1,4 +1,4 @@
-const uppy = require('./pluggable')
+const uppy = require('./uppy')
 const { app, sessionMiddleware } = require('./standalone')
 const PORT = process.env.UPPYSERVER_PORT || 3020
 

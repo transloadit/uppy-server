@@ -8,17 +8,30 @@ export FREY_DOMAIN="server.uppy.io"
 # export FREY_ENCRYPTION_SECRET="***"
 export UPPYSERVER_PORT=3020
 export UPPY_ENDPOINT="uppy.io"
+# for whitelisting multiple clients
+export UPPY_ENDPOINTS="uppy.io,localhost:3452"
+# inform uppy client about the server host name
+export UPPYSERVER_SELF_ENDPOINT="localhost:3020"
+export UPPYSERVER_REDIS_URL="redis://localhost:6379"
 export UPPYSERVER_DATADIR="/mnt/uppy-server-data"
 export UPPYSERVER_DOMAIN="server.uppy.io"
+# valid server hostnames for oauth handling
+export UPPYSERVER_DOMAINS="server.uppy.io,localhost:3020"
 export UPPYSERVER_PATH=""
 export UPPYSERVER_SECRET="***"
 export UPPYSERVER_PROTOCOL="https"
+# single oauth redirect handler for multiple server instances
+export UPPYSERVER_OAUTH_DOMAIN="localhost:3020"
 export UPPYSERVER_DROPBOX_KEY="***"
 export UPPYSERVER_DROPBOX_SECRET="***"
 export UPPYSERVER_GOOGLE_KEY="***"
 export UPPYSERVER_GOOGLE_SECRET="***"
 export UPPYSERVER_INSTAGRAM_KEY="***"
 export UPPYSERVER_INSTAGRAM_SECRET="***"
+export UPPYSERVER_AWS_KEY="***"
+export UPPYSERVER_AWS_SECRET="***"
+export UPPYSERVER_AWS_BUCKET="***"
+export UPPYSERVER_AWS_REGION="***"
 
 # source env.sh
 # travis encrypt --add env.global "FREY_DOMAIN=${FREY_DOMAIN}"

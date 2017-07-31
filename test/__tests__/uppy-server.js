@@ -46,12 +46,12 @@ describe('test authentication', () => {
 
   test('check for authenticated provider', () => {
     request(authServer)
-      .get('/drive/auth/')
+      .get('/drive/authorized/')
       .expect(200)
       .then((res) => expect(res.body.authenticated).toBe(true))
 
     request(noAuthServer)
-      .get('/drive/auth/')
+      .get('/drive/authorized/')
       .expect(200)
       .then((res) => expect(res.body.authenticated).toBe(false))
   })

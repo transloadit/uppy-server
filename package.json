@@ -2,7 +2,7 @@
   "name": "uppy-server",
   "version": "0.6.1",
   "description": "Almost as cute as a Puppy :dog:",
-  "main": "lib/pluggable.js",
+  "main": "lib/uppy.js",
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",

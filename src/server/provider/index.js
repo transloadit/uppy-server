@@ -5,7 +5,7 @@ const instagram = require('./instagram')
 
 module.exports.getProviderMiddleware = (providers) => {
   return (req, res, next, providerName) => {
-    if (providers[providerName]) {
+    if (providers[providerName] && validOptions(req.uppyOptions)) {
       req.uppyProvider = new providers[providerName]({ providerName, config })
     }
     next()
@@ -24,6 +24,10 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
 }
 
 module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) => {
+  if (!validOptions({ server, providerOptions })) {
+    return
+  }
+
   grantConfig.server = {
     host: server.host,
     protocol: server.protocol,
@@ -44,4 +48,8 @@ module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) =
       }
     }
   })
+}
+
+const validOptions = ({ server, providerOptions }) => {
+  return server.host && server.protocol
 }

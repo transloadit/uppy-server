@@ -41,6 +41,7 @@
     "express-validator": "3.1.2",
     "grant-express": "3.7.0",
     "helmet": "3.3.0",
+    "lodash.merge": "^4.6.0",
     "mime-types": "2.1.12",
     "morgan": "1.8.2",
     "ms": "^2.0.0",
@@ -81,7 +82,8 @@
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
     "start:production": "node ./lib/start-standalone.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
+    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3020 UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
+    "start:40": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3040 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3040 UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/start-standalone.js --exec babel-node'",
     "test": "npm run lint && env UPPYSERVER_SECRET=secret UPPYSERVER_DATADIR=./test/output jest",
     "test:watch": "npm test -- --watch"
   }

@@ -6,8 +6,16 @@ const dispatcher = require('./server/controllers/dispatcher')
 const s3 = require('./server/controllers/s3')
 const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
+const merge = require('lodash.merge')
 
 const providers = providerManager.getDefaultProviders()
+const defaultOptions = {
+  server: {
+    protocol: 'http',
+    path: ''
+  },
+  providerOptions: {}
+}
 
 /**
  * @param {Object} options - configurations for the uppy app.
@@ -21,6 +29,7 @@ const providers = providerManager.getDefaultProviders()
  * @return express js pluggagle app.
  */
 module.exports.app = (options = {}) => {
+  options = merge({}, defaultOptions, options)
   providerManager.addProviderOptions(options, grantConfig)
 
   const customProviders = options.customProviders

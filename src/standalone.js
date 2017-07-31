@@ -113,7 +113,7 @@ const uppyOptions = {
   server: {
     host: process.env.UPPYSERVER_DOMAIN,
     protocol: process.env.UPPYSERVER_PROTOCOL,
-    path: process.env.UPPYSERVER_PATH || '',
+    path: process.env.UPPYSERVER_PATH,
     oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
     validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
   },

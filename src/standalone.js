@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
-const connectRedis = require('connect-redis')
+// const connectRedis = require('connect-redis')
 
 const app = express()
 
@@ -41,12 +41,12 @@ const sessionOptions = {
   saveUninitialized: true
 }
 
-if (process.env.UPPYSERVER_REDIS_URL) {
-  const RedisStore = connectRedis(session)
-  sessionOptions.store = new RedisStore({
-    url: process.env.UPPYSERVER_REDIS_URL
-  })
-}
+// if (process.env.UPPYSERVER_REDIS_URL) {
+//   const RedisStore = connectRedis(session)
+//   sessionOptions.store = new RedisStore({
+//     url: process.env.UPPYSERVER_REDIS_URL
+//   })
+// }
 
 const sessionMiddleware = session(sessionOptions)
 

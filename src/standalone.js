@@ -38,10 +38,7 @@ app.disable('x-powered-by')
 const sessionOptions = {
   secret: process.env.UPPYSERVER_SECRET,
   resave: true,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 // 24 hours
-  }
+  saveUninitialized: true
 }
 
 if (process.env.UPPYSERVER_REDIS_URL) {

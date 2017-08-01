@@ -11,7 +11,7 @@ export UPPY_ENDPOINT="uppy.io"
 # for whitelisting multiple clients
 export UPPY_ENDPOINTS="uppy.io,localhost:3452"
 # inform uppy client about the server host name
-export UPPYSERVER_REDIS_URL="redis://localhost:6379"
+export UPPYSERVER_REDIS_URL=""
 export UPPYSERVER_DATADIR="/mnt/uppy-server-data"
 export UPPYSERVER_DOMAIN="server.uppy.io"
 export UPPYSERVER_SELF_ENDPOINT="${UPPYSERVER_DOMAIN}"

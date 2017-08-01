@@ -18,6 +18,7 @@ export UPPYSERVER_SELF_ENDPOINT="${UPPYSERVER_DOMAIN}"
 # valid server hostnames for oauth handling
 export UPPYSERVER_DOMAINS="server.uppy.io,localhost:3020"
 export UPPYSERVER_PATH=""
+export UPPYSERVER_IMPLICIT_PATH=""
 export UPPYSERVER_SECRET="***"
 export UPPYSERVER_PROTOCOL="https"
 # single oauth redirect handler for multiple server instances

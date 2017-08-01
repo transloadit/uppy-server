@@ -110,7 +110,7 @@ const uppyOptions = {
   server: {
     host: process.env.UPPYSERVER_DOMAIN,
     protocol: process.env.UPPYSERVER_PROTOCOL,
-    path: process.env.UPPYSERVER_PATH,
+    path: process.env.UPPYSERVER_PATH || process.env.UPPYSERVER_IMPLICIT_PATH,
     oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
     validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
   },
@@ -121,7 +121,11 @@ if (process.env.UPPYSERVER_SELF_ENDPOINT) {
   uppyOptions.sendSelfEndpoint = process.env.UPPYSERVER_SELF_ENDPOINT
 }
 
-app.use(uppy.app(uppyOptions))
+if (process.env.UPPYSERVER_PATH) {
+  app.use(process.env.UPPYSERVER_PATH, uppy.app(uppyOptions))
+} else {
+  app.use(uppy.app(uppyOptions))
+}
 
 app.use((req, res, next) => {
   const err = new Error('Not Found')

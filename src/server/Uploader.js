@@ -16,7 +16,7 @@ class Uploader {
   }
 
   onSocketReady (callback) {
-    emitter.once(`initial-connection:${this.token}`, () => callback())
+    emitter.once(`connection:${this.token}`, () => callback())
   }
 
   cleanUp () {

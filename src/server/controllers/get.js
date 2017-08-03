@@ -25,10 +25,6 @@ function get (req, res) {
     provider.download({ id, token },
     body.size ? uploader.handleChunk.bind(uploader) : null,
     !body.size ? uploader.handleResponse.bind(uploader) : null)
-
-    uploader.saveState({
-      payload: { progress: 0, bytesUploaded: 0 }
-    })
   })
   const response = uploader.getResponse()
   return res.status(response.status).json(response.body)

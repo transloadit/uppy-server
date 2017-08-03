@@ -81,20 +81,14 @@ module.exports.socket = (server, { redisUrl }) => {
       //    that is only created once.
       redis.createClient({ url: redisUrl }).get(token, (err, data) => {
         if (err) console.log(err)
-
-        if (!data) {
-          emitter.emit(`initial-connection:${token}`)
-        } else {
+        if (data) {
           data = JSON.parse(data.toString())
-          if (data.action) {
-            sendProgress(data)
-          }
+          if (data.action) sendProgress(data)
         }
       })
-    } else {
-      emitter.emit(`initial-connection:${token}`)
     }
 
+    emitter.emit(`connection:${token}`)
     emitter.on(token, sendProgress)
 
     ws.on('message', (jsonData) => {

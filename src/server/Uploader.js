@@ -13,27 +13,15 @@ class Uploader {
     this.writer = fs.createWriteStream(this.options.path)
     this.emittedProgress = 0
     this.storage = options.storage
-    this.storage.uploads = this.storage.uploads || {}
-    this.saveState({
-      payload: { progress: 0, bytesUploaded: 0 }
-    })
-    this._socketConnectionHandlers = []
   }
 
   onSocketReady (callback) {
-    const handler = () => callback()
-    emitter.on(`initial-connection:${this.token}`, handler)
-    this._socketConnectionHandlers.push(handler)
+    emitter.once(`initial-connection:${this.token}`, () => callback())
   }
 
   cleanUp () {
     if (fs.existsSync(this.options.path)) {
       fs.unlink(this.options.path)
-    }
-
-    while (this._socketConnectionHandlers.length) {
-      const handler = this._socketConnectionHandlers.pop()
-      emitter.removeListener(`initial-connection:${this.token}`, handler)
     }
   }
 
@@ -69,8 +57,8 @@ class Uploader {
   }
 
   saveState (state) {
-    this.storage.uploads[this.token] = state
-    this.storage.save()
+    if (!this.storage) return
+    this.storage.set(this.token, JSON.stringify(state))
   }
 
   emitProgress (bytesUploaded, bytesTotal) {

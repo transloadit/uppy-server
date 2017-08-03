@@ -7,6 +7,7 @@ const s3 = require('./server/controllers/s3')
 const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
+const redis = require('redis')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -62,35 +63,47 @@ module.exports.app = (options = {}) => {
   return app
 }
 
-module.exports.socket = (server, session) => {
+module.exports.socket = (server, { redisUrl }) => {
   const wss = new SocketServer({ server })
 
   wss.on('connection', (ws) => {
-    session(ws.upgradeReq, {}, () => {
-      const fullPath = ws.upgradeReq.url
-      const token = fullPath.replace(/\/api\//, '')
+    const fullPath = ws.upgradeReq.url
+    const token = fullPath.replace(/\/api\//, '')
 
-      function sendProgress (data) {
-        ws.send(JSON.stringify(data), (err) => {
-          if (err) console.log(`Error: ${err}`)
-        })
-      }
-
-      const uploadState = ws.upgradeReq.session.uploads[token]
-
-      if (uploadState && uploadState.action) sendProgress(uploadState)
-      else emitter.emit(`initial-connection:${token}`)
-
-      emitter.on(token, sendProgress)
-
-      ws.on('message', (jsonData) => {
-        const data = JSON.parse(jsonData)
-        emitter.emit(`${data.action}:${token}`)
+    function sendProgress (data) {
+      ws.send(JSON.stringify(data), (err) => {
+        if (err) console.log(`Error: ${err}`)
       })
+    }
 
-      ws.on('close', () => {
-        emitter.removeListener(token, sendProgress)
+    if (redisUrl) {
+      // TODO: maybe redis client should be a global variable.
+      //    that is only created once.
+      redis.createClient({ url: redisUrl }).get(token, (err, data) => {
+        if (err) console.log(err)
+
+        if (!data) {
+          emitter.emit(`initial-connection:${token}`)
+        } else {
+          data = JSON.parse(data.toString())
+          if (data.action) {
+            sendProgress(data)
+          }
+        }
       })
+    } else {
+      emitter.emit(`initial-connection:${token}`)
+    }
+
+    emitter.on(token, sendProgress)
+
+    ws.on('message', (jsonData) => {
+      const data = JSON.parse(jsonData)
+      emitter.emit(`${data.action}:${token}`)
+    })
+
+    ws.on('close', () => {
+      emitter.removeListener(token, sendProgress)
     })
   })
 }

@@ -47,9 +47,7 @@ if (process.env.UPPYSERVER_REDIS_URL) {
   })
 }
 
-const sessionMiddleware = session(sessionOptions)
-
-app.use(sessionMiddleware)
+app.use(session(sessionOptions))
 
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL
@@ -114,7 +112,8 @@ const uppyOptions = {
     oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
     validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
   },
-  filePath: process.env.UPPYSERVER_DATADIR
+  filePath: process.env.UPPYSERVER_DATADIR,
+  redisUrl: process.env.UPPYSERVER_REDIS_URL
 }
 
 if (process.env.UPPYSERVER_SELF_ENDPOINT) {
@@ -144,4 +143,4 @@ if (app.get('env') === 'production') {
   })
 }
 
-module.exports = { app, sessionMiddleware }
+module.exports = { app, uppyOptions }

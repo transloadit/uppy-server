@@ -6,6 +6,9 @@
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
+  "bin": {
+    "uppy-server": "./lib/start-standalone.js"
+  },
   "lint-staged": {
     "*.js": "eslint"
   },

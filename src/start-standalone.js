@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const uppy = require('./uppy')
 const { app, uppyOptions } = require('./standalone')
 const PORT = process.env.UPPYSERVER_PORT || 3020

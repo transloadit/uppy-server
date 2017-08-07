@@ -90,16 +90,16 @@ To run uppy-server as a standalone server, you are required to set your uppy opt
 ```bash
 ####### Mandatory variables ###########
 export UPPYSERVER_DOMAIN="YOUR SERVER DOMAIN"
-export UPPYSERVER_DATADIR="PATH/TO/UPLOAD/DIRECTORY"
+export UPPYSERVER_DATADIR="PATH/TO/DOWNLOAD/DIRECTORY"
 
 ###### Optionional variables ##########
 export UPPYSERVER_PROTOCOL="YOUR SERVER PROTOCOL" # defaults to http
 export UPPYSERVER_PORT="YOUR SERVER PORT" # defaults to 3020
-export UPPYSERVER_PATH="/SERVER/PATH/TO/WHERE/UPPY/SERVER/LIVES" # defaults to ''
+export UPPYSERVER_PATH="/SERVER/PATH/TO/WHERE/UPPY-SERVER/LIVES" # defaults to ''
 
 # use this in place of UPPYSERVER_PATH if the server path should not be
 # handled by the express.js app but maybe by an external server configuration
-# instead.
+# instead (e.g Nginx).
 export UPPYSERVER_IMPLICIT_PATH="/SERVER/PATH/TO/WHERE/UPPY/SERVER/LIVES"
 
 # To enable redis session storage
@@ -131,8 +131,6 @@ export UPPYSERVER_DOMAINS="sub1.domain.com,sub2.domain.com,sub3.domain.com"
 # Only set this variable if you want uppy server to set the "i-am" header
 # in every response.
 export UPPYSERVER_SELF_ENDPOINT="THIS SHOULD BE SAME AS YOUR DOMAIN + PATH"
-export
-export
 ```
 
 ### Options
@@ -163,17 +161,18 @@ export
     host: "localhost:3020", // or yourdomain.com
     protocol: "http"
   },
-  filePath: "path/to/download/folder"
+  filePath: "path/to/download/folder",
+  sendSelfEndpoint: "localhost:3020"
 }
 ```
 
-1. filePath(required) - Full path to the directory where provider files would temporarily be downloaded to.
+1. **filePath(required)** - Full path to the directory where provider files would temporarily be downloaded to.
 
-2. redisUrl(optional) - URL to running redis server. If this is set, the state of uploads would be stored temporarily. This helps for resumed uploads after a browser crash from the client. The stored upload would be sent back to the client on reconnection.
+2. **redisUrl(optional)** - URL to running redis server. If this is set, the state of uploads would be stored temporarily. This helps for resumed uploads after a browser crash from the client. The stored upload would be sent back to the client on reconnection.
 
-3. providerOptions(optional) - An object containing credentials (`key` and `secret`) for each provider you would like to enable. Please [see](#supported-providers) for supported providers.
+3. **providerOptions(optional)** - An object containing credentials (`key` and `secret`) for each provider you would like to enable. Please [see](#supported-providers) for supported providers.
 
-4. server(optional) - An object with details mainly used to carry out oauth authentication from any of the enable providers above. Though it is optional, it is required if you would be enabling any of the supported providers. The following are the server options you may set
+4. **server(optional)** - An object with details mainly used to carry out oauth authentication from any of the enable providers above. Though it is optional, it is required if you would be enabling any of the supported providers. The following are the server options you may set
 
   - protocol - `http | https`
   - host(required) - your server host (e.g localhost:3020, mydomain.com)
@@ -181,7 +180,9 @@ export
   - oauthDoamin - if you have multiple instances of uppy server with different(and maybe dynamic) subdomains, you can set a master domain(e.g `sub1.mydomain.com`) to handle your oauth authentication for you. This would then redirect to the slave subdomain with the required credentials on completion.
   - validHosts - if you are setting a master `oauthDomain`, you need to set a list of valid hosts, so the master oauth handler can validate the host of the uppy instance requesting the authentication. This is basically a list of valid domains running your uppy server instances. The list may also contain regex patterns. e.g `['sub2.mydomain.com', 'sub3.mydomain.com', '(\\w+).mydomain.com']`
 
-5. customProviders - This option enables you add custom providers along with the already supported providers. [See](#adding-custom-providers) for more.
+5. **sendSelfEndpoint(optional)** - This is basically the same as the `server.host + server.path` attributes. The major reason for this attributes is that, when set, it adds the value as the `i-am` header of every request response.
+
+6. **customProviders(optional)** - This option enables you add custom providers along with the already supported providers. [See](#adding-custom-providers) for more.
 
 ### Adding Custom Providers
 

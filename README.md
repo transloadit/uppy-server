@@ -102,6 +102,10 @@ export UPPYSERVER_PATH="/SERVER/PATH/TO/WHERE/UPPY-SERVER/LIVES" # defaults to '
 # instead (e.g Nginx).
 export UPPYSERVER_IMPLICIT_PATH="/SERVER/PATH/TO/WHERE/UPPY/SERVER/LIVES"
 
+# camma separated client hosts to whitlelist by the server
+# if not specified, the server would allow any host
+export UPPY_ENDPOINTS="localhost:3452,uppy.io"
+
 # To enable redis session storage
 # and enable upload progress storage
 export UPPYSERVER_REDIS_URL="REDIS URL" 

@@ -16,14 +16,13 @@ class Instagram {
       .request(done)
   }
 
-  _getMediaUrl (body) {
+  _getMediaUrl (body, carouselId) {
     let mediaObj
     let type
 
     if (body.data.type === 'carousel') {
-      // carousels are not yet supported,
-      // so we download just the first file.
-      mediaObj = body.data.carousel_media[0]
+      carouselId = carouselId ? parseInt(carouselId) : 0
+      mediaObj = body.data.carousel_media[carouselId]
       type = mediaObj.type
     } else {
       mediaObj = body.data
@@ -33,13 +32,13 @@ class Instagram {
     return mediaObj[`${type}s`].standard_resolution.url
   }
 
-  download ({ id, token }, onData, onResponse) {
+  download ({ id, token, query = {} }, onData, onResponse) {
     return this.client
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
         if (err) return console.log('there was an error:', err)
-        request(this._getMediaUrl(body))
+        request(this._getMediaUrl(body, query.carousel_id))
           .on('response', onResponse)
           .on('error', (err) => {
             console.log('there was an error:', err)

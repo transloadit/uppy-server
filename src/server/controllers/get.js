@@ -22,7 +22,7 @@ function get (req, res) {
   })
 
   uploader.onSocketReady(() => {
-    provider.download({ id, token },
+    provider.download({ id, token, query: req.query },
     body.size ? uploader.handleChunk.bind(uploader) : null,
     !body.size ? uploader.handleResponse.bind(uploader) : null)
   })

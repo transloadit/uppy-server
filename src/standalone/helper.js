@@ -46,8 +46,8 @@ exports.validateConfig = () => {
     if (!process.env[i]) unspecified.push(i)
   })
   if (unspecified.length) {
-    console.error('\x1b[31m', 'Please specify the following environment ',
-      'variables to run uppy-server as Standalone: ', unspecified.join(','), '\x1b[0m')
+    console.error('\x1b[31m', 'Please specify the following environment',
+      'variables to run uppy-server as Standalone:\n', unspecified.join(',\n'), '\x1b[0m')
     process.exit(1)
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const uppy = require('./uppy')
-const { app, uppyOptions } = require('./standalone')
+const uppy = require('../uppy')
+const { app, uppyOptions } = require('./index')
 const PORT = process.env.UPPYSERVER_PORT || 3020
 
 uppy.socket(app.listen(PORT), uppyOptions)

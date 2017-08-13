@@ -1,5 +1,5 @@
 const express = require('express')
-const uppy = require('./uppy')
+const uppy = require('../uppy')
 const helmet = require('helmet')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
@@ -7,6 +7,8 @@ const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
+const helper = require('./helper')
+helper.validateConfig()
 
 const app = express()
 
@@ -50,7 +52,7 @@ if (process.env.UPPYSERVER_REDIS_URL) {
 app.use(session(sessionOptions))
 
 app.use((req, res, next) => {
-  const protocol = process.env.UPPYSERVER_PROTOCOL
+  const protocol = process.env.UPPYSERVER_PROTOCOL || 'http'
 
   if (process.env.UPPY_ENDPOINTS) {
     const whitelist = process.env.UPPY_ENDPOINTS
@@ -84,43 +86,8 @@ app.get('/', (req, res) => {
   )
 })
 
-// TODO: Rename providerOptions to providers.
-const uppyOptions = {
-  providerOptions: {
-    google: {
-      key: process.env.UPPYSERVER_GOOGLE_KEY,
-      secret: process.env.UPPYSERVER_GOOGLE_SECRET
-    },
-    dropbox: {
-      key: process.env.UPPYSERVER_DROPBOX_KEY,
-      secret: process.env.UPPYSERVER_DROPBOX_SECRET
-    },
-    instagram: {
-      key: process.env.UPPYSERVER_INSTAGRAM_KEY,
-      secret: process.env.UPPYSERVER_INSTAGRAM_SECRET
-    },
-    s3: {
-      key: process.env.UPPYSERVER_AWS_KEY,
-      secret: process.env.UPPYSERVER_AWS_SECRET,
-      bucket: process.env.UPPYSERVER_AWS_BUCKET,
-      region: process.env.UPPYSERVER_AWS_REGION
-    }
-  },
-  server: {
-    host: process.env.UPPYSERVER_DOMAIN,
-    protocol: process.env.UPPYSERVER_PROTOCOL,
-    path: process.env.UPPYSERVER_PATH || process.env.UPPYSERVER_IMPLICIT_PATH,
-    oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
-    validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
-  },
-  filePath: process.env.UPPYSERVER_DATADIR,
-  redisUrl: process.env.UPPYSERVER_REDIS_URL
-}
-
-if (process.env.UPPYSERVER_SELF_ENDPOINT) {
-  uppyOptions.sendSelfEndpoint = process.env.UPPYSERVER_SELF_ENDPOINT
-}
-
+// initialize uppy
+const uppyOptions = helper.getUppyOptions()
 if (process.env.UPPYSERVER_PATH) {
   app.use(process.env.UPPYSERVER_PATH, uppy.app(uppyOptions))
 } else {

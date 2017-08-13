@@ -89,6 +89,7 @@ To run uppy-server as a standalone server, you are required to set your uppy opt
 
 ```bash
 ####### Mandatory variables ###########
+export UPPYSERVER_SECRET="shh!Issa Secret!"
 export UPPYSERVER_DOMAIN="YOUR SERVER DOMAIN"
 export UPPYSERVER_DATADIR="PATH/TO/DOWNLOAD/DIRECTORY"
 

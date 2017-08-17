@@ -357,12 +357,12 @@ restart {
         state = "restarted"
       }
     }
-    tasks {
-      name   = "uppy-server | Restart redis"
-      service {
-        name  = "redis"
-        state = "restarted"
-      }
-    }
+    // tasks {
+    //   name   = "uppy-server | Restart redis"
+    //   service {
+    //     name  = "redis-server"
+    //     state = "restarted"
+    //   }
+    // }
   }
 }

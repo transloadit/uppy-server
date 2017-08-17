@@ -123,6 +123,7 @@ install {
         "mtr",
         "mysql-client",
         "nginx-light",
+        "redis-server",
         "psmisc",
         "telnet",
         "vim",
@@ -353,6 +354,13 @@ restart {
       name   = "uppy-server | Restart nginx"
       service {
         name  = "nginx"
+        state = "restarted"
+      }
+    }
+    tasks {
+      name   = "uppy-server | Restart redis"
+      service {
+        name  = "redis"
         state = "restarted"
       }
     }

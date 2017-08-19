@@ -1,6 +1,7 @@
 const atob = require('atob')
 const qs = require('querystring')
 const parseUrl = require('url').parse
+const hasMatch = require('../utils')
 
 module.exports = function oauthRedirect (req, res, next) {
   const query = Object.assign({}, req.query)
@@ -8,11 +9,7 @@ module.exports = function oauthRedirect (req, res, next) {
   const handler = state.uppyInstance
   const handlerHostName = parseUrl(handler).host
 
-  const isValidHost = req.uppyOptions.server.validHosts.some((url) => {
-    return handlerHostName === url || (new RegExp(url)).test(handlerHostName)
-  })
-
-  if (isValidHost) {
+  if (hasMatch(handlerHostName, req.uppyOptions.server.validHosts)) {
     const providerName = req.uppyProvider.authProvider
     const params = qs.stringify(query)
     const url = `${handler}/connect/${providerName}/callback?${params}`

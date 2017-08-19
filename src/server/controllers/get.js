@@ -1,5 +1,6 @@
 const Uploader = require('../Uploader')
 const redis = require('redis')
+const { hasMatch } = require('../utils')
 
 function get (req, res) {
   const providerName = req.params.providerName
@@ -9,7 +10,12 @@ function get (req, res) {
     ? req.session[providerName].token
     : body.token
   const provider = req.uppyProvider
-  const { redisUrl } = req.uppyOptions
+  const { redisUrl, uploadUrls } = req.uppyOptions
+
+  if (uploadUrls && body.endpoint && !hasMatch(body.endpoint, uploadUrls)) {
+    return res.sendStatus(400)
+  }
+
   const uploader = new Uploader({
     endpoint: body.endpoint,
     protocol: body.protocol,

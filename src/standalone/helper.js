@@ -1,5 +1,7 @@
 // TODO: Rename providerOptions to providers.
 exports.getUppyOptions = () => {
+  const uploadUrls = process.env.UPPYSERVER_UPLOAD_URLS
+
   return {
     providerOptions: {
       google: {
@@ -30,7 +32,8 @@ exports.getUppyOptions = () => {
     },
     filePath: process.env.UPPYSERVER_DATADIR,
     redisUrl: process.env.UPPYSERVER_REDIS_URL,
-    sendSelfEndpoint: process.env.UPPYSERVER_SELF_ENDPOINT
+    sendSelfEndpoint: process.env.UPPYSERVER_SELF_ENDPOINT,
+    uploadUrls: uploadUrls ? uploadUrls.split(',') : null
   }
 }
 

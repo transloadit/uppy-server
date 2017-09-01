@@ -6,6 +6,15 @@ jest.mock('purest')
 const request = require('supertest')
 const { authServer, noAuthServer } = require('../mockserver')
 
+describe('set i-am header', () => {
+  test('set i-am header in response', () => {
+    return request(authServer)
+      .get('/dropbox/list/')
+      .expect(200)
+      .then((res) => expect(res.header['i-am']).toBe('http://localhost:3020'))
+  })
+})
+
 describe('list provider files', () => {
   test('list files for dropbox', () => {
     return request(authServer)
@@ -61,5 +70,38 @@ describe('test authentication', () => {
       .get('/drive/logout/')
       .expect(200)
       .then((res) => expect(res.body.ok).toBe(true))
+  })
+})
+
+describe('connect to provider', () => {
+  test('connect to dropbox via grant.js endpoint', () => {
+    return request(authServer)
+      .get('/dropbox/connect?foo=bar')
+      .expect(302)
+      .expect('Location', '/connect/dropbox?foo=bar')
+  })
+
+  test('connect to drive via grant.js endpoint', () => {
+    return request(authServer)
+      .get('/drive/connect?foo=bar')
+      .expect(302)
+      .expect('Location', '/connect/google?foo=bar')
+  })
+})
+
+describe('handle oauth redirect', () => {
+  test('redirect to a valid uppy instance', () => {
+    const state = new Buffer(JSON.stringify({ uppyInstance: 'http://localhost:3020' })).toString('base64')
+    return request(authServer)
+      .get(`/dropbox/redirect?state=${state}`)
+      .expect(302)
+      .expect('Location', `http://localhost:3020/connect/dropbox/callback?state=${encodeURIComponent(state)}`)
+  })
+
+  test('do not redirect to invalid uppy instances', () => {
+    const state = new Buffer(JSON.stringify({ uppyInstance: 'http://localhost:3452' })).toString('base64')
+    return request(authServer)
+      .get(`/dropbox/redirect?state=${state}`)
+      .expect(400)
   })
 })

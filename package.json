@@ -88,7 +88,7 @@
     "start:production": "node ./lib/standalone/start-server.js",
     "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3020 UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/standalone/start-server.js --exec babel-node'",
     "start:40": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3040 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3040 UPPY_ENDPOINT=localhost:3452 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/standalone/start-server.js --exec babel-node'",
-    "test": "npm run lint && source env.test.sh && jest",
+    "test": "bash -c 'npm run lint && source env.test.sh && jest'",
     "test:watch": "npm test -- --watch"
   }
 }

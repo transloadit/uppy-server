@@ -1,6 +1,6 @@
 const express = require('express')
 const Grant = require('grant-express')
-const grantConfig = require('./config/grant')
+const grantConfig = require('./config/grant')()
 const providerManager = require('./server/provider')
 const dispatcher = require('./server/controllers/dispatcher')
 const s3 = require('./server/controllers/s3')

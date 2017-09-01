@@ -1,7 +1,7 @@
 const atob = require('atob')
 const qs = require('querystring')
 const parseUrl = require('url').parse
-const hasMatch = require('../utils')
+const { hasMatch } = require('../utils')
 
 module.exports = function oauthRedirect (req, res, next) {
   const query = Object.assign({}, req.query)
@@ -16,5 +16,5 @@ module.exports = function oauthRedirect (req, res, next) {
     return res.redirect(url)
   }
 
-  next(new Error('Invalid Host in state'))
+  res.status(400).send('Invalid Host in state')
 }

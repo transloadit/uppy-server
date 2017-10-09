@@ -44,6 +44,7 @@
     "express-validator": "3.1.2",
     "grant-express": "3.7.0",
     "helmet": "3.3.0",
+    "jsonwebtoken": "^8.0.1",
     "lodash.merge": "^4.6.0",
     "mime-types": "2.1.12",
     "morgan": "1.8.2",

@@ -3,15 +3,19 @@
  * and redirects to redirect url.
  */
 const atob = require('atob')
+const tokenService = require('../token-service')
 
 module.exports = function callback (req, res, next) {
   const providerName = req.params.providerName
 
-  if (!req.session[providerName]) {
-    req.session[providerName] = {}
+  if (!req.uppyProviderTokens) {
+    req.uppyProviderTokens = {}
   }
 
-  req.session[providerName].token = req.query.access_token
+  req.uppyProviderTokens[providerName] = req.query.access_token
+  const uppyAuthToken = tokenService.generateToken(req.uppyProviderTokens, req.uppyOptions.secret)
+  tokenService.setToken(res, uppyAuthToken)
+
   if (req.session.grant.state) {
     // TODO: confirm if the direct is one of uppy endpoints
     //    or just validate this redirect someway, since it's coming

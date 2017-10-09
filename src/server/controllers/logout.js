@@ -1,9 +1,12 @@
+const tokenService = require('../token-service')
+
 function logout (req, res) {
   const session = req.session
   const providerName = req.params.providerName
 
-  if (session[providerName]) {
-    session[providerName].token = null
+  if (req.uppyProviderTokens[providerName]) {
+    delete req.uppyProviderTokens[providerName]
+    tokenService.setToken(res, tokenService.generateToken(req.uppyProviderTokens, req.uppyOptions.secret))
   }
 
   if (session.grant) {

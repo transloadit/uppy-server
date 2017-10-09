@@ -19,6 +19,7 @@ const collectDefaultMetrics = promClient.collectDefaultMetrics
 collectDefaultMetrics({ register: promClient.register })
 
 // log server requests.
+// TODO: do not log requests with access tokens
 app.use(morgan('combined'))
 
 // make app metrics available at '/metrics'.

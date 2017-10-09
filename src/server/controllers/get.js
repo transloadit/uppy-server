@@ -6,9 +6,7 @@ function get (req, res) {
   const providerName = req.params.providerName
   const id = req.params.id
   const body = req.body
-  const token = req.session[providerName]
-    ? req.session[providerName].token
-    : body.token
+  const token = req.uppyProviderTokens[providerName]
   const provider = req.uppyProvider
   const { redisUrl, uploadUrls } = req.uppyOptions
 
@@ -29,8 +27,8 @@ function get (req, res) {
 
   uploader.onSocketReady(() => {
     provider.download({ id, token, query: req.query },
-    body.size ? uploader.handleChunk.bind(uploader) : null,
-    !body.size ? uploader.handleResponse.bind(uploader) : null)
+      body.size ? uploader.handleChunk.bind(uploader) : null,
+      !body.size ? uploader.handleResponse.bind(uploader) : null)
   })
   const response = uploader.getResponse()
   return res.status(response.status).json(response.body)

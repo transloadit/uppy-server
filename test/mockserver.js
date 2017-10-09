@@ -5,12 +5,6 @@ const session = require('express-session')
 var authServer = express()
 
 authServer.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
-authServer.all('*', (req, res, next) => {
-  req.session.dropbox = {token: 'token value'}
-  req.session.drive = {token: 'token value'}
-  next()
-})
-
 authServer.all('/drive/callback', (req, res, next) => {
   req.session.grant = { state: new Buffer(JSON.stringify({ redirect: 'http://redirect.foo' })).toString('base64') }
   next()

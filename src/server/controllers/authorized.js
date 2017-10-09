@@ -1,13 +1,12 @@
-function authorized ({ params, session, uppyProvider }, res) {
+function authorized ({ params, uppyProviderTokens, uppyProvider }, res) {
   const providerName = params.providerName
 
-  if (!session[providerName] || !session[providerName].token) {
+  if (!uppyProviderTokens || !uppyProviderTokens[providerName]) {
     return res.json({ authenticated: false })
   }
-  const provider = uppyProvider
-  const token = session[providerName].token
 
-  provider.list({ token }, (err, response, body) => {
+  const token = uppyProviderTokens[providerName]
+  uppyProvider.list({ token }, (err, response, body) => {
     const notAuthenticated = Boolean(err)
     return res.json({ authenticated: !notAuthenticated })
   })

@@ -1,10 +1,7 @@
 function thumbnail (req, res) {
   const providerName = req.params.providerName
   const id = req.params.id
-  const body = req.body
-  const token = req.session[providerName]
-    ? req.session[providerName].token
-    : body.token
+  const token = req.uppyProviderTokens[providerName]
   const provider = req.uppyProvider
 
   provider.thumbnail({ id, token }, (response) => response ? response.pipe(res) : res.sendStatus(404))

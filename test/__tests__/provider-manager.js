@@ -1,4 +1,4 @@
-/*global jest:false, test:false, expect:false, describe:false, beforeEach:false*/
+/* global jest:false, test:false, expect:false, describe:false, beforeEach:false */
 
 const providerManager = require('../../src/server/provider')
 let grantConfig

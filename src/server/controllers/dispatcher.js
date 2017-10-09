@@ -1,3 +1,5 @@
+const tokenService = require('../token-service')
+
 const handlers = {
   authorized: { self: require('./authorized') },
   callback: { self: require('./callback') },
@@ -10,6 +12,7 @@ const handlers = {
 }
 
 function routeDispatcher (req, res, next) {
+  // TODO: confirm if we still need to check for session.
   if (!req.session || !req.body) {
     return next()
   }
@@ -21,12 +24,12 @@ function routeDispatcher (req, res, next) {
     return next()
   }
 
-  if (handler.requiresAuth) {
-    const providerName = req.params.providerName
-    if (!req.session[providerName] || !req.session[providerName].token) {
-      return res.sendStatus(401)
-    }
+  const providerName = req.params.providerName
+  const { err, payload } = tokenService.verifyToken(req.uppyAuthToken, req.uppyOptions.secret)
+  if (handler.requiresAuth && (err || !payload[providerName])) {
+    return res.sendStatus(401)
   }
+  req.uppyProviderTokens = payload
 
   if (handler.requiresId && !req.params.id) {
     return next()

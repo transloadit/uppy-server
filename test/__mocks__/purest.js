@@ -1,12 +1,12 @@
 const fs = require('fs')
 
 class MockPurest {
-  constructor (options) {
-    const methodsToMock = ['query', 'select', 'where', 'auth', 'get', 'put', 'post']
+  constructor (opts) {
+    const methodsToMock = ['query', 'select', 'where', 'auth', 'get', 'put', 'post', 'options', 'json']
     methodsToMock.forEach((item) => {
       this[item] = () => this
     })
-    this.options = options
+    this.opts = opts
   }
 
   request (done) {
@@ -14,7 +14,7 @@ class MockPurest {
       const responses = {
         dropbox: {
           hash: '0a9f95a989dd4b1851f0103c31e304ce',
-          contents: [{ rev: 'f24234cd4' }]
+          entries: [{ rev: 'f24234cd4' }]
         },
         drive: {
           kind: 'drive#fileList',
@@ -22,7 +22,7 @@ class MockPurest {
           items: [{ id: '0B2x-PmqQHSKdT013TE1VVjZ3TWs' }]
         }
       }
-      const body = responses[this.options.providerName]
+      const body = responses[this.opts.providerName]
       done(null, { body }, body)
     }
 

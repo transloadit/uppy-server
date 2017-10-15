@@ -15,10 +15,14 @@ class DropBox {
 
   stats ({ directory, query, token }, done) {
     this.client
-      .query()
-      .select(`metadata/auto/${directory || ''}`)
+      .post('files/list_folder')
+      .options({version: '2'})
       .where(query)
       .auth(token)
+      .json({
+        path: `${directory || ''}`,
+        include_media_info: true
+      })
       .request(done)
   }
 
@@ -28,6 +32,7 @@ class DropBox {
     const request = this.client
       .query('files')
       .put(`files_put/auto/${name}`)
+      .options({version: '2'})
       .auth(options.token)
       .request(done)
 
@@ -38,8 +43,13 @@ class DropBox {
 
   download ({ id, token }, onData) {
     return this.client
-      .query('files')
-      .get(`files/auto/${id}`)
+      .post('https://content.dropboxapi.com/2/files/download')
+      .options({
+        version: '2',
+        headers: {
+          'Dropbox-API-Arg': JSON.stringify({path: `${id}`})
+        }
+      })
       .auth(token)
       .request()
       .on('data', onData)
@@ -50,8 +60,13 @@ class DropBox {
 
   thumbnail ({id, token}, done) {
     return this.client
-      .query('files')
-      .get(`thumbnails/auto/${id}`)
+      .post('https://content.dropboxapi.com/2/files/download/get_thumbnail')
+      .options({
+        version: '2',
+        headers: {
+          'Dropbox-API-Arg': JSON.stringify({path: `${id}`})
+        }
+      })
       .auth(token)
       .request()
       .on('response', done)

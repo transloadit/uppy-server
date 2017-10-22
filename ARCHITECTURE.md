@@ -1,4 +1,4 @@
-Uppy Server is the server side component for Uppy.  It is currently built with the Koa framework for Node.js.  
+Uppy Server is the server side component for Uppy.  It is currently built with the Express.js.
 The purpose of Uppy Server is to interface with third party APIs and handle remote file uploading from them.
 
 # How it works
@@ -25,7 +25,8 @@ redirects to Google's oAuth page.  So on the client side, you just need to link 
 
 After the user completes the oAuth flow, they should always be redirected to `https://your-server/:provider/callback`.
 The `/:provider/callback` routes are handled by the `callback` controller at `server/controllers/callback.js`.  
-This controller saves the oAuth token to the user's session and redirects the user.
+This controller receives the oAuth token, generates a json web token with it, and sends the generated json web token to the client by adding it to the cookies. This way uppy-server doesn't have to save users' oAuth tokens (which is good from the security perspective).
+This json web token would be sent to uppy-server in subsequent requests and the oAuth token can be read from it.
 
 ## Routing And Controllers
 There are four generic routes:
@@ -43,7 +44,7 @@ There are 5 controllers:
 
 | controller | description |
 | ---------- | ----------- |
-| `auth` | checks if the current user is authenticated |
+| `authorized` | checks if the current user is authorized |
 | `callback` | handles redirect from oAuth.  Stores oAuth token in user session and redirects user. |
 | `get` | downloads files from third party APIs, writes them to disk, and uploads them to the target server |
 | `list` | fetches a list of files, usually from a specified directory |
@@ -69,15 +70,13 @@ When a request is made to `/:provider/get` to start a transfer, a token is gener
 
 WebSockets aren't particularly secure, but we feel this is safe because the token is only usable during the corresponding file transfer, and no sensitive information is being sent, only a file id and the progress.
 
-**Note:** Tus doesn't currently handle progress when used on the server side.  It will only emit a progress event when the upload is completed.
-
 # Design Goals
 These are the goals I had in mind while designing and building Uppy Server.
 
 ## Standalone Server / Pluggable Module
 Uppy Server currently works as a standalone server.  It should also work as a module that can easily be incorporated into an already existing server, so people don't have to manage another server just to use Uppy.
 
-One issue here is that `Grant` has different versions for Koa, Express, and Hapi.  We're using `grant-koa` right now, and also use all Koa modules.  This becomes a problem if someone is using Express, or Hapi, or something else.  I don't think we can make Uppy Server completely framework agnostic, so best case scenario would be to follow Grant and make versions for Koa, Hapi, and Express.
+One issue here is that `Grant` has different versions for Koa, Express, and Hapi.  We're using `grant-express` right now, and also use all express modules.  This becomes a problem if someone is using Koa, or Hapi, or something else.  I don't think we can make Uppy Server completely framework agnostic, so best case scenario would be to follow Grant and make versions for Koa, Hapi, and Express.
 
 All of this may be more trouble than it's worth if no one needs it, so I'd get some community feedback beforehand.
 

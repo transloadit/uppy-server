@@ -7,7 +7,7 @@
 Uppy-server is a server integration for [Uppy](https://github.com/transloadit/uppy) file uploader.
 
 It handles the server-to-server communication between your server and file storage providers such as Google Drive, Dropbox,
-Instagram, etc.
+Instagram, etc. [See here for full documentation](https://uppy.io/docs/server/)
 
 ## Install
 

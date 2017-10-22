@@ -25,6 +25,8 @@ function get (req, res) {
     storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
   })
 
+  // wait till the client has connected to the socket, before starting
+  // the download, so that the client can receive all download/upload progress.
   uploader.onSocketReady(() => {
     provider.download({ id, token, query: req.query },
       body.size ? uploader.handleChunk.bind(uploader) : null,

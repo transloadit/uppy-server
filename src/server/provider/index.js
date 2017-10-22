@@ -4,6 +4,8 @@ const drive = require('./drive')
 const instagram = require('./instagram')
 
 module.exports.getProviderMiddleware = (providers) => {
+  // adds the desired provider module to the request object,
+  // based on the providerName parameter specified.
   return (req, res, next, providerName) => {
     if (providers[providerName] && validOptions(req.uppyOptions)) {
       req.uppyProvider = new providers[providerName]({ providerName, config })

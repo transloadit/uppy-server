@@ -1,3 +1,4 @@
+// oauth configuration for provider services that are used.
 module.exports = () => {
   return {
     google: {

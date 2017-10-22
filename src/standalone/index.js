@@ -12,8 +12,8 @@ helper.validateConfig()
 
 const app = express()
 
+// for server metrics tracking.
 const metricsMiddleware = promBundle({includeMethod: true, includePath: true})
-
 const promClient = metricsMiddleware.promClient
 const collectDefaultMetrics = promClient.collectDefaultMetrics
 collectDefaultMetrics({ register: promClient.register })
@@ -55,6 +55,9 @@ app.use(session(sessionOptions))
 app.use((req, res, next) => {
   const protocol = process.env.UPPYSERVER_PROTOCOL || 'http'
 
+  // if endpoint urls are specified, then we only allow those endpoints
+  // otherwise, we allow any client url to access uppy-server.
+  // here we also enforce that only the protocol allowed by uppy-server is used.
   if (process.env.UPPY_ENDPOINTS) {
     const whitelist = process.env.UPPY_ENDPOINTS
       .split(',')

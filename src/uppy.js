@@ -18,17 +18,7 @@ const defaultOptions = {
   providerOptions: {}
 }
 
-/**
- * @param {Object} options - configurations for the uppy app.
- * Valid configuration options include:
- *  customProviders - an object of the format:
- *    {[providerName]: {
- *        config: provider config,
- *        module: provider module
- *      }
- *    }
- * @return express js pluggagle app.
- */
+// Entry point into initializing the uppy-server app.
 module.exports.app = (options = {}) => {
   options = merge({}, defaultOptions, options)
   providerManager.addProviderOptions(options, grantConfig)
@@ -40,17 +30,17 @@ module.exports.app = (options = {}) => {
 
   const app = express()
   app.use(new Grant(grantConfig))
-
   if (options.sendSelfEndpoint) {
     app.use('*', (req, res, next) => {
       const { protocol } = options.server
       res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
-      // maybe this should be concatenated with its previously set value.
-      res.header('Access-Control-Expose-Headers', 'i-am')
+      // add it to the exposed custom headers.
+      res.header('Access-Control-Expose-Headers', [res.get('Access-Control-Expose-Headers'), 'i-am'].join(', '))
       next()
     })
   }
 
+  // add uppy options to the request object so it can be accessed by subsequent handlers.
   app.use('*', getOptionsMiddleware(options))
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)
@@ -63,11 +53,17 @@ module.exports.app = (options = {}) => {
   return app
 }
 
+// the socket is used to send progress events during an upload
 module.exports.socket = (server, { redisUrl }) => {
   const wss = new SocketServer({ server })
 
+  // A new connection is usually created when an upload begins,
+  // or when connection fails while an upload is on-going and,
+  // client attempts to reconnect.
   wss.on('connection', (ws) => {
     const fullPath = ws.upgradeReq.url
+    // the token identifies which ongoing upload's progress, the socket
+    // connection wishes to listen to.
     const token = fullPath.replace(/\/api\//, '')
 
     function sendProgress (data) {
@@ -76,6 +72,8 @@ module.exports.socket = (server, { redisUrl }) => {
       })
     }
 
+    // if the redis url is set, then we attempt to check the storage
+    // if we have any already stored progress data on the upload.
     if (redisUrl) {
       // TODO: maybe redis client should be a global variable.
       //    that is only created once.

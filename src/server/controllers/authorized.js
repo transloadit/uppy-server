@@ -1,3 +1,7 @@
+// checks if uppy-server is authorized to access a user's
+// provider account.
+// TODO: this function seems uneccessary. Might be better to just
+// have this as a middleware that is used for all auth required routes.
 function authorized ({ params, uppyProviderTokens, uppyProvider }, res) {
   const providerName = params.providerName
 

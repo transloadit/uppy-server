@@ -1,5 +1,5 @@
 /**
- * oAuth callback.  Adds access token to session store
+ * oAuth callback.  Encripts the access token and sends the new token with the response,
  * and redirects to redirect url.
  */
 const atob = require('atob')
@@ -14,6 +14,7 @@ module.exports = function callback (req, res, next) {
 
   req.uppyProviderTokens[providerName] = req.query.access_token
   const uppyAuthToken = tokenService.generateToken(req.uppyProviderTokens, req.uppyOptions.secret)
+  // add the token to the response
   tokenService.setToken(res, uppyAuthToken)
 
   if (req.session.grant.state) {

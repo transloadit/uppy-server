@@ -1,3 +1,6 @@
+// Reads all uppy-server configuration set via environment variables
+// and builds them into an object which can be passed as options to
+// the uppy.app method.
 // TODO: Rename providerOptions to providers.
 exports.getUppyOptions = () => {
   const uploadUrls = process.env.UPPYSERVER_UPLOAD_URLS
@@ -38,6 +41,8 @@ exports.getUppyOptions = () => {
   }
 }
 
+// validates that the mandatory uppy-server options are set
+// in the environment variables.
 exports.validateConfig = () => {
   const mandatoryOptions = [
     'UPPYSERVER_SECRET',

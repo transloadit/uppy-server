@@ -1,6 +1,7 @@
 const atob = require('atob')
 const qs = require('querystring')
 
+// initializes the oAuth flow for a provider.
 module.exports = function connect (req, res, next) {
   const query = Object.assign({}, req.query)
   const { path } = req.uppyOptions.server

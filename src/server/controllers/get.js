@@ -1,8 +1,13 @@
 const Uploader = require('../Uploader')
 const redis = require('redis')
 const { hasMatch } = require('../utils')
+const validator = require('validator')
 
 function get (req, res) {
+  if (!validData(req.body)) {
+    return res.sendStatus(400)
+  }
+
   const providerName = req.params.providerName
   const id = req.params.id
   const body = req.body
@@ -36,4 +41,15 @@ function get (req, res) {
   return res.status(response.status).json(response.body)
 }
 
+const validData = (data) => {
+  if (data.size) {
+    return !isNaN(data.size)
+  }
+
+  if (data.endpoint) {
+    return validator.isURL(data.endpoint, { require_protocol: true })
+  }
+
+  return true
+}
 exports = module.exports = get

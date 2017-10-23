@@ -12,7 +12,6 @@ const handlers = {
 }
 
 function routeDispatcher (req, res, next) {
-  // TODO: confirm if we still need to check for session.
   if (!req.session || !req.body) {
     return next()
   }

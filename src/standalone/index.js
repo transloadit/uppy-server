@@ -1,4 +1,5 @@
 const express = require('express')
+const qs = require('querystring')
 const uppy = require('../uppy')
 const helmet = require('helmet')
 const morgan = require('morgan')
@@ -19,8 +20,17 @@ const collectDefaultMetrics = promClient.collectDefaultMetrics
 collectDefaultMetrics({ register: promClient.register })
 
 // log server requests.
-// TODO: do not log requests with access tokens
 app.use(morgan('combined'))
+morgan.token('url', (req, res) => {
+  // don't log access_tokens in urls
+  if (req.query && req.query.access_token) {
+    const query = Object.assign({}, req.query)
+    // replace logged access token with xxxx character
+    query.access_token = 'x'.repeat(req.query.access_token.length)
+    return `${req.path}?${qs.stringify(query)}`
+  }
+  return req.originalUrl || req.url
+})
 
 // make app metrics available at '/metrics'.
 app.use(metricsMiddleware)

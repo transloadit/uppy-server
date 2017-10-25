@@ -81,12 +81,12 @@ class Uploader {
   }
 
   emitSuccess (url) {
-    const emtiData = {
+    const emitData = {
       action: 'success',
       payload: { complete: true, url }
     }
-    this.saveState(emtiData)
-    emitter.emit(this.token, emtiData)
+    this.saveState(emitData)
+    emitter.emit(this.token, emitData)
   }
 
   uploadTus () {

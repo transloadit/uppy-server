@@ -15,7 +15,7 @@ addons:
     packages:
     - g++-4.8
 before_script:
-- scripts/rebuild-env.sh
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
 - npm test
 env:

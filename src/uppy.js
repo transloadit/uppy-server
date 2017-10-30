@@ -62,6 +62,7 @@ module.exports.socket = (server, { redisUrl }) => {
   // client attempts to reconnect.
   wss.on('connection', (ws) => {
     const fullPath = ws.upgradeReq.url
+    let redisClient
     // the token identifies which ongoing upload's progress, the socket
     // connection wishes to listen to.
     const token = fullPath.replace(/\/api\//, '')
@@ -75,9 +76,10 @@ module.exports.socket = (server, { redisUrl }) => {
     // if the redis url is set, then we attempt to check the storage
     // if we have any already stored progress data on the upload.
     if (redisUrl) {
-      // TODO: maybe redis client should be a global variable.
-      //    that is only created once.
-      redis.createClient({ url: redisUrl }).get(token, (err, data) => {
+      if (!redisClient) {
+        redisClient = redis.createClient({ url: redisUrl })
+      }
+      redisClient.get(token, (err, data) => {
         if (err) console.log(err)
         if (data) {
           data = JSON.parse(data.toString())

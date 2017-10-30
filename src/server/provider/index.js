@@ -9,6 +9,8 @@ module.exports.getProviderMiddleware = (providers) => {
   return (req, res, next, providerName) => {
     if (providers[providerName] && validOptions(req.uppyOptions)) {
       req.uppyProvider = new providers[providerName]({ providerName, config })
+    } else {
+      console.warn('uppy: Invalid provider options detected. Provider will not be loaded')
     }
     next()
   }
@@ -27,6 +29,7 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
 
 module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) => {
   if (!validOptions({ server, providerOptions })) {
+    console.warn('uppy: Invalid provider options detected. Providers will not be loaded')
     return
   }
 

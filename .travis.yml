@@ -20,7 +20,7 @@ before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
 - npm test
-- docker build -t uppy-server .
+- docker-compose build
 env:
   global:
   - CXX=g++-4.8

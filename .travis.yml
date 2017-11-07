@@ -4,8 +4,6 @@ services:
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
-- docker build -t uppy-server .
-- docker tag uppy-server transloadit/uppy-server:$TRAVIS_COMMIT
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1
@@ -50,6 +48,8 @@ deploy:
     branch: master
 after_success:
   - if [ "$TRAVIS_BRANCH" == "docker-k8s" ]; then
+    docker build -t uppy-server .;
+    docker tag uppy-server transloadit/uppy-server:$TRAVIS_COMMIT;
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push transloadit/uppy-server:$TRAVIS_COMMIT;
     fi

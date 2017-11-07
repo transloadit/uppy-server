@@ -2,8 +2,7 @@ version: '2'
 
 services:
   uppy:
-    image: uppy-server
+    image: uppy-server-test
     build:
       context: .
-      dockerfile: Dockerfile
-    command: ["npm", "test"]
+      dockerfile: Dockerfile.test

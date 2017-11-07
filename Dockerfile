@@ -14,7 +14,6 @@ RUN apk --update add  --virtual native-dep \
 
 COPY . /app
 RUN npm install -g nodemon
-CMD ["node","/app/lib/standalone/start-server.js"]
 # This can be overwritten later
 EXPOSE 3020
 

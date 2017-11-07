@@ -4,6 +4,7 @@ services:
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
+- docker build -t uppy-server .
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1

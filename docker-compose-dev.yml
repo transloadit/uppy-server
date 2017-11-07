@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  uppy-server:
+  uppy:
     image: uppy-server:latest
     build:
       context: .

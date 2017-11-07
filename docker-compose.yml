@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  uppy-server:
+    image: uppy-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "3020:3020"
+    command: ["/usr/bin/nodemon", "/app/lib/standalone/start-server.js", "--config", "/app/nodemon.json"]

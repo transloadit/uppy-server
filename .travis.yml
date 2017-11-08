@@ -50,4 +50,5 @@ after_success:
     docker build -t transloadit/uppy-server:latest -t transloadit/uppy-server:$TRAVIS_COMMIT .;
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push transloadit/uppy-server:$TRAVIS_COMMIT;
+    docker push transloadit/uppy-server:latest;
     fi

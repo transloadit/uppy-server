@@ -1,9 +1,25 @@
+language: node_js
 sudo: true
+cache:
+  apt: true
+  directories:
+  - node_modules
+  - /home/travis/.frey/tools
+  - ~/.pyenv
 services:
   - docker
+node_js:
+- 6.11.1
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
+- npm test
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1

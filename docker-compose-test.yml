@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  uppy:
+    image: uppy-server
+    build:
+      context: .
+      dockerfile: Dockerfile.test

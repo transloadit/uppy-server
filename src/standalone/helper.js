@@ -60,3 +60,7 @@ exports.validateConfig = () => {
     process.exit(1)
   }
 }
+
+exports.hasProtocol = (url) => {
+  return url.startsWith('http://') || url.startsWith('https://')
+}

@@ -69,7 +69,7 @@ app.use((req, res, next) => {
   if (process.env.UPPY_ENDPOINTS) {
     const whitelist = process.env.UPPY_ENDPOINTS
       .split(',')
-      .map((domain) => `${protocol}://${domain}`)
+      .map((url) => helper.hasProtocol(url) ? url : `${protocol}://${url}`)
 
     if (req.headers.origin && whitelist.indexOf(req.headers.origin) > -1) {
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin)

@@ -17,4 +17,17 @@ spec:
         envFrom:
         - configMapRef:
             name: uppy-server-env
-            
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 60    

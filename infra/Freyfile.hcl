@@ -54,7 +54,7 @@ infra resource aws_instance "uppy-server" {
   key_name        = "${aws_key_pair.uppy-server.key_name}"
   security_groups = ["fw-uppy-server"]
   connection {
-    private_key = "{{{config.global.ssh.privatekey_file}}}"
+    private_key = "${file("{{{config.global.ssh.privatekey_file}}}")}"
     user        = "{{{config.global.ssh.user}}}"
   }
   tags {
@@ -63,7 +63,7 @@ infra resource aws_instance "uppy-server" {
   provisioner "remote-exec" {
     inline = ["sudo pwd"]
     connection {
-      private_key = "{{{config.global.ssh.privatekey_file}}}"
+      private_key = "${file("{{{config.global.ssh.privatekey_file}}}")}"
       user        = "{{{config.global.ssh.user}}}"
     }
   }

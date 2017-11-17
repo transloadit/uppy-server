@@ -71,7 +71,7 @@
   "scripts": {
     "build": "babel src --out-dir lib",
     "console": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra",
-    "deploy:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey setup --force-yes --project-dir ./infra'",
+    "deploy:travis": "bash -c 'source env.sh && env DEBUG=\"\" frey install --force-yes --project-dir ./infra'",
     "deploy:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run deploy",
     "deploy": "source env.sh && ${FREYCMD:-frey} setup --project-dir ./infra",
     "fix": "eslint . --fix",

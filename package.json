@@ -1,11 +1,25 @@
 {
   "name": "uppy-server",
   "version": "0.9.0",
-  "description": "Almost as cute as a Puppy :dog:",
+  "description": "Server component for Uppy's (https://uppy.io) extensible file upload widget with support for drag&drop, resumable uploads, previews, restrictions, file processing/encoding, remote providers like Dropbox and Google Drive, S3 and more :dog:",
   "main": "lib/uppy.js",
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
+  "keywords": [
+    "file uploader",
+    "progress",
+    "preview",
+    "resumable uploads",
+    "tus",
+    "s3",
+    "google drive",
+    "dropbox",
+    "backend",
+    "websocket",
+    "express",
+    "realtime"
+  ],
   "bin": {
     "uppy-server": "./lib/standalone/start-server.js"
   },

@@ -6,6 +6,10 @@
   "author": "Transloadit.com",
   "license": "ISC",
   "homepage": "https://github.com/transloadit/uppy-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/transloadit/uppy-server.git"
+  },
   "keywords": [
     "file uploader",
     "progress",

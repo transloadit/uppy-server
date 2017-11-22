@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: uppy-server
+    spec:
+      containers:
+      - image: docker.io/transloadit/uppy-server:latest
+        imagePullPolicy: Always
+        name: uppy-server
+        envFrom:
+        - configMapRef:
+            name: uppy-server-env
+        ports:
+        - containerPort: 3020

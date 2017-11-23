@@ -17,7 +17,7 @@ script:
 - gcloud --quiet version
 - gcloud --quiet components update
 - gcloud --quiet components update kubectl
-- echo $GCLOUD_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
+- echo $GCLOUD_KEY | python -m base64 -d > ${HOME}/gcloud-service-key.json
 - cat ${HOME}/gcloud-service-key.json
 - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
 env:

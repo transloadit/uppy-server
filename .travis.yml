@@ -57,7 +57,7 @@ deploy:
     branch: master
   skip_cleanup: true
   provider: script
-  script: scripts/gcloud-deploy.sh
+  script: infra/kube/gcloud-deploy.sh
   on:
     branch: kubernetes
 after_success:

@@ -8,8 +8,10 @@ services:
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
-- echo $GCLOUD_KEY
-- echo $GCLOUD_KEY | base64 --decode -i
+- docker-compose -f docker-compose-test.yml build
+- docker-compose -f docker-compose-test.yml -p ci up
+- docker logs -f ci_uppy_1
+- docker wait ci_uppy_1
 env:
   global:
   - secure: 3RPBBbMob6VhV3uWdKMWcDWqlmJh2Z6twNW3KdneOlMHpyO8MUzU16y6zZgErCrQ74MCCSz3Z56iGHdg04T6j6KBy+czDAQ14m28LBMvjKrVdzMrwdampzajzFNPuc65Up8vFWiZPRoySHkDAOJaChUccO11BFMkAXsK8BZNeX/d6w2/jgCfd/HxwEMnfQa3ldEViTiRw9jXiEkxsASHtRguj9gUVCm5EoA6XfGkGbsBBF6D1WJrb5pu2TAjdlQ0vJiAFuExOkEtP0cgJ8CkbgZfKAyrBhm7eI/I2f0/pMzeNxgfoQPkMcRztuGnL6NChukOr9W95BDMeTXX6zfVpI8OpIzseC2c6vvA/MbIxxnPhPHx4zveSRh2iCd5kRiB7MK8oXgN/1NKEO+jIwH5Cxg9RiGTM8ws88GZxFQrqK8rRsSD3Cr3+O5kp2J5XT2GCNbWcPF7RiRmy1lTWe9O5qYJFOB0msIpR7Sp0hwYrwGLGirVZ52nZZMhLw9Tt8fWdhjUA4ZCgtv3B0gKeQWpwnn5Y9lJB31+X6su0iys2sAXNFlxJ2ZgUzSPTzvd5MFHdAWlG7/4Np9aHtxULeiAnYbx/tQGgqakj3e2XNiywIhi+lQqzA7JKhPeEXRt6rzBTQCYhF5GBYQirm/zoLpXrxNb2WTH4BP/Igdlh8VsDMw=
@@ -58,10 +60,3 @@ deploy:
   script: infra/kube/gcloud-deploy.sh
   on:
     branch: kubernetes
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker build --quiet -t transloadit/uppy-server:latest -t transloadit/uppy-server:$TRAVIS_COMMIT .;
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push transloadit/uppy-server:$TRAVIS_COMMIT;
-    docker push transloadit/uppy-server:latest;
-    fi

@@ -5,7 +5,7 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __kube="${__dir}"
 
 
-echo $GCLOUD_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
+echo -n `echo $GCLOUD_KEY | base64 --decode -i` > ${HOME}/gcloud-service-key.json
 gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
 
 echo $UPPY_ENV | base64 --decode -i > "${__kube}/uppy-server/uppy-env.yaml"

@@ -41,3 +41,4 @@ test/output/*
 
 # Transpiled
 lib/
+infra/kube/uppy-server/uppy-env.yaml

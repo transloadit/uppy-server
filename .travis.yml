@@ -1,11 +1,7 @@
-language: node_js
 sudo: true
 cache:
   apt: true
   directories:
-  - node_modules
-  - /home/travis/.frey/tools
-  - ~/.pyenv
   - "$HOME/google-cloud-sdk/"
 services:
   - docker
@@ -20,7 +16,6 @@ addons:
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
-- npm test
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1

@@ -5,14 +5,6 @@ cache:
   - "$HOME/google-cloud-sdk/"
 services:
   - docker
-node_js:
-- 6.11.1
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
@@ -64,6 +56,11 @@ deploy:
   script: scripts/travis-deploy.sh
   on:
     branch: master
+  skip_cleanup: true
+  provider: script
+  script: scripts/gcloud-deploy.sh
+  on:
+    branch: kubernetes
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker build --quiet -t transloadit/uppy-server:latest -t transloadit/uppy-server:$TRAVIS_COMMIT .;

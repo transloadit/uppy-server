@@ -34,11 +34,11 @@ sleep 15s
 
 kubectl apply -f "${__kube}/uppy-server/00-namespace.yaml"
 
-helm list |grep uppy-redis || helm install --name uppy \
+helm list |grep uppy || helm install --name uppy \
                                       --namespace uppy \
                                       --set redisPassword=${UPPY_REDIS_PASS}  \
                                       stable/redis
-helm list
+helm list --namespace uppy
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"

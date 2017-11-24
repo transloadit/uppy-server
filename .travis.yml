@@ -49,7 +49,7 @@ before_deploy:
   - gcloud --quiet version
   - gcloud --quiet components update
   - gcloud --quiet components update kubectl
-  - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+  - curl https://raw.githubusercontent.com/kubernetes/helm/8478fb4fc723885b155c924d1c8c410b7a9444e6/scripts/get | bash
 deploy:
   skip_cleanup: true
   provider: script

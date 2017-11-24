@@ -29,7 +29,7 @@ gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 
 kubectl config current-context
 
-kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
+helm init --service-account tiller --upgrade
 
 kubectl apply -f "${__kube}/uppy-server/00-namespace.yaml"
 
@@ -43,7 +43,7 @@ kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"
 kubectl apply -f "${__kube}/uppy-server/service.yaml"
 kubectl apply -f "${__kube}/uppy-server/ingress-tls.yaml"
-
+kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 
 kubectl get pods --namespace=uppy

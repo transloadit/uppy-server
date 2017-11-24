@@ -22,10 +22,7 @@ gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
 
 echo $UPPY_ENV | base64 --decode -i > "${__kube}/uppy-server/uppy-env.yaml"
 
-gcloud --quiet config set project $PROJECT_NAME
-gcloud --quiet config set container/cluster $CLUSTER_NAME
-gcloud --quiet config set compute/zone ${COMPUTE_ZONE}
-gcloud --quiet container clusters get-credentials $CLUSTER_NAME
+ 
 
 kubectl config current-context
 
@@ -51,6 +48,14 @@ kubectl get pods --namespace=uppy
 kubectl get service --namespace=uppy
 kubectl get deployment --namespace=uppy
 
+function cleanup {
+    printf "Cleaning up...\n"
+    rm -vf "${HOME}/gcloud-service-key.json"
+    rm -vf "${__kube}/uppy-server/uppy-env.yaml"
+    printf "Cleaning done."
+}
+
+trap cleanup EXIT
 
 
 

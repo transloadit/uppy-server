@@ -30,6 +30,7 @@ gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 kubectl config current-context
 
 helm init --service-account tiller --upgrade
+sleep 15s
 
 kubectl apply -f "${__kube}/uppy-server/00-namespace.yaml"
 

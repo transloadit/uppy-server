@@ -4,8 +4,6 @@ set -o errexit
 set -o nounset
 # set -o xtrace
 
-
-
 # Set magic variables for current FILE & DIR
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __kube="${__dir}"
@@ -59,16 +57,3 @@ function cleanup {
 }
 
 trap cleanup EXIT
-
-
-
-
-
-
-
-
-
-
-
-
-

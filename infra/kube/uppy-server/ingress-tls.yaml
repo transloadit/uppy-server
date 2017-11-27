@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - bycactus.me
+    - server.uppy.io
     secretName: uppy-server-tls
   rules:
-  - host: bycactus.me
+  - host: server.uppy.io
     http:
       paths:
       - path: /

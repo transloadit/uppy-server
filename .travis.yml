@@ -1,26 +1,13 @@
-language: node_js
 sudo: true
 cache:
   apt: true
   directories:
-  - node_modules
-  - /home/travis/.frey/tools
-  - ~/.pyenv
   - "$HOME/google-cloud-sdk/"
 services:
   - docker
-node_js:
-- 6.11.1
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
-- npm test
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1
@@ -61,18 +48,11 @@ before_deploy:
   - source /home/travis/google-cloud-sdk/path.bash.inc
   - gcloud --quiet version
   - gcloud --quiet components update
-  - gcloud --quiet components beta update
   - gcloud --quiet components update kubectl
+  - curl https://raw.githubusercontent.com/kubernetes/helm/8478fb4fc723885b155c924d1c8c410b7a9444e6/scripts/get | bash
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/travis-deploy.sh
+  script: infra/kube/gcloud-deploy.sh
   on:
     branch: master
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker build -t transloadit/uppy-server:latest -t transloadit/uppy-server:$TRAVIS_COMMIT .;
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push transloadit/uppy-server:$TRAVIS_COMMIT;
-    docker push transloadit/uppy-server:latest;
-    fi

@@ -53,11 +53,6 @@ before_deploy:
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/travis-deploy.sh
-  on:
-    branch: master
-  skip_cleanup: true
-  provider: script
   script: infra/kube/gcloud-deploy.sh
   on:
-    branch: kubernetes
+    branch: master

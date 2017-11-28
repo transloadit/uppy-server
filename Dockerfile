@@ -15,7 +15,8 @@ RUN apk add bash
 COPY . /app
 RUN mkdir /mnt/uppy-server-data
 RUN npm install -g nodemon
-CMD ["node","/app/src/standalone/start-server.js"]
+RUN npm run build
+CMD ["node","/app/lib/standalone/start-server.js"]
 # This can be overwritten later
 EXPOSE 3020
 

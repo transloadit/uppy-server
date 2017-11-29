@@ -19,16 +19,16 @@ function routeDispatcher (req, res, next) {
   const action = req.params.action
   const handler = handlers[action]
 
-  if (!req.params.providerName || !handler || !req.uppyProvider) {
+  if (!req.params.providerName || !handler || !req.uppy.provider) {
     return next()
   }
 
   const providerName = req.params.providerName
-  const { err, payload } = tokenService.verifyToken(req.uppyAuthToken, req.uppyOptions.secret)
+  const { err, payload } = tokenService.verifyToken(req.uppy.authToken, req.uppy.options.secret)
   if (handler.requiresAuth && (err || !payload[providerName])) {
     return res.sendStatus(401)
   }
-  req.uppyProviderTokens = payload
+  req.uppy.providerTokens = payload
 
   if (handler.requiresId && !req.params.id) {
     return next()

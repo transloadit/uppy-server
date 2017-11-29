@@ -9,8 +9,8 @@ module.exports = function oauthRedirect (req, res, next) {
   const handler = state.uppyInstance
   const handlerHostName = parseUrl(handler).host
 
-  if (hasMatch(handlerHostName, req.uppyOptions.server.validHosts)) {
-    const providerName = req.uppyProvider.authProvider
+  if (hasMatch(handlerHostName, req.uppy.options.server.validHosts)) {
+    const providerName = req.uppy.provider.authProvider
     const params = qs.stringify(query)
     const url = `${handler}/connect/${providerName}/callback?${params}`
     return res.redirect(url)

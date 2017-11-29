@@ -4,9 +4,9 @@ function logout (req, res) {
   const session = req.session
   const providerName = req.params.providerName
 
-  if (req.uppyProviderTokens[providerName]) {
-    delete req.uppyProviderTokens[providerName]
-    tokenService.setToken(res, tokenService.generateToken(req.uppyProviderTokens, req.uppyOptions.secret))
+  if (req.uppy.providerTokens[providerName]) {
+    delete req.uppy.providerTokens[providerName]
+    tokenService.setToken(res, tokenService.generateToken(req.uppy.providerTokens, req.uppy.options.secret))
   }
 
   if (session.grant) {

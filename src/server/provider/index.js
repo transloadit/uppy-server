@@ -7,8 +7,8 @@ module.exports.getProviderMiddleware = (providers) => {
   // adds the desired provider module to the request object,
   // based on the providerName parameter specified.
   return (req, res, next, providerName) => {
-    if (providers[providerName] && validOptions(req.uppyOptions)) {
-      req.uppyProvider = new providers[providerName]({ providerName, config })
+    if (providers[providerName] && validOptions(req.uppy.options)) {
+      req.uppy.provider = new providers[providerName]({ providerName, config })
     } else {
       console.warn('uppy: Invalid provider options detected. Provider will not be loaded')
     }

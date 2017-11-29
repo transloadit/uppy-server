@@ -11,9 +11,9 @@ function get (req, res) {
   const providerName = req.params.providerName
   const id = req.params.id
   const body = req.body
-  const token = req.uppyProviderTokens[providerName]
-  const provider = req.uppyProvider
-  const { redisUrl, uploadUrls } = req.uppyOptions
+  const token = req.uppy.providerTokens[providerName]
+  const provider = req.uppy.provider
+  const { redisUrl, uploadUrls } = req.uppy.options
 
   if (uploadUrls && body.endpoint && !hasMatch(body.endpoint, uploadUrls)) {
     return res.status(400).json({ error: 'upload endpoint does not match the endpoints specified' })
@@ -25,7 +25,7 @@ function get (req, res) {
     metadata: body.metadata,
     size: body.size,
     fieldname: body.fieldname,
-    pathPrefix: `${req.uppyOptions.filePath}`,
+    pathPrefix: `${req.uppy.options.filePath}`,
     pathSuffix: `${encodeURIComponent(id)}`,
     storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
   })

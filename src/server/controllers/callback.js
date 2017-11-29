@@ -8,12 +8,12 @@ const tokenService = require('../token-service')
 module.exports = function callback (req, res, next) {
   const providerName = req.params.providerName
 
-  if (!req.uppyProviderTokens) {
-    req.uppyProviderTokens = {}
+  if (!req.uppy.providerTokens) {
+    req.uppy.providerTokens = {}
   }
 
-  req.uppyProviderTokens[providerName] = req.query.access_token
-  const uppyAuthToken = tokenService.generateToken(req.uppyProviderTokens, req.uppyOptions.secret)
+  req.uppy.providerTokens[providerName] = req.query.access_token
+  const uppyAuthToken = tokenService.generateToken(req.uppy.providerTokens, req.uppy.options.secret)
   // add the token to the response
   tokenService.setToken(res, uppyAuthToken)
 

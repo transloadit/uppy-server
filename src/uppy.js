@@ -107,8 +107,7 @@ module.exports.socket = (server, { redisUrl }) => {
 
 const getOptionsMiddleware = (options) => {
   return (req, res, next) => {
-    req.uppyOptions = options
-    req.uppyAuthToken = req.cookies.uppyAuthToken
+    req.uppy = { options, authToken: req.cookies.uppyAuthToken }
     next()
   }
 }

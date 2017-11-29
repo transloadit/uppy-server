@@ -16,7 +16,8 @@ const defaultOptions = {
     protocol: 'http',
     path: ''
   },
-  providerOptions: {}
+  providerOptions: {},
+  debug: true
 }
 
 // Entry point into initializing the uppy-server app.
@@ -105,9 +106,23 @@ module.exports.socket = (server, { redisUrl }) => {
   })
 }
 
+// returns a logger function, that would log a message only if
+// the debug option is set to true
+const getDebugLogger = (options) => {
+  return (message) => {
+    if (options.debug) {
+      console.log(`uppy-server: ${message}`)
+    }
+  }
+}
+
 const getOptionsMiddleware = (options) => {
   return (req, res, next) => {
-    req.uppy = { options, authToken: req.cookies.uppyAuthToken }
+    req.uppy = {
+      options,
+      authToken: req.cookies.uppyAuthToken,
+      debugLog: getDebugLogger(options)
+    }
     next()
   }
 }

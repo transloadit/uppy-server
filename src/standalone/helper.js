@@ -37,7 +37,8 @@ exports.getUppyOptions = () => {
     redisUrl: process.env.UPPYSERVER_REDIS_URL,
     sendSelfEndpoint: process.env.UPPYSERVER_SELF_ENDPOINT,
     uploadUrls: uploadUrls ? uploadUrls.split(',') : null,
-    secret: process.env.UPPYSERVER_SECRET
+    secret: process.env.UPPYSERVER_SECRET,
+    debug: process.env.NODE_ENV !== 'production'
   }
 }
 

@@ -5,7 +5,7 @@ const validator = require('validator')
 
 function get (req, res) {
   if (!validData(req.body)) {
-    return res.sendStatus(400)
+    return res.status(400).json({ error: 'Invalid upload data' })
   }
 
   const providerName = req.params.providerName
@@ -16,7 +16,7 @@ function get (req, res) {
   const { redisUrl, uploadUrls } = req.uppyOptions
 
   if (uploadUrls && body.endpoint && !hasMatch(body.endpoint, uploadUrls)) {
-    return res.sendStatus(400)
+    return res.status(400).json({ error: 'upload endpoint does not match the endpoints specified' })
   }
 
   const uploader = new Uploader({

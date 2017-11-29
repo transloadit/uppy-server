@@ -8,6 +8,7 @@ const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
 const redis = require('redis')
+const cookieParser = require('cookie-parser')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -29,6 +30,8 @@ module.exports.app = (options = {}) => {
   }
 
   const app = express()
+  app.use(cookieParser()) // server tokens are added to cookies
+
   app.use(new Grant(grantConfig))
   if (options.sendSelfEndpoint) {
     app.use('*', (req, res, next) => {

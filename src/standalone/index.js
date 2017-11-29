@@ -3,7 +3,6 @@ const qs = require('querystring')
 const uppy = require('../uppy')
 const helmet = require('helmet')
 const morgan = require('morgan')
-const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
@@ -36,7 +35,6 @@ app.use(metricsMiddleware)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser())
 
 // Use helmet to secure Express headers
 app.use(helmet.frameguard())

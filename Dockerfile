@@ -13,7 +13,6 @@ RUN apk --update add  --virtual native-dep \
   apk del native-dep
 RUN apk add bash
 COPY . /app
-RUN mkdir /mnt/uppy-server-data
 RUN npm install -g nodemon
 RUN npm run build
 CMD ["node","/app/lib/standalone/start-server.js"]

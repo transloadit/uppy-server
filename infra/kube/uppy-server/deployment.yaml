@@ -19,3 +19,10 @@ spec:
             name: uppy-server-env
         ports:
         - containerPort: 3020
+        volumeMounts:
+        - name: uppy-server-data
+          mountPath: /mnt/uppy-server-data
+      volumes:
+      - name: uppy-server-data
+        persistentVolumeClaim:
+          claimName: uppy-server

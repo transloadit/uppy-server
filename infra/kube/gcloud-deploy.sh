@@ -39,6 +39,7 @@ helm list |grep uppy || helm install --name uppy \
 helm list --namespace uppy
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
+kubectl apply -f "${__kube}/uppy-server/pvc.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"
 kubectl apply -f "${__kube}/uppy-server/service.yaml"
 kubectl apply -f "${__kube}/uppy-server/ingress-tls.yaml"

@@ -46,12 +46,12 @@ module.exports.app = (options = {}) => {
 
   // add uppy options to the request object so it can be accessed by subsequent handlers.
   app.use('*', getOptionsMiddleware(options))
+  app.use('/s3', s3(options.providerOptions.s3))
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)
   app.post('/:providerName/:action', dispatcher)
   app.post('/:providerName/:action/:id', dispatcher)
 
-  app.use('/s3', s3(options.providerOptions.s3))
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 
   return app

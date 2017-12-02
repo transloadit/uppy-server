@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Server component for Uppy's (https://uppy.io) extensible file upload widget with support for drag&drop, resumable uploads, previews, restrictions, file processing/encoding, remote providers like Dropbox and Google Drive, S3 and more :dog:",
   "main": "lib/uppy.js",
   "author": "Transloadit.com",

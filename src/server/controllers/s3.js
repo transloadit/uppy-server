@@ -4,7 +4,8 @@ const S3 = require('aws-sdk/clients/s3')
 
 const defaultConfig = {
   acl: 'public-read',
-  conditions: []
+  conditions: [],
+  getKey: (req, filename) => filename
 }
 
 module.exports = function s3 (config) {
@@ -17,15 +18,17 @@ module.exports = function s3 (config) {
 
   return router()
     .get('/params', (req, res, next) => {
+      const key = config.getKey(req, req.query.filename)
+      const fields = {
+        acl: config.acl,
+        key: key,
+        success_action_status: '201',
+        'content-type': req.query.type
+      }
       client.createPresignedPost({
         Bucket: config.bucket,
         Expires: ms('5 minutes') / 1000,
-        Fields: {
-          acl: config.acl,
-          key: req.query.filename,
-          success_action_status: '201',
-          'content-type': req.query.type
-        },
+        Fields: fields,
         Conditions: config.conditions
       }, (err, data) => {
         if (err) {

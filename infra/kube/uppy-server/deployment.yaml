@@ -13,7 +13,14 @@ spec:
       containers:
       - image: docker.io/transloadit/uppy-server:latest
         imagePullPolicy: Always
-        name: uppy-server
+        name: uppy-server        
+        resources:
+          limits:
+            cpu: 0.7
+            memory: 200Mi
+          requests:
+            cpu: 0.5
+            memory: 100Mi
         envFrom:
         - configMapRef:
             name: uppy-server-env

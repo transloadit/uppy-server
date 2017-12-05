@@ -33,6 +33,7 @@ kubectl apply -f "${__kube}/uppy-server/pvc.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"
 kubectl apply -f "${__kube}/uppy-server/service.yaml"
 kubectl apply -f "${__kube}/uppy-server/ingress-tls.yaml"
+kubectl apply -f "${__kube}/uppy-server/hpa.yaml"
 kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 

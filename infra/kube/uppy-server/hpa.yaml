@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: uppy-server
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80

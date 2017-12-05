@@ -31,8 +31,6 @@ kubectl config current-context
 helm init --service-account tiller --upgrade
 sleep 15s
 
-kubectl apply -f "${__kube}/uppy-server/00-namespace.yaml"
-
 helm list |grep uppy || helm install --name uppy \
                                       --namespace uppy \
                                       --set redisPassword=${UPPY_REDIS_PASS}  \

@@ -28,15 +28,6 @@ echo $UPPY_ENV | base64 --decode -i > "${__kube}/uppy-server/uppy-env.yaml"
 
 kubectl config current-context
 
-helm init --service-account tiller --upgrade
-sleep 15s
-
-helm list |grep uppy || helm install --name uppy \
-                                      --namespace uppy \
-                                      --set redisPassword=${UPPY_REDIS_PASS}  \
-                                      stable/redis
-helm list --namespace uppy
-
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
 kubectl apply -f "${__kube}/uppy-server/pvc.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"

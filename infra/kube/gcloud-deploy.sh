@@ -14,35 +14,26 @@ docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
 docker push transloadit/uppy-server:$TRAVIS_COMMIT;
 docker push transloadit/uppy-server:latest;
 
+echo $CA_CRT | base64 --decode -i > ${HOME}/ca.crt
 
-echo $GCLOUD_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
-gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+gcloud config set container/use_client_certificate True
+export CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
+
+kubectl config set-cluster transloadit-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
+kubectl config set-credentials travis --token=$SA_TOKEN
+kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis --namespace=uppy
+kubectl config use-context travis
 
 echo $UPPY_ENV | base64 --decode -i > "${__kube}/uppy-server/uppy-env.yaml"
 
-gcloud --quiet config set project $PROJECT_NAME	
-gcloud --quiet config set container/cluster $CLUSTER_NAME		
-gcloud --quiet config set compute/zone ${COMPUTE_ZONE}		
-gcloud --quiet container clusters get-credentials $CLUSTER_NAME
-
 kubectl config current-context
-
-helm init --service-account tiller --upgrade
-sleep 15s
-
-kubectl apply -f "${__kube}/uppy-server/00-namespace.yaml"
-
-helm list |grep uppy || helm install --name uppy \
-                                      --namespace uppy \
-                                      --set redisPassword=${UPPY_REDIS_PASS}  \
-                                      stable/redis
-helm list --namespace uppy
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
 kubectl apply -f "${__kube}/uppy-server/pvc.yaml"
 kubectl apply -f "${__kube}/uppy-server/deployment.yaml"
 kubectl apply -f "${__kube}/uppy-server/service.yaml"
 kubectl apply -f "${__kube}/uppy-server/ingress-tls.yaml"
+kubectl apply -f "${__kube}/uppy-server/hpa.yaml"
 kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 

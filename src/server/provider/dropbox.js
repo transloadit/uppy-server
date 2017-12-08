@@ -5,8 +5,12 @@ const purest = require('purest')({ request })
 
 class DropBox {
   constructor (options) {
-    this.authProvider = options.provider = 'dropbox'
+    this.authProvider = options.provider = DropBox.authProvider
     this.client = purest(options)
+  }
+
+  static get authProvider () {
+    return 'dropbox'
   }
 
   list (options, done) {

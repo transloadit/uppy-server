@@ -6,10 +6,14 @@ const mime = require('mime-types').lookup
 
 class Drive {
   constructor (options) {
-    this.authProvider = options.provider = 'google'
+    this.authProvider = options.provider = Drive.authProvider
     options.alias = 'drive'
 
     this.client = purest(options)
+  }
+
+  static get authProvider () {
+    return 'google'
   }
 
   list (options, done) {

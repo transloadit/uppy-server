@@ -41,18 +41,32 @@ module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) =
 
   const { oauthDomain } = server
   const keys = Object.keys(providerOptions).filter((key) => key !== 'server')
-  keys.forEach((providerName) => {
-    if (grantConfig[providerName]) {
+  keys.forEach((authProvider) => {
+    if (grantConfig[authProvider]) {
       // explicitly add providerOptions so users don't override other providerOptions.
-      grantConfig[providerName].key = providerOptions[providerName].key
-      grantConfig[providerName].secret = providerOptions[providerName].secret
+      grantConfig[authProvider].key = providerOptions[authProvider].key
+      grantConfig[authProvider].secret = providerOptions[authProvider].secret
 
       // override grant.js redirect uri with uppy's custom redirect url
       if (oauthDomain) {
-        grantConfig[providerName].redirect_uri = `${server.protocol}://${oauthDomain}/${providerName}/redirect`
+        const providerName = authToProviderName(authProvider)
+        grantConfig[authProvider].redirect_uri = `${server.protocol}://${oauthDomain}/${providerName}/redirect`
       }
+    } else if (authProvider !== 's3') { // TODO: there should be a cleaner way to do this.
+      console.warn(`uppy: skipping one found unsupported provider "${authProvider}".`)
     }
   })
+}
+
+const authToProviderName = (authProvider) => {
+  const providers = exports.getDefaultProviders()
+  const providerNames = Object.keys(providers)
+  for (const name of providerNames) {
+    const provider = providers[name]
+    if (provider.authProvider === authProvider) {
+      return name
+    }
+  }
 }
 
 const validOptions = ({ server, providerOptions }) => {

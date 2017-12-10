@@ -89,6 +89,15 @@ class Uploader {
     emitter.emit(this.token, emitData)
   }
 
+  emitError (err) {
+    const dataToEmit = {
+      action: 'error',
+      payload: { error: err }
+    }
+    this.saveState(dataToEmit)
+    emitter.emit(this.token, dataToEmit)
+  }
+
   uploadTus () {
     const fname = this.options.name || path.basename(this.options.path)
     const metadata = Object.assign({ filename: fname }, this.options.metadata || {})
@@ -102,7 +111,9 @@ class Uploader {
       metadata,
       chunkSize: this.writer.bytesWritten,
       onError (error) {
-        uploader.cleanUp()
+        uploader.emitError(error)
+        // TODO: should the download file be deleted on error?
+        //    How would we then handle retries.
         console.log(error)
       },
       onProgress (bytesUploaded, bytesTotal) {
@@ -140,13 +151,9 @@ class Uploader {
 
     const formData = { [this.options.fieldname]: file }
     request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
-      if (error) {
-        const dataToEmit = {
-          action: 'error',
-          payload: { error }
-        }
-        this.saveState(dataToEmit)
-        emitter.emit(this.token, dataToEmit)
+      if (error || response.statusCode >= 400) {
+        console.log(`error: ${error} status: ${response.statusCode}`)
+        this.emitError(error || response.statusMessage)
       } else {
         this.emitSuccess()
       }

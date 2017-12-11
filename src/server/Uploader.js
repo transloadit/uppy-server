@@ -23,6 +23,8 @@ class Uploader {
     if (fs.existsSync(this.options.path)) {
       fs.unlink(this.options.path)
     }
+    emitter.removeAllListeners(`pause:${this.token}`)
+    emitter.removeAllListeners(`resume:${this.token}`)
   }
 
   handleChunk (chunk) {

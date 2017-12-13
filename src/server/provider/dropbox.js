@@ -64,7 +64,7 @@ class DropBox {
 
   thumbnail ({id, token}, done) {
     return this.client
-      .post('https://content.dropboxapi.com/2/files/download/get_thumbnail')
+      .post('https://content.dropboxapi.com/2/files/get_thumbnail')
       .options({
         version: '2',
         headers: {

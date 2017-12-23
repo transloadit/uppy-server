@@ -18,6 +18,9 @@ function authorized (req, res) {
   const token = uppy.providerTokens[providerName]
   uppy.provider.list({ token }, (err, response, body) => {
     const notAuthenticated = Boolean(err)
+    if (notAuthenticated) {
+      console.log(`Provider:${providerName} failed authorizarion test err:${err}`)
+    }
     return res.json({ authenticated: !notAuthenticated })
   })
 }

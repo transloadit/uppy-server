@@ -1,4 +1,5 @@
 const express = require('express')
+// @ts-ignore
 const Grant = require('grant-express')
 const grantConfig = require('./config/grant')()
 const providerManager = require('./server/provider')
@@ -20,7 +21,11 @@ const defaultOptions = {
   debug: true
 }
 
-// Entry point into initializing the uppy-server app.
+/**
+ * Entry point into initializing the uppy-server app.
+ *
+ * @param {object} options
+ */
 module.exports.app = (options = {}) => {
   options = merge({}, defaultOptions, options)
   providerManager.addProviderOptions(options, grantConfig)
@@ -57,20 +62,31 @@ module.exports.app = (options = {}) => {
   return app
 }
 
-// the socket is used to send progress events during an upload
-module.exports.socket = (server, { redisUrl }) => {
+/**
+ * the socket is used to send progress events during an upload
+ *
+ * @param {object} server
+ * @param {object} options
+ */
+module.exports.socket = (server, options) => {
   const wss = new SocketServer({ server })
+  const { redisUrl } = options
 
   // A new connection is usually created when an upload begins,
   // or when connection fails while an upload is on-going and,
   // client attempts to reconnect.
   wss.on('connection', (ws) => {
+    // @ts-ignore
     const fullPath = ws.upgradeReq.url
     let redisClient
     // the token identifies which ongoing upload's progress, the socket
     // connection wishes to listen to.
     const token = fullPath.replace(/\/api\//, '')
 
+    /**
+     *
+     * @param {{action: string, payload: object}} data
+     */
     function sendProgress (data) {
       ws.send(JSON.stringify(data), (err) => {
         if (err) console.log(`Error: ${err}`)
@@ -86,8 +102,8 @@ module.exports.socket = (server, { redisUrl }) => {
       redisClient.get(token, (err, data) => {
         if (err) console.log(err)
         if (data) {
-          data = JSON.parse(data.toString())
-          if (data.action) sendProgress(data)
+          const dataObj = JSON.parse(data.toString())
+          if (dataObj.action) sendProgress(dataObj)
         }
       })
     }
@@ -96,7 +112,7 @@ module.exports.socket = (server, { redisUrl }) => {
     emitter.on(token, sendProgress)
 
     ws.on('message', (jsonData) => {
-      const data = JSON.parse(jsonData)
+      const data = JSON.parse(jsonData.toString())
       emitter.emit(`${data.action}:${token}`)
     })
 
@@ -106,18 +122,39 @@ module.exports.socket = (server, { redisUrl }) => {
   })
 }
 
-// returns a logger function, that would log a message only if
-// the debug option is set to true
+/**
+ * returns a logger function, that would log a message only if
+ * the debug option is set to true
+ *
+ * @param {{debug: boolean}} options
+ * @returns {function}
+ */
 const getDebugLogger = (options) => {
-  return (message) => {
+  /**
+   *
+   * @param {string} message
+   */
+  const conditonalLogger = (message) => {
     if (options.debug) {
       console.log(`uppy-server: ${message}`)
     }
   }
+
+  return conditonalLogger
 }
 
+/**
+ *
+ * @param {object} options
+ */
 const getOptionsMiddleware = (options) => {
-  return (req, res, next) => {
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @param {function} next
+   */
+  const middleware = (req, res, next) => {
     req.uppy = {
       options,
       authToken: req.cookies.uppyAuthToken,
@@ -125,4 +162,6 @@ const getOptionsMiddleware = (options) => {
     }
     next()
   }
+
+  return middleware
 }

@@ -57,4 +57,5 @@ const validData = (data) => {
 
   return true
 }
-exports = module.exports = get
+
+module.exports = get

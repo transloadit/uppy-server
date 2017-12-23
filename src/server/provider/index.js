@@ -1,12 +1,71 @@
+/**
+ * @module provider
+ */
+// @ts-ignore
 const config = require('@purest/providers')
 const dropbox = require('./dropbox')
 const drive = require('./drive')
 const instagram = require('./instagram')
 
+/**
+ * Provider interface defines the specifications of any provider implementation
+ *
+ * @interface
+ */
+class Provider {
+  /**
+   *
+   * @param {object} options
+   */
+  constructor (options) {
+    return this
+  }
+  /**
+   *
+   * @param {object} options
+   * @param {function} cb
+   */
+  list (options, cb) {}
+
+  /**
+   *
+   * @param {object} options
+   * @param {function} cb
+   */
+  download (options, cb) {}
+
+  /**
+   *
+   * @param {object} options
+   * @param {function} cb
+   */
+  thumbnail (options, cb) {}
+
+  /**
+   * @returns {string}
+   */
+  static get authProvider () {
+    return ''
+  }
+}
+
+module.exports.ProviderInterface = Provider
+
+/**
+ * adds the desired provider module to the request object,
+ * based on the providerName parameter specified
+ *
+ * @param {Object.<string, typeof Provider>} providers
+ */
 module.exports.getProviderMiddleware = (providers) => {
-  // adds the desired provider module to the request object,
-  // based on the providerName parameter specified.
-  return (req, res, next, providerName) => {
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @param {function} next
+   * @param {string} providerName
+   */
+  const middleware = (req, res, next, providerName) => {
     if (providers[providerName] && validOptions(req.uppy.options)) {
       req.uppy.provider = new providers[providerName]({ providerName, config })
     } else {
@@ -14,12 +73,25 @@ module.exports.getProviderMiddleware = (providers) => {
     }
     next()
   }
+
+  return middleware
 }
 
+/**
+ * @return {Object.<string, typeof Provider>}
+ */
 module.exports.getDefaultProviders = () => {
   return { dropbox, drive, instagram }
 }
 
+/**
+ *
+ * @typedef {{module: typeof Provider, config: object}} CustomProvider
+ *
+ * @param {Object.<string, CustomProvider>} customProviders
+ * @param {Object.<string, typeof Provider>} providers
+ * @param {object} grantConfig
+ */
 module.exports.addCustomProviders = (customProviders, providers, grantConfig) => {
   Object.keys(customProviders).forEach((providerName) => {
     providers[providerName] = customProviders[providerName].module
@@ -27,8 +99,14 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
   })
 }
 
-module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) => {
-  if (!validOptions({ server, providerOptions })) {
+/**
+ *
+ * @param {{server: object, providerOptions: object}} options
+ * @param {object} grantConfig
+ */
+module.exports.addProviderOptions = (options, grantConfig) => {
+  const { server, providerOptions } = options
+  if (!validOptions({ server })) {
     console.warn('uppy: Invalid provider options detected. Providers will not be loaded')
     return
   }
@@ -58,6 +136,10 @@ module.exports.addProviderOptions = ({ server, providerOptions }, grantConfig) =
   })
 }
 
+/**
+ *
+ * @param {string} authProvider
+ */
 const authToProviderName = (authProvider) => {
   const providers = exports.getDefaultProviders()
   const providerNames = Object.keys(providers)
@@ -69,6 +151,10 @@ const authToProviderName = (authProvider) => {
   }
 }
 
-const validOptions = ({ server, providerOptions }) => {
-  return server.host && server.protocol
+/**
+ *
+ * @param {{server: object}} options
+ */
+const validOptions = (options) => {
+  return options.server.host && options.server.protocol
 }

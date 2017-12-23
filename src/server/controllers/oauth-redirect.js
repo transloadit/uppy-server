@@ -1,8 +1,15 @@
+// @ts-ignore
 const atob = require('atob')
 const qs = require('querystring')
 const parseUrl = require('url').parse
 const { hasMatch } = require('../utils')
 
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ */
 module.exports = function oauthRedirect (req, res, next) {
   const query = Object.assign({}, req.query)
   const state = JSON.parse(atob(query.state))

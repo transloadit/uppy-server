@@ -66,4 +66,4 @@ class Instagram {
   }
 }
 
-exports = module.exports = Instagram
+module.exports = Instagram

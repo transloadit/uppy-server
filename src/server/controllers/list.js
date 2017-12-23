@@ -10,4 +10,4 @@ function list ({ query, params, uppy }, res, next) {
   })
 }
 
-exports = module.exports = list
+module.exports = list

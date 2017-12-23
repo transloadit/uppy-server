@@ -41,4 +41,4 @@ function routeDispatcher (req, res, next) {
   return handler.self(req, res, next)
 }
 
-exports = module.exports = routeDispatcher
+module.exports = routeDispatcher

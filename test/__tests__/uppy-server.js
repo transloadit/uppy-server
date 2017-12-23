@@ -106,7 +106,7 @@ describe('connect to provider', () => {
 
 describe('handle oauth redirect', () => {
   test('redirect to a valid uppy instance', () => {
-    const state = new Buffer(JSON.stringify({ uppyInstance: 'http://localhost:3020' })).toString('base64')
+    const state = Buffer.from(JSON.stringify({ uppyInstance: 'http://localhost:3020' })).toString('base64')
     return request(authServer)
       .get(`/dropbox/redirect?state=${state}`)
       .set('Cookie', `uppyAuthToken=${token}`)
@@ -115,7 +115,7 @@ describe('handle oauth redirect', () => {
   })
 
   test('do not redirect to invalid uppy instances', () => {
-    const state = new Buffer(JSON.stringify({ uppyInstance: 'http://localhost:3452' })).toString('base64')
+    const state = Buffer.from(JSON.stringify({ uppyInstance: 'http://localhost:3452' })).toString('base64')
     return request(authServer)
       .get(`/dropbox/redirect?state=${state}`)
       .set('Cookie', `uppyAuthToken=${token}`)

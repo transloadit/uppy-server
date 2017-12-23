@@ -1,8 +1,14 @@
-// checks if uppy-server is authorized to access a user's
-// provider account.
 // TODO: this function seems uneccessary. Might be better to just
 // have this as a middleware that is used for all auth required routes.
-function authorized ({ params, uppy }, res) {
+
+/**
+ * checks if uppy-server is authorized to access a user's provider account.
+ *
+ * @param {object} req
+ * @param {object} res
+ */
+function authorized (req, res) {
+  const { params, uppy } = req
   const providerName = params.providerName
 
   if (!uppy.providerTokens || !uppy.providerTokens[providerName]) {
@@ -16,4 +22,4 @@ function authorized ({ params, uppy }, res) {
   })
 }
 
-exports = module.exports = authorized
+module.exports = authorized

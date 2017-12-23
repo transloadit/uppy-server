@@ -1,9 +1,11 @@
-const fs = require('fs')
-const path = require('path')
 const request = require('request')
+// @ts-ignore
 const purest = require('purest')({ request })
-const mime = require('mime-types').lookup
 
+/**
+ * @class
+ * @implements {Provider}
+ */
 class Drive {
   constructor (options) {
     this.authProvider = options.provider = Drive.authProvider
@@ -32,25 +34,6 @@ class Drive {
     return this.client.query().get(`files/${id}`).auth(token).request(done)
   }
 
-  upload (options, done) {
-    return this.client
-      .query('upload-drive')
-      .update('files')
-      .where({ uploadType: 'multipart' })
-      .upload([
-        {
-          'Content-Type': 'application/json',
-          body: JSON.stringify({ title: path.basename(options.path) })
-        },
-        {
-          'Content-Type': mime(path.extname(options.path)),
-          body: options.body || fs.createReadStream(options.path)
-        }
-      ])
-      .auth(options.token)
-      .request(done)
-  }
-
   download ({ id, token }, onData) {
     return this.client
       .query()
@@ -74,4 +57,4 @@ class Drive {
   }
 }
 
-exports = module.exports = Drive
+module.exports = Drive

@@ -1,5 +1,10 @@
 const tokenService = require('../token-service')
 
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ */
 function logout (req, res) {
   const session = req.session
   const providerName = req.params.providerName
@@ -16,4 +21,4 @@ function logout (req, res) {
   res.json({ ok: true })
 }
 
-exports = module.exports = logout
+module.exports = logout

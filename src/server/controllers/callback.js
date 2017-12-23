@@ -2,9 +2,16 @@
  * oAuth callback.  Encripts the access token and sends the new token with the response,
  * and redirects to redirect url.
  */
+// @ts-ignore
 const atob = require('atob')
 const tokenService = require('../token-service')
 
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ */
 module.exports = function callback (req, res, next) {
   const providerName = req.params.providerName
 

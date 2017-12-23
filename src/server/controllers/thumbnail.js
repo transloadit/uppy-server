@@ -1,3 +1,8 @@
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ */
 function thumbnail (req, res) {
   const providerName = req.params.providerName
   const id = req.params.id
@@ -7,4 +12,4 @@ function thumbnail (req, res) {
   provider.thumbnail({ id, token }, (response) => response ? response.pipe(res) : res.sendStatus(404))
 }
 
-exports = module.exports = thumbnail
+module.exports = thumbnail

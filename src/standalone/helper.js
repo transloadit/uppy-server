@@ -50,6 +50,7 @@ exports.validateConfig = () => {
     'UPPYSERVER_DATADIR',
     'UPPYSERVER_DOMAIN'
   ]
+  /** @type {string[]} */
   const unspecified = []
 
   mandatoryOptions.forEach((i) => {
@@ -62,6 +63,10 @@ exports.validateConfig = () => {
   }
 }
 
+/**
+ *
+ * @param {string} url
+ */
 exports.hasProtocol = (url) => {
   return url.startsWith('http://') || url.startsWith('https://')
 }

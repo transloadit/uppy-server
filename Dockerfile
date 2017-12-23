@@ -9,7 +9,7 @@ WORKDIR /app
 
 RUN apk --update add  --virtual native-dep \
   make gcc g++ python libgcc libstdc++ && \
-  npm  install && \
+  npm  install --silent && \
   apk del native-dep
 RUN apk add bash
 COPY . /app

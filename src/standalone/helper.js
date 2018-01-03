@@ -37,7 +37,8 @@ exports.getUppyOptions = () => {
     redisUrl: process.env.UPPYSERVER_REDIS_URL,
     sendSelfEndpoint: process.env.UPPYSERVER_SELF_ENDPOINT,
     uploadUrls: uploadUrls ? uploadUrls.split(',') : null,
-    secret: process.env.UPPYSERVER_SECRET
+    secret: process.env.UPPYSERVER_SECRET,
+    debug: process.env.NODE_ENV !== 'production'
   }
 }
 
@@ -49,6 +50,7 @@ exports.validateConfig = () => {
     'UPPYSERVER_DATADIR',
     'UPPYSERVER_DOMAIN'
   ]
+  /** @type {string[]} */
   const unspecified = []
 
   mandatoryOptions.forEach((i) => {
@@ -61,6 +63,10 @@ exports.validateConfig = () => {
   }
 }
 
+/**
+ *
+ * @param {string} url
+ */
 exports.hasProtocol = (url) => {
   return url.startsWith('http://') || url.startsWith('https://')
 }

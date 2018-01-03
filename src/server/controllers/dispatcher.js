@@ -13,28 +13,32 @@ const handlers = {
 
 function routeDispatcher (req, res, next) {
   if (!req.session || !req.body) {
+    req.uppy.debugLog('No session/body attached to req object. Exiting dispatcher.')
     return next()
   }
 
   const action = req.params.action
   const handler = handlers[action]
 
-  if (!req.params.providerName || !handler || !req.uppyProvider) {
+  if (!req.params.providerName || !handler || !req.uppy.provider) {
+    req.uppy.debugLog('No provider/provider-handler found. Exiting dispatcher.')
     return next()
   }
 
   const providerName = req.params.providerName
-  const { err, payload } = tokenService.verifyToken(req.uppyAuthToken, req.uppyOptions.secret)
+  const { err, payload } = tokenService.verifyToken(req.uppy.authToken, req.uppy.options.secret)
   if (handler.requiresAuth && (err || !payload[providerName])) {
     return res.sendStatus(401)
   }
-  req.uppyProviderTokens = payload
+  req.uppy.providerTokens = payload
 
   if (handler.requiresId && !req.params.id) {
+    req.uppy.debugLog('id Param is not specified, but required. Exiting dispatcher.')
     return next()
   }
 
+  req.uppy.debugLog('Found an handler for request.')
   return handler.self(req, res, next)
 }
 
-exports = module.exports = routeDispatcher
+module.exports = routeDispatcher

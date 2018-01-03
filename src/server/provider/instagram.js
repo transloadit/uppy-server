@@ -3,8 +3,12 @@ const purest = require('purest')({ request })
 
 class Instagram {
   constructor (options) {
-    this.authProvider = options.provider = 'instagram'
+    this.authProvider = options.provider = Instagram.authProvider
     this.client = purest(options)
+  }
+
+  static get authProvider () {
+    return 'instagram'
   }
 
   list ({ directory = 'recent', token, query = {} }, done) {
@@ -62,4 +66,4 @@ class Instagram {
   }
 }
 
-exports = module.exports = Instagram
+module.exports = Instagram

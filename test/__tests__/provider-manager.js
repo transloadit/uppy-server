@@ -42,7 +42,7 @@ describe('Test Provider options', () => {
     providerManager.addProviderOptions(uppyOptions, grantConfig)
 
     expect(grantConfig.dropbox.redirect_uri).toBe('http://domain.com/dropbox/redirect')
-    expect(grantConfig.google.redirect_uri).toBe('http://domain.com/google/redirect')
+    expect(grantConfig.google.redirect_uri).toBe('http://domain.com/drive/redirect')
     expect(grantConfig.instagram.redirect_uri).toBe('http://domain.com/instagram/redirect')
   })
 })

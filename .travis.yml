@@ -1,25 +1,13 @@
-language: node_js
-sudo: true
+sudo: required
 cache:
   apt: true
   directories:
-  - node_modules
-  - /home/travis/.frey/tools
-  - ~/.pyenv
+  - "$HOME/google-cloud-sdk/"
 services:
   - docker
-node_js:
-- 6.11.1
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then bash scripts/rebuild-env.sh; fi
 script:
-- npm test
 - docker-compose -f docker-compose-test.yml build
 - docker-compose -f docker-compose-test.yml -p ci up
 - docker logs -f ci_uppy_1
@@ -55,16 +43,16 @@ env:
 notifications:
   slack:
     secure: KpMEfM6BPCmcHQsFM/RfMwxUVujTCRY3nolMnQ8MllK04TXZswW7qwtdb32jSpja2N0F3CUx/UEeushpdQ51eD+XqFnpioPFUzoTm+vmAza6QiXvQDGAMIF688BMjlR/BeCIVL7BwEUd5vBv2G0nh9hgqE2ItBc4X9UoMikn+StiNuVwHP9WHJ2GpLW9ft9TPXyUrtNsaIhQ3AJCJyBO0H+HZpK8AaTv/IA+rcfcvv73mB4LzK6o4PxfIeJAE2NeW9v0+pNlQ7obQVmltAvOd3W6mWgVvYA0I0NJN0LCRd5LFzf/uQQAh1n4oUgnAnQKUWBckcWRnznx14r1LWRyRgZMIJdGCKpn+MQPl2I8WHnHgl1YRxFxD9JjPHquoe7tPlbbaenj7eC8By7s+Q7gog6F4h6Df0JsiRtfg/fuGkLukqAfWrrTND9T3EIZCL6k4HtpLvvfG1pz9kRIKco2lUKyqZUeZYuimElmZ9Pw7wiUogfhjfnMGWzpERNwZewGt7LDNSNy9nLjzGd36IrqXjE+4rwKkZ6/Bcv8/zh1KCRBxT+3OT4a7c4RmJ9ay+thzbJVatwzUYZ4GQE3cw196I1MJUnDMpqm0z0BRxWvtdZfA/Jo97HVfPsC43R8VDNBzXfZLLryCj9FIKUrX84yAI3/4dUe5Nef2mp6YewXAGU=
+before_deploy:
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; curl https://sdk.cloud.google.com | bash > /dev/null 2>&1; fi
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+  - gcloud --quiet version
+  - gcloud --quiet components update
+  - gcloud --quiet components update kubectl
+  - curl https://raw.githubusercontent.com/kubernetes/helm/8478fb4fc723885b155c924d1c8c410b7a9444e6/scripts/get | bash
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/travis-deploy.sh
+  script: infra/kube/gcloud-deploy.sh
   on:
     branch: master
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker build -t transloadit/uppy-server:latest -t transloadit/uppy-server:$TRAVIS_COMMIT .;
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push transloadit/uppy-server:$TRAVIS_COMMIT;
-    docker push transloadit/uppy-server:latest;
-    fi

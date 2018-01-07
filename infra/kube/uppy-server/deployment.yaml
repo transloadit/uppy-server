@@ -5,7 +5,7 @@ metadata:
   namespace: uppy
 spec:
   replicas: 1
-  minReadySeconds: 8
+  minReadySeconds: 5
   strategy:
     type: RollingUpdate
     rollingUpdate:

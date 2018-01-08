@@ -29,11 +29,7 @@ echo $UPPY_ENV | base64 --decode -i > "${__kube}/uppy-server/uppy-env.yaml"
 kubectl config current-context
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
-kubectl apply -f "${__kube}/uppy-server/pvc.yaml"
-kubectl apply -f "${__kube}/uppy-server/deployment.yaml"
-kubectl apply -f "${__kube}/uppy-server/service.yaml"
-kubectl apply -f "${__kube}/uppy-server/ingress-tls.yaml"
-kubectl apply -f "${__kube}/uppy-server/hpa.yaml"
+kubectl apply -f "${__kube}/uppy-server/uppy-server-kube.yaml"
 kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 

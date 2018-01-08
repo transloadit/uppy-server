@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: uppy-server
+    spec:
+      containers:
+      - image: docker.io/transloadit/uppy-server:latest
+        imagePullPolicy: Always
+        name: uppy-server        
+        resources:
+          limits:
+            cpu: 0.5
+            memory: 150Mi
+          requests:
+            cpu: 0.3
+            memory: 100Mi
+        envFrom:
+        - configMapRef:
+            name: uppy-server-env
+        ports:
+        - containerPort: 3020
+        volumeMounts:
+        - name: uppy-server-data
+          mountPath: /mnt/uppy-server-data
+      volumes:
+      - name: uppy-server-data
+        persistentVolumeClaim:
+          claimName: uppy-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  ports:
+  - port: 80
+    targetPort: 3020
+    protocol: TCP
+  selector:
+    app: uppy-server
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: uppy-server
+  namespace: uppy
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+    - server.uppy.io
+    secretName: uppy-server-tls
+  rules:
+  - host: server.uppy.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: uppy-server
+          servicePort: 80
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: uppy-server
+  namespace: uppy
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: uppy-server
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80

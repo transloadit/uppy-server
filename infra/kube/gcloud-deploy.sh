@@ -39,7 +39,6 @@ kubectl get deployment --namespace=uppy
 
 function cleanup {
     printf "Cleaning up...\n"
-    rm -vf "${HOME}/gcloud-service-key.json"
     rm -vf "${__kube}/uppy-server/uppy-env.yaml"
     printf "Cleaning done."
 }

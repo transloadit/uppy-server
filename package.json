@@ -82,6 +82,7 @@
     "purest": "3.0.0",
     "redis": "^2.7.1",
     "request": "^2.81.0",
+    "serialize-error": "^2.1.0",
     "tus-js-client": "1.4.3",
     "uuid": "2.0.2",
     "validator": "^9.0.0",

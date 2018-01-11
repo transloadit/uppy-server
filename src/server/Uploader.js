@@ -4,6 +4,8 @@ const tus = require('tus-js-client')
 const uuid = require('uuid')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
+const serializeError = require('serialize-error')
+const { jsonStringify } = require('./utils')
 
 class Uploader {
   /**
@@ -95,7 +97,7 @@ class Uploader {
    */
   saveState (state) {
     if (!this.storage) return
-    this.storage.set(this.token, JSON.stringify(state))
+    this.storage.set(this.token, jsonStringify(state))
   }
 
   /**
@@ -143,7 +145,8 @@ class Uploader {
   emitError (err) {
     const dataToEmit = {
       action: 'error',
-      payload: { error: err }
+      // TODO: consider removing the stack property
+      payload: { error: serializeError(err) }
     }
     this.saveState(dataToEmit)
     emitter.emit(this.token, dataToEmit)
@@ -167,10 +170,10 @@ class Uploader {
        * @param {Error} error
        */
       onError (error) {
+        console.log(error)
         uploader.emitError(error)
         // TODO: should the download file be deleted on error?
         //    How would we then handle retries.
-        console.log(error)
       },
       /**
        *

@@ -10,6 +10,7 @@ const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
 const redis = require('redis')
 const cookieParser = require('cookie-parser')
+const {jsonStringify} = require('./server/utils')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -88,7 +89,7 @@ module.exports.socket = (server, options) => {
      * @param {{action: string, payload: object}} data
      */
     function sendProgress (data) {
-      ws.send(JSON.stringify(data), (err) => {
+      ws.send(jsonStringify(data), (err) => {
         if (err) console.log(`Error: ${err}`)
       })
     }

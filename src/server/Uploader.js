@@ -205,7 +205,6 @@ class Uploader {
     })
 
     emitter.on(`resume:${this.token}`, () => {
-      this.tus.options.uploadUrl = this.tus.url
       this.tus.start()
     })
   }

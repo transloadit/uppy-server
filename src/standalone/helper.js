@@ -18,6 +18,8 @@ exports.getUppyOptions = () => {
  */
 const getConfigFromEnv = () => {
   const uploadUrls = process.env.UPPYSERVER_UPLOAD_URLS
+  const domains = process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN || null
+  const validHosts = domains ? domains.split(',') : []
 
   return {
     // TODO: Rename providerOptions to providers.
@@ -46,7 +48,7 @@ const getConfigFromEnv = () => {
       protocol: process.env.UPPYSERVER_PROTOCOL,
       path: process.env.UPPYSERVER_PATH || process.env.UPPYSERVER_IMPLICIT_PATH,
       oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
-      validHosts: (process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN).split(',')
+      validHosts: validHosts
     },
     filePath: process.env.UPPYSERVER_DATADIR,
     redisUrl: process.env.UPPYSERVER_REDIS_URL,

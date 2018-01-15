@@ -117,9 +117,8 @@
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",
     "release": "npm version ${SEMANTIC:-patch} -m \"Release %s\" && git push && git push --tags && npm publish",
-    "start:production": "node ./lib/standalone/start-server.js",
-    "start": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3020 UPPY_ENDPOINTS=localhost:3452 nodemon --exec node ./src/standalone/start-server.js'",
-    "start:40": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3040 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3040 UPPY_ENDPOINTS=localhost:3452 nodemon ./src/standalone/start-server.js --exec node'",
+    "start": "node ./lib/standalone/start-server.js",
+    "start:dev": "bash -c 'source env.sh; env UPPYSERVER_DATADIR=./output UPPYSERVER_DOMAIN=localhost:3020 UPPYSERVER_PROTOCOL=http UPPYSERVER_PORT=3020 UPPY_ENDPOINTS=localhost:3452 nodemon --exec node ./src/standalone/start-server.js'",
     "test": "/bin/bash -c 'npm run build && npm run lint && source env.test.sh && jest'",
     "test:watch": "npm test -- --watch"
   }

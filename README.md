@@ -70,7 +70,7 @@ If you cloned the repo from gtihub and want to run it as a standalone server, yo
 directory
 
 ```bash
-npm run start:production
+npm start
 ```
 
 See [full documentation](https://uppy.io/docs/server/)

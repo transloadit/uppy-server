@@ -60,7 +60,7 @@ uppy.socket(server, options)
 ```
 
 ### Run as standalone server
-Please ensure that the required env varaibles are set before runnning/using uppy-server as a standalone server. [See](#configure-standalone).
+Please ensure that the required env varaibles are set before runnning/using uppy-server as a standalone server. [See](https://uppy.io/docs/server/#Configure-Standalone).
 
 ```bash
 $ uppy-server

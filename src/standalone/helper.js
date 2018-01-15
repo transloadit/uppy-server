@@ -1,11 +1,26 @@
-// Reads all uppy-server configuration set via environment variables
-// and builds them into an object which can be passed as options to
-// the uppy.app method.
-// TODO: Rename providerOptions to providers.
+const fs = require('fs')
+const merge = require('lodash.merge')
+
+/**
+ * Reads all uppy-server configuration set via environment variables
+ * and via the config file path
+ *
+ * @returns {object}
+ */
 exports.getUppyOptions = () => {
+  return merge({}, getConfigFromEnv(), getConfigFromFile())
+}
+
+/**
+ * Loads the config from environment variables
+ *
+ * @returns {object}
+ */
+const getConfigFromEnv = () => {
   const uploadUrls = process.env.UPPYSERVER_UPLOAD_URLS
 
   return {
+    // TODO: Rename providerOptions to providers.
     providerOptions: {
       google: {
         key: process.env.UPPYSERVER_GOOGLE_KEY,
@@ -42,23 +57,61 @@ exports.getUppyOptions = () => {
   }
 }
 
-// validates that the mandatory uppy-server options are set
-// in the environment variables.
-exports.validateConfig = () => {
-  const mandatoryOptions = [
-    'UPPYSERVER_SECRET',
-    'UPPYSERVER_DATADIR',
-    'UPPYSERVER_DOMAIN'
-  ]
+/**
+ * Loads the config from a file and returns it as an object
+ *
+ * @returns {object}
+ */
+const getConfigFromFile = () => {
+  const path = getConfigPath()
+  if (!path) return {}
+
+  const rawdata = fs.readFileSync(getConfigPath())
+  // TODO validate the json object fields to match the uppy config schema
+  // @ts-ignore
+  return JSON.parse(rawdata)
+}
+
+/**
+ * Returns the config path specified via cli arguments
+ *
+ * @returns {string}
+ */
+const getConfigPath = () => {
+  let configPath
+
+  for (let i = process.argv.length - 1; i >= 0; i--) {
+    const isConfigFlag = process.argv[i] === '-c' || process.argv[i] === '--config'
+    const flagHasValue = i + 1 <= process.argv.length
+    if (isConfigFlag && flagHasValue) {
+      configPath = process.argv[i + 1]
+      break
+    }
+  }
+
+  return configPath
+}
+
+/**
+ * validates that the mandatory uppy-server options are set.
+ * If it is invalid, it will console an error of unset options and exits the process.
+ * If it is valid, nothing happens.
+ *
+ * @param {object} config
+ */
+exports.validateConfig = (config) => {
+  const mandatoryOptions = ['secret', 'filePath', 'server.host']
   /** @type {string[]} */
   const unspecified = []
 
   mandatoryOptions.forEach((i) => {
-    if (!process.env[i]) unspecified.push(i)
+    const value = i.split('.').reduce((prev, curr) => prev[curr], config)
+
+    if (!value) unspecified.push(`"${i}"`)
   })
   if (unspecified.length) {
-    console.error('\x1b[31m', 'Please specify the following environment',
-      'variables to run uppy-server as Standalone:\n', unspecified.join(',\n'), '\x1b[0m')
+    console.error('\x1b[31m', 'Please specify the following options',
+      'to run uppy-server as Standalone:\n', unspecified.join(',\n'), '\x1b[0m')
     process.exit(1)
   }
 }

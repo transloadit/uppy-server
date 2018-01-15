@@ -8,7 +8,6 @@ const bodyParser = require('body-parser')
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
 const helper = require('./helper')
-helper.validateConfig()
 
 const app = express()
 
@@ -100,6 +99,7 @@ app.get('/', (req, res) => {
 
 // initialize uppy
 const uppyOptions = helper.getUppyOptions()
+helper.validateConfig(uppyOptions)
 if (process.env.UPPYSERVER_PATH) {
   app.use(process.env.UPPYSERVER_PATH, uppy.app(uppyOptions))
 } else {

@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
     volumes:
       - ./:/app
       - /app/node_modules

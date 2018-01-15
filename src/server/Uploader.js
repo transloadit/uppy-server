@@ -219,7 +219,7 @@ class Uploader {
     const formData = { [this.options.fieldname]: file }
     request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
       if (error || response.statusCode >= 400) {
-        console.log(`error: ${error} status: ${response.statusCode}`)
+        console.log(`error: ${error} status: ${response ? response.statusCode : null}`)
         this.emitError(error || response.statusMessage)
       } else {
         this.emitSuccess(null)

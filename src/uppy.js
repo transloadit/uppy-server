@@ -5,6 +5,7 @@ const grantConfig = require('./config/grant')()
 const providerManager = require('./server/provider')
 const dispatcher = require('./server/controllers/dispatcher')
 const s3 = require('./server/controllers/s3')
+const url = require('./server/controllers/url')
 const SocketServer = require('ws').Server
 const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
@@ -53,6 +54,7 @@ module.exports.app = (options = {}) => {
   // add uppy options to the request object so it can be accessed by subsequent handlers.
   app.use('*', getOptionsMiddleware(options))
   app.use('/s3', s3(options.providerOptions.s3))
+  app.use('/url', url())
   app.get('/:providerName/:action', dispatcher)
   app.get('/:providerName/:action/:id', dispatcher)
   app.post('/:providerName/:action', dispatcher)

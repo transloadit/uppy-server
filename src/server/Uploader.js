@@ -14,10 +14,10 @@ class Uploader {
    * @property {string} protocol
    * @property {object} metadata
    * @property {number} size
-   * @property {string} fieldname
+   * @property {string=} fieldname
    * @property {string} pathPrefix
    * @property {string} pathSuffix
-   * @property {object} storage
+   * @property {object=} storage
    * @property {string=} path
    *
    * @param {Options} options

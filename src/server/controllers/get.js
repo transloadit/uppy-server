@@ -39,6 +39,8 @@ function get (req, res) {
     // wait till the client has connected to the socket, before starting
     // the download, so that the client can receive all download/upload progress.
     req.uppy.debugLog('Waiting for socket connection before beginning remote download.')
+    // TODO: there's a potential bug here. We should check if "endpoint" is specified before
+    // waiting for socketReady.
     uploader.onSocketReady(() => {
       req.uppy.debugLog('Socket connection received. Starting remote download.')
       provider.download({ id, token, query: req.query },

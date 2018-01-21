@@ -25,7 +25,7 @@ const meta = (req, res) => {
   }
 
   utils.getURLMeta(req.body.url)
-    .then(res.json)
+    .then((meta) => res.json(meta))
     .catch((err) => {
       console.error(err)
       return res.status(500).json({ error: err })
@@ -82,7 +82,7 @@ const get = (req, res) => {
  * to the callback chunk by chunk.
  *
  * @param {string} url
- * @param {function} onDataChunk
+ * @param {typeof Function} onDataChunk
  */
 const downloadURL = (url, onDataChunk) => {
   const opts = {

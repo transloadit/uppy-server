@@ -133,6 +133,7 @@ module.exports.socket = (server, options) => {
  * @returns {function}
  */
 const getDebugLogger = (options) => {
+  // TODO: add line number and originating file
   /**
    *
    * @param {string} message

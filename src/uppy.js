@@ -42,6 +42,7 @@ module.exports.app = (options = {}) => {
 
   app.use(new Grant(grantConfig))
   if (options.sendSelfEndpoint) {
+    // TODO: handle Access-Control-Allow-Origin here instead of externally
     app.use('*', (req, res, next) => {
       const { protocol } = options.server
       res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)

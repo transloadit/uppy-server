@@ -35,10 +35,8 @@ spec:
         name: uppy-server        
         resources:
           limits:
-            cpu: 0.5
             memory: 150Mi
           requests:
-            cpu: 0.3
             memory: 100Mi
         envFrom:
         - configMapRef:

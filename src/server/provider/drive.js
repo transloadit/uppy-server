@@ -43,16 +43,27 @@ class Drive {
       .request()
       .on('data', onData)
       .on('error', (err) => {
-        console.log('there was an error:', err)
+        console.error(err)
       })
   }
 
   thumbnail ({id, token}, done) {
     return this.stats({id, token}, (err, resp, body) => {
       if (err) {
-        console.log('there was an error:', err)
+        console.error(err)
+        return done(null)
       }
       done(body.thumbnailLink ? request(body.thumbnailLink) : null)
+    })
+  }
+
+  size ({id, token}, done) {
+    return this.stats({ id, token }, (err, resp, body) => {
+      if (err) {
+        console.error(err)
+        return done(null)
+      }
+      done(parseInt(body.fileSize))
     })
   }
 }

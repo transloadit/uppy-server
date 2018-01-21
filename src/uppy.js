@@ -92,7 +92,7 @@ module.exports.socket = (server, options) => {
      */
     function sendProgress (data) {
       ws.send(jsonStringify(data), (err) => {
-        if (err) console.log(`Error: ${err}`)
+        if (err) console.error(err)
       })
     }
 
@@ -103,7 +103,7 @@ module.exports.socket = (server, options) => {
         redisClient = redis.createClient({ url: redisUrl })
       }
       redisClient.get(token, (err, data) => {
-        if (err) console.log(err)
+        if (err) console.error(err)
         if (data) {
           const dataObj = JSON.parse(data.toString())
           if (dataObj.action) sendProgress(dataObj)

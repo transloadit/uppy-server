@@ -1,5 +1,6 @@
 const request = require('request')
 const purest = require('purest')({ request })
+const utils = require('../utils')
 
 class Instagram {
   constructor (options) {
@@ -36,16 +37,16 @@ class Instagram {
     return mediaObj[`${type}s`].standard_resolution.url
   }
 
-  download ({ id, token, query = {} }, onData, onResponse) {
+  download ({ id, token, query = {} }, onData) {
     return this.client
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
-        if (err) return console.log('there was an error:', err)
+        if (err) return console.error(err)
         request(this._getMediaUrl(body, query.carousel_id))
-          .on('response', onResponse)
+          .on('data', onData)
           .on('error', (err) => {
-            console.log('there was an error:', err)
+            console.error(err)
           })
       })
   }
@@ -55,12 +56,31 @@ class Instagram {
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
-        if (err) return console.log('there was an error:', err)
+        if (err) return console.error(err)
 
         request(body.data.images.thumbnail.url)
           .on('response', done)
           .on('error', (err) => {
-            console.log('there was an error:', err)
+            console.error(err)
+          })
+      })
+  }
+
+  size ({id, token, query = {}}, done) {
+    return this.client
+      .get(`media/${id}`)
+      .auth(token)
+      .request((err, resp, body) => {
+        if (err) {
+          console.error(err)
+          return done()
+        }
+
+        utils.getURLMeta(this._getMediaUrl(body, query.carousel_id))
+          .then(({ size }) => done(size))
+          .catch((err) => {
+            console.error(err)
+            done()
           })
       })
   }

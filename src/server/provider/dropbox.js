@@ -49,7 +49,7 @@ class DropBox {
       .request()
       .on('data', onData)
       .on('error', (err) => {
-        console.log('there was an error:', err)
+        console.error(err)
       })
   }
 
@@ -66,7 +66,26 @@ class DropBox {
       .request()
       .on('response', done)
       .on('error', (err) => {
-        console.log('there was an error:', err)
+        console.error(err)
+      })
+  }
+
+  size ({id, token}, done) {
+    return this.client
+      .post('files/get_metadata')
+      .options({ version: '2' })
+      .auth(token)
+      .json({
+        path: id,
+        include_media_info: true
+      })
+      .request((err, resp, body) => {
+        if (err) {
+          console.error(err)
+          return done(null)
+        }
+
+        done(body.size)
       })
   }
 }

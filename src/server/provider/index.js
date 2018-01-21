@@ -42,6 +42,13 @@ class Provider {
   thumbnail (options, cb) {}
 
   /**
+   *
+   * @param {object} options
+   * @param {function} cb
+   */
+  size (options, cb) {}
+
+  /**
    * @returns {string}
    */
   static get authProvider () {

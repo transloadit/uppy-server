@@ -44,7 +44,7 @@ class Uploader {
     if (fs.existsSync(this.options.path)) {
       fs.unlink(this.options.path, (err) => {
         if (err) {
-          console.log(`unable to clean up uploaded file: ${this.options.path} err: ${err}`)
+          console.error(`unable to clean up uploaded file: ${this.options.path} err: ${err}`)
         }
       })
     }
@@ -58,6 +58,7 @@ class Uploader {
    */
   handleChunk (chunk) {
     this.writer.write(chunk, () => {
+      console.log(`Downloaded ${this.writer.bytesWritten} bytes`)
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
@@ -170,7 +171,7 @@ class Uploader {
        * @param {Error} error
        */
       onError (error) {
-        console.log(error)
+        console.error(error)
         uploader.emitError(error)
         // TODO: should the download file be deleted on error?
         //    How would we then handle retries.
@@ -222,7 +223,7 @@ class Uploader {
     const formData = { [this.options.fieldname]: file }
     request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
       if (error || response.statusCode >= 400) {
-        console.log(`error: ${error} status: ${response ? response.statusCode : null}`)
+        console.error(`error: ${error} status: ${response ? response.statusCode : null}`)
         this.emitError(error || response.statusMessage)
       } else {
         this.emitSuccess(null)

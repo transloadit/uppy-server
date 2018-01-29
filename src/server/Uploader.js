@@ -220,7 +220,11 @@ class Uploader {
       this.emitProgress(bytesUploaded, null)
     })
 
-    const formData = { [this.options.fieldname]: file }
+    const formData = Object.assign(
+      {},
+      this.options.metadata,
+      { [this.options.fieldname]: file }
+    )
     request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
       if (error || response.statusCode >= 400) {
         console.error(`error: ${error} status: ${response ? response.statusCode : null}`)

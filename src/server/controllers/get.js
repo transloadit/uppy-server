@@ -4,7 +4,7 @@ const { hasMatch } = require('../utils')
 const validator = require('validator')
 
 function get (req, res) {
-  if (!validData(req.body)) {
+  if (!validData(req.body, req.uppy.options.debug)) {
     req.uppy.debugLog('Invalid request body detected. Exiting download/upload handler.')
     return res.status(400).json({ error: 'Invalid upload data' })
   }
@@ -52,9 +52,9 @@ function get (req, res) {
   })
 }
 
-const validData = (data) => {
+const validData = (data, debugMode) => {
   if (data.endpoint) {
-    return validator.isURL(data.endpoint, { require_protocol: true })
+    return validator.isURL(data.endpoint, { require_protocol: true, require_tld: !debugMode })
   }
 
   return true

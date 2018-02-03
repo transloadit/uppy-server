@@ -19,7 +19,7 @@ module.exports = () => {
 const meta = (req, res) => {
   req.uppy.debugLog('URL file import handler running')
 
-  if (!validateData(req.body)) {
+  if (!validateData(req.body, req.uppy.options.debug)) {
     req.uppy.debugLog('Invalid request body detected. Exiting url meta handler.')
     return res.status(400).json({error: 'Invalid request body'})
   }
@@ -43,7 +43,7 @@ const meta = (req, res) => {
 const get = (req, res) => {
   req.uppy.debugLog('URL file import handler running')
 
-  if (!validateData(req.body)) {
+  if (!validateData(req.body, req.uppy.options.debug)) {
     req.uppy.debugLog('Invalid request body detected. Exiting url download/upload handler.')
     return res.status(400).json({ error: 'Invalid request body' })
   }
@@ -100,14 +100,15 @@ const downloadURL = (url, onDataChunk) => {
  * Validates if passed data contains valid content
  *
  * @param {object} data
+ * @param {boolean} debugMode
  * @returns {boolean}
  */
-const validateData = (data) => {
-  if (data.endpoint && !validator.isURL(data.endpoint, { require_protocol: true })) {
+const validateData = (data, debugMode) => {
+  if (data.endpoint && !validator.isURL(data.endpoint, { require_protocol: true, require_tld: !debugMode })) {
     return false
   }
 
-  if (data.url && !validator.isURL(data.url, { require_protocol: true })) {
+  if (data.url && !validator.isURL(data.url, { require_protocol: true, require_tld: !debugMode })) {
     return false
   }
 

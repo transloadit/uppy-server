@@ -76,7 +76,7 @@ module.exports.getProviderMiddleware = (providers) => {
     if (providers[providerName] && validOptions(req.uppy.options)) {
       req.uppy.provider = new providers[providerName]({ providerName, config })
     } else {
-      console.warn('uppy: Invalid provider options detected. Provider will not be loaded')
+      console.warn('uppy-server: Invalid provider options detected. Provider will not be loaded')
     }
     next()
   }
@@ -114,7 +114,7 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
 module.exports.addProviderOptions = (options, grantConfig) => {
   const { server, providerOptions } = options
   if (!validOptions({ server })) {
-    console.warn('uppy: Invalid provider options detected. Providers will not be loaded')
+    console.warn('uppy-server: Invalid provider options detected. Providers will not be loaded')
     return
   }
 
@@ -138,7 +138,7 @@ module.exports.addProviderOptions = (options, grantConfig) => {
         grantConfig[authProvider].redirect_uri = `${server.protocol}://${oauthDomain}/${providerName}/redirect`
       }
     } else if (authProvider !== 's3') { // TODO: there should be a cleaner way to do this.
-      console.warn(`uppy: skipping one found unsupported provider "${authProvider}".`)
+      console.warn(`uppy-server: skipping one found unsupported provider "${authProvider}".`)
     }
   })
 }

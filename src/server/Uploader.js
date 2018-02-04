@@ -25,7 +25,7 @@ class Uploader {
   constructor (options) {
     this.options = options
     this.token = uuid.v4()
-    this.options.path = `${this.options.pathPrefix}/${this.token}-${this.options.pathSuffix}`
+    this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}-${this.options.pathSuffix}`
     this.writer = fs.createWriteStream(this.options.path)
     /** @type {number} */
     this.emittedProgress = 0
@@ -41,13 +41,11 @@ class Uploader {
   }
 
   cleanUp () {
-    if (fs.existsSync(this.options.path)) {
-      fs.unlink(this.options.path, (err) => {
-        if (err) {
-          console.error(`unable to clean up uploaded file: ${this.options.path} err: ${err}`)
-        }
-      })
-    }
+    fs.unlink(this.options.path, (err) => {
+      if (err) {
+        console.error(`unable to clean up uploaded file: ${this.options.path} err: ${err}`)
+      }
+    })
     emitter.removeAllListeners(`pause:${this.token}`)
     emitter.removeAllListeners(`resume:${this.token}`)
   }
@@ -175,8 +173,6 @@ class Uploader {
       onError (error) {
         console.error(error)
         uploader.emitError(error)
-        // TODO: should the download file be deleted on error?
-        //    How would we then handle retries.
       },
       /**
        *
@@ -251,5 +247,7 @@ class Uploader {
     })
   }
 }
+
+Uploader.FILE_NAME_PREFIX = 'uppy-file'
 
 module.exports = Uploader

@@ -107,7 +107,7 @@ if (process.env.UPPYSERVER_PATH) {
 }
 
 app.use((req, res, next) => {
-  return res.status(400).json({ message: 'Not Found' })
+  return res.status(404).json({ message: 'Not Found' })
 })
 
 if (app.get('env') === 'production') {

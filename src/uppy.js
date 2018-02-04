@@ -11,7 +11,8 @@ const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
 const redis = require('redis')
 const cookieParser = require('cookie-parser')
-const {jsonStringify} = require('./server/utils')
+const { jsonStringify } = require('./server/utils')
+const jobs = require('./server/jobs')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -62,6 +63,8 @@ module.exports.app = (options = {}) => {
   app.post('/:providerName/:action/:id', dispatcher)
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
+
+  jobs.startCleanUpJob(options.filePath)
 
   return app
 }

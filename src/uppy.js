@@ -64,7 +64,9 @@ module.exports.app = (options = {}) => {
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 
-  jobs.startCleanUpJob(options.filePath)
+  if (app.get('env') !== 'test') {
+    jobs.startCleanUpJob(options.filePath)
+  }
 
   return app
 }

@@ -1,3 +1,4 @@
+export NODE_ENV="test"
 export UPPYSERVER_PORT=3020
 export UPPYSERVER_DOMAIN="localhost:3020"
 export UPPYSERVER_SELF_ENDPOINT="localhost:3020"

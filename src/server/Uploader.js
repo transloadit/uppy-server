@@ -129,11 +129,12 @@ class Uploader {
   /**
    *
    * @param {string} url
+   * @param {object} extraData
    */
-  emitSuccess (url) {
+  emitSuccess (url, extraData = {}) {
     const emitData = {
       action: 'success',
-      payload: { complete: true, url }
+      payload: Object.assign(extraData, { complete: true, url })
     }
     this.saveState(emitData)
     emitter.emit(this.token, emitData)
@@ -142,12 +143,13 @@ class Uploader {
   /**
    *
    * @param {Error} err
+   * @param {object=} extraData
    */
-  emitError (err) {
+  emitError (err, extraData = {}) {
     const dataToEmit = {
       action: 'error',
       // TODO: consider removing the stack property
-      payload: { error: serializeError(err) }
+      payload: Object.assign(extraData, { error: serializeError(err) })
     }
     this.saveState(dataToEmit)
     emitter.emit(this.token, dataToEmit)
@@ -225,12 +227,24 @@ class Uploader {
       this.options.metadata,
       { [this.options.fieldname]: file }
     )
-    request.post({ url: this.options.endpoint, formData }, (error, response, body) => {
-      if (error || response.statusCode >= 400) {
-        console.error(`error: ${error} status: ${response ? response.statusCode : null}`)
-        this.emitError(error || response.statusMessage)
+    request.post({ url: this.options.endpoint, formData, encoding: null }, (error, response, body) => {
+      if (error) {
+        console.error(`error: ${error}`)
+        this.emitError(error)
+        return
+      }
+      const respObj = {
+        reponseText: body.toString(),
+        status: response.statusCode,
+        statusText: response.statusMessage,
+        headers: response.headers
+      }
+
+      if (response.statusCode >= 400) {
+        console.error(`upload failed with status: ${response.statusCode}`)
+        this.emitError(new Error(response.statusMessage), respObj)
       } else {
-        this.emitSuccess(null)
+        this.emitSuccess(null, { response: respObj })
       }
 
       this.cleanUp()

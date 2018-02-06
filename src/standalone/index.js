@@ -113,6 +113,7 @@ app.use((req, res, next) => {
 if (app.get('env') === 'production') {
   // @ts-ignore
   app.use((err, req, res, next) => {
+    console.error('\x1b[31m', err.stack, '\x1b[0m')
     res.status(err.status || 500).json({ message: 'Something went wrong' })
   })
 } else {

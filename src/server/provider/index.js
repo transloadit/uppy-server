@@ -135,7 +135,7 @@ module.exports.addProviderOptions = (options, grantConfig) => {
       // override grant.js redirect uri with uppy's custom redirect url
       if (oauthDomain) {
         const providerName = authToProviderName(authProvider)
-        grantConfig[authProvider].redirect_uri = `${server.protocol}://${oauthDomain}/${providerName}/redirect`
+        grantConfig[authProvider].redirect_uri = `${server.protocol}://${oauthDomain}/${server.path}/${providerName}/redirect`
       }
     } else if (authProvider !== 's3') { // TODO: there should be a cleaner way to do this.
       console.warn(`uppy-server: skipping one found unsupported provider "${authProvider}".`)

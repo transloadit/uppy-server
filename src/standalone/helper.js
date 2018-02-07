@@ -46,7 +46,8 @@ const getConfigFromEnv = () => {
     server: {
       host: process.env.UPPYSERVER_DOMAIN,
       protocol: process.env.UPPYSERVER_PROTOCOL,
-      path: process.env.UPPYSERVER_PATH || process.env.UPPYSERVER_IMPLICIT_PATH,
+      path: process.env.UPPYSERVER_PATH,
+      implicitPath: process.env.UPPYSERVER_IMPLICIT_PATH,
       oauthDomain: process.env.UPPYSERVER_OAUTH_DOMAIN,
       validHosts: validHosts
     },

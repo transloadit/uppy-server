@@ -11,14 +11,12 @@ const qs = require('querystring')
  */
 module.exports = function connect (req, res, next) {
   const query = Object.assign({}, req.query)
-  const { path } = req.uppy.options.server
 
   if (req.uppy.options.server.oauthDomain) {
     let newState = query.state ? JSON.parse(atob(query.state)) : {}
-    const { host, protocol } = req.uppy.options.server
-    newState.uppyInstance = `${protocol}://${host}${path}`
+    newState.uppyInstance = req.uppy.buildURL('', true)
     query.state = Buffer.from(JSON.stringify(newState)).toString('base64')
   }
 
-  res.redirect(`${path}/connect/${req.uppy.provider.authProvider}?${qs.stringify(query)}`)
+  res.redirect(req.uppy.buildURL(`/connect/${req.uppy.provider.authProvider}?${qs.stringify(query)}`, true, true))
 }

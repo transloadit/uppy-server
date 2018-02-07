@@ -10,6 +10,7 @@ const emitter = require('./server/WebsocketEmitter')
 const merge = require('lodash.merge')
 const redis = require('redis')
 const cookieParser = require('cookie-parser')
+const { getURLBuilder } = require('./server/utils')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -158,7 +159,8 @@ const getOptionsMiddleware = (options) => {
     req.uppy = {
       options,
       authToken: req.cookies.uppyAuthToken,
-      debugLog: getDebugLogger(options)
+      debugLog: getDebugLogger(options),
+      buildURL: getURLBuilder(options)
     }
     next()
   }

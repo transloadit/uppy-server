@@ -23,7 +23,7 @@ module.exports = function callback (req, res, next) {
   req.uppy.debugLog(`Generating auth token for provider ${providerName}.`)
   const uppyAuthToken = tokenService.generateToken(req.uppy.providerTokens, req.uppy.options.secret)
   // add the token to the response
-  tokenService.setToken(res, uppyAuthToken)
+  tokenService.setToken(res, uppyAuthToken, req.uppy.options)
 
   if (req.session.grant.state) {
     // TODO: confirm if the direct is one of uppy endpoints

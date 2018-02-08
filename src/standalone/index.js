@@ -56,6 +56,12 @@ if (process.env.UPPYSERVER_REDIS_URL) {
   })
 }
 
+if (process.env.UPPYSERVER_COOKIE_DOMAIN) {
+  sessionOptions.cookie = {
+    domain: process.env.UPPYSERVER_COOKIE_DOMAIN
+  }
+}
+
 app.use(session(sessionOptions))
 
 app.use((req, res, next) => {

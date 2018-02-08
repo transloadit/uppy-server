@@ -27,11 +27,17 @@ module.exports.verifyToken = (token, secret) => {
  *
  * @param {object} res
  * @param {string} token
+ * @param {object=} uppyOptions
  */
-module.exports.setToken = (res, token) => {
-  // send signed token to client.
-  res.cookie('uppyAuthToken', token, {
+module.exports.setToken = (res, token, uppyOptions) => {
+  const cookieOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 30, // would expire after 30 days
     httpOnly: true
-  })
+  }
+
+  if (uppyOptions.cookieDomain) {
+    cookieOptions.domain = uppyOptions.cookieDomain
+  }
+  // send signed token to client.
+  res.cookie('uppyAuthToken', token, cookieOptions)
 }

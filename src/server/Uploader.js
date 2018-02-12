@@ -229,11 +229,16 @@ class Uploader {
         this.emitError(error)
         return
       }
+      const headers = response.headers
+      // remove browser forbidden headers
+      delete headers['set-cookie']
+      delete headers['set-cookie2']
+
       const respObj = {
         reponseText: body.toString(),
         status: response.statusCode,
         statusText: response.statusMessage,
-        headers: response.headers
+        headers
       }
 
       if (response.statusCode >= 400) {

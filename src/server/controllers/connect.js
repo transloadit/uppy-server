@@ -18,5 +18,5 @@ module.exports = function connect (req, res, next) {
     query.state = Buffer.from(JSON.stringify(newState)).toString('base64')
   }
 
-  res.redirect(req.uppy.buildURL(`/connect/${req.uppy.provider.authProvider}?${qs.stringify(query)}`, true, true))
+  res.redirect(req.uppy.buildURL(`/connect/${req.uppy.provider.authProvider}?${qs.stringify(query)}`, true))
 }

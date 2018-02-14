@@ -115,7 +115,6 @@
     "logtail:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run logtail",
     "logtail": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra --remote 'tail -f /srv/uppy-server/shared/logs/uppy-server.log'",
     "prepublish": "npm run build",
-    "postinstall": "npm run build",
     "release:major": "env SEMANTIC=major npm run release",
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",

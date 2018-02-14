@@ -21,7 +21,8 @@ const promInterval = collectDefaultMetrics({ register: promClient.register, time
 
 // Add version as a prometheus gauge
 const versionGauge = new promClient.Gauge({ name: 'uppyserver_version', help: 'npm version as an integer' })
-versionGauge.set(version.replace(/\./g, '') * 1) // Set to 10
+const numberVersion = version.replace(/\D/g, '') * 1
+versionGauge.set(numberVersion)
 
 if (app.get('env') !== 'test') {
   clearInterval(promInterval)

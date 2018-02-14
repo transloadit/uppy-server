@@ -58,13 +58,17 @@ if (process.env.UPPYSERVER_REDIS_URL) {
 
 if (process.env.UPPYSERVER_COOKIE_DOMAIN) {
   sessionOptions.cookie = {
-    domain: process.env.UPPYSERVER_COOKIE_DOMAIN
+    domain: process.env.UPPYSERVER_COOKIE_DOMAIN,
+    sameSite: 'lax',
+    proxy: true,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }
 
 app.use(session(sessionOptions))
 
 app.use((req, res, next) => {
+  console.log('session-debug: ', req.session.id, req.session.grant)
   const protocol = process.env.UPPYSERVER_PROTOCOL || 'http'
 
   // if endpoint urls are specified, then we only allow those endpoints

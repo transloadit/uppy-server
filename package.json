@@ -85,6 +85,7 @@
     "request": "^2.81.0",
     "serialize-error": "^2.1.0",
     "tus-js-client": "1.4.5",
+    "typescript": "^2.6.2",
     "uuid": "2.0.2",
     "validator": "^9.0.0",
     "ws": "1.1.5"
@@ -114,6 +115,7 @@
     "logtail:localfrey": "env FREYCMD=\"babel-node ${HOME}/code/frey/src/cli.js\" npm run logtail",
     "logtail": "source env.sh && ${FREYCMD:-frey} remote --project-dir ./infra --remote 'tail -f /srv/uppy-server/shared/logs/uppy-server.log'",
     "prepublish": "npm run build",
+    "postinstall": "npm run build",
     "release:major": "env SEMANTIC=major npm run release",
     "release:minor": "env SEMANTIC=minor npm run release",
     "release:patch": "env SEMANTIC=patch npm run release",

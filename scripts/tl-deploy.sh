@@ -52,6 +52,6 @@ echo ""
 ssh="ssh -i ${__root}/../api2/envs/api2-production-ssh-key.pem -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -l ubuntu"
 
 cat "${hostsFile}" |while read -r host; do
-  echo "${ssh} \"${host}\" \"sudo chmod 777 ${parentDir} && sudo chgrp -R ubuntu ${remotePath} && sudo chmod -R g+wrX ${remotePath}\" && rsync --progress -vvnaie \"${ssh}\" ${localPath} ${host}:${remotePath} && ${ssh} \"${host}\" \"${cmd}\""
-  # (${ssh} "${host}" "sudo chmod 777 ${parentDir} && sudo chgrp -R ubuntu ${remotePath} && sudo chmod -R g+wrX ${remotePath}" && rsync --progress -naie "${ssh}" ${localPath} ${host}:${remotePath} && ${ssh} "${host}" "${cmd}") &
+  echo "${ssh} \"${host}\" \"sudo chmod 777 ${parentDir} && sudo chgrp -R ubuntu ${remotePath} && sudo chmod -R g+wrX ${remotePath}\" && rsync --progress -ai --no-o --no-g --no-p --no-t -e \"${ssh}\" ${localPath} ${host}:${remotePath} && ${ssh} \"${host}\" \"${cmd}\""
+  (${ssh} "${host}" "sudo chmod 777 ${parentDir} && sudo chgrp -R ubuntu ${remotePath} && sudo chmod -R g+wrX ${remotePath}" && rsync --progress -ai --no-o --no-g --no-p --no-t -e "${ssh}" ${localPath} ${host}:${remotePath} && ${ssh} "${host}" "${cmd}") &
 done

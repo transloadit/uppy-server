@@ -8,6 +8,8 @@ const bodyParser = require('body-parser')
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
 const helper = require('./helper')
+// @ts-ignore
+const { version } = require('../../package.json')
 
 const app = express()
 
@@ -15,7 +17,15 @@ const app = express()
 const metricsMiddleware = promBundle({includeMethod: true, includePath: true})
 const promClient = metricsMiddleware.promClient
 const collectDefaultMetrics = promClient.collectDefaultMetrics
-collectDefaultMetrics({ register: promClient.register })
+const promInterval = collectDefaultMetrics({ register: promClient.register, timeout: 5000 })
+
+// Add version as a prometheus gauge
+const versionGauge = new promClient.Gauge({ name: 'uppyserver_version', help: 'npm version as an integer' })
+versionGauge.set(version.replace(/\./g, '') * 1) // Set to 10
+
+if (app.get('env') !== 'test') {
+  clearInterval(promInterval)
+}
 
 // log server requests.
 app.use(morgan('combined'))
@@ -103,7 +113,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/plain')
   res.send(
-    [ 'Welcome to Uppy Server', '======================', '' ].join('\n')
+    [ `Welcome to Uppy Server v${version}`, '======================', '' ].join('\n')
   )
 })
 

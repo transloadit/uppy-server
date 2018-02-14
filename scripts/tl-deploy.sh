@@ -20,7 +20,13 @@ cmd="${cmd} && tlsvc -s uppy-server restart"
 type jq || brew install jq
 type curl || brew install curl
 
-if false; then
+# Cache hosts file for 10 minutes
+if find "${hostsFile}" -mmin +10; then
+  echo "--> Deleting hosts cache file '${hostsFile}' cause older than 10 minutes ... "
+  rm -f "${hostsFile}"
+fi
+if [ ! -f "${hostsFile}" ]; then
+  echo "--> Saving new hosts cache file '${hostsFile}' for the next 10 minutes of iterations ... "
   curl -sSLk https://api2.transloadit.com/instances \
     | jq --raw-output \
       '.instances[] 
@@ -48,7 +54,7 @@ echo "You have 3 seconds to press CTRL+C"
 echo "************************************************************************************"
 echo ""
 
-# sleep 3
+sleep 3
 
 ssh="ssh -i ${__root}/../api2/envs/api2-production-ssh-key.pem -o LogLevel=error -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -l ubuntu"
 

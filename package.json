@@ -71,6 +71,7 @@
     "connect-redis": "^3.3.0",
     "cookie-parser": "1.4.3",
     "express": "^4.16.0",
+    "express-interceptor": "^1.2.0",
     "express-prom-bundle": "^3.1.0",
     "express-session": "1.15.6",
     "grant-express": "3.8.0",

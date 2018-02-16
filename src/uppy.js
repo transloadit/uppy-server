@@ -13,6 +13,7 @@ const redis = require('redis')
 const cookieParser = require('cookie-parser')
 const { jsonStringify, getURLBuilder } = require('./server/utils')
 const jobs = require('./server/jobs')
+const interceptor = require('express-interceptor')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -41,6 +42,7 @@ module.exports.app = (options = {}) => {
   const app = express()
   app.use(cookieParser()) // server tokens are added to cookies
 
+  app.use(interceptGrantErrorResponse)
   app.use(new Grant(grantConfig))
   if (options.sendSelfEndpoint) {
     // TODO: handle Access-Control-Allow-Origin here instead of externally
@@ -130,6 +132,29 @@ module.exports.socket = (server, options) => {
     })
   })
 }
+
+// intercepts grantJS' default response error when something goes
+// wrong during oauth process.
+const interceptGrantErrorResponse = interceptor((req, res) => {
+  return {
+    isInterceptable: () => {
+      // match grant.js' callback url
+      return /^\/connect\/\w+\/callback/.test(req.path)
+    },
+    intercept: (body, send) => {
+      const unwantedBody = 'error=Grant%3A%20missing%20session%20or%20misconfigured%20provider'
+      if (body === unwantedBody) {
+        console.error(`uppy-server: grant.js responded with error: ${body}`)
+        send([
+          'Uppy-server was unable to complete the OAuth process :(',
+          '(Hint, try clearing your cookies and try again)'
+        ].join('\n'))
+      } else {
+        send(body)
+      }
+    }
+  }
+})
 
 /**
  * returns a logger function, that would log a message only if

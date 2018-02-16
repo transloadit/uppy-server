@@ -7,7 +7,10 @@ const bodyParser = require('body-parser')
 // @ts-ignore
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
+const stripIndent = require('common-tags/lib/stripIndent')
 const helper = require('./helper')
+// @ts-ignore
+const { version } = require('../../package.json')
 
 const app = express()
 
@@ -15,7 +18,16 @@ const app = express()
 const metricsMiddleware = promBundle({includeMethod: true, includePath: true})
 const promClient = metricsMiddleware.promClient
 const collectDefaultMetrics = promClient.collectDefaultMetrics
-collectDefaultMetrics({ register: promClient.register })
+const promInterval = collectDefaultMetrics({ register: promClient.register, timeout: 5000 })
+
+// Add version as a prometheus gauge
+const versionGauge = new promClient.Gauge({ name: 'uppyserver_version', help: 'npm version as an integer' })
+const numberVersion = version.replace(/\D/g, '') * 1
+versionGauge.set(numberVersion)
+
+if (app.get('env') !== 'test') {
+  clearInterval(promInterval)
+}
 
 // log server requests.
 app.use(morgan('combined'))
@@ -58,7 +70,8 @@ if (process.env.UPPYSERVER_REDIS_URL) {
 
 if (process.env.UPPYSERVER_COOKIE_DOMAIN) {
   sessionOptions.cookie = {
-    domain: process.env.UPPYSERVER_COOKIE_DOMAIN
+    domain: process.env.UPPYSERVER_COOKIE_DOMAIN,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }
 
@@ -98,9 +111,23 @@ app.use((req, res, next) => {
 // Routes
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/plain')
-  res.send(
-    [ 'Welcome to Uppy Server', '======================', '' ].join('\n')
-  )
+  res.send(stripIndent`
+    Welcome to Uppy Server v${version}
+    ===================================
+
+    Congratulations on setting up Uppy Server! Thanks for joining our cause, you have taken
+    the first step towards the future of file uploading! We
+    hope you are as excited about this as we are!
+
+    While you did an awesome job on getting Uppy Server running, this is just the welcome
+    message, so let's talk about the places that really matter:
+
+    - /dropbox/callback - oAuth dances with clients
+    - /metrics - gather statistics to keep Uppy Server running smoothly
+    - https://github.com/transloadit/uppy-server/issues - report your bugs here
+
+    So quit lollygagging, start uploading and experience the future!
+  `)
 })
 
 // initialize uppy

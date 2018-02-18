@@ -92,7 +92,7 @@ describe('connect to provider', () => {
       .get('/dropbox/connect?foo=bar')
       .set('Cookie', `uppyAuthToken=${token}`)
       .expect(302)
-      .expect('Location', '/connect/dropbox?foo=bar')
+      .expect('Location', 'http://localhost:3020/connect/dropbox?foo=bar')
   })
 
   test('connect to drive via grant.js endpoint', () => {
@@ -100,7 +100,7 @@ describe('connect to provider', () => {
       .get('/drive/connect?foo=bar')
       .set('Cookie', `uppyAuthToken=${token}`)
       .expect(302)
-      .expect('Location', '/connect/google?foo=bar')
+      .expect('Location', 'http://localhost:3020/connect/google?foo=bar')
   })
 })
 

@@ -1,5 +1,9 @@
 const fs = require('fs')
 const merge = require('lodash.merge')
+const stripIndent = require('common-tags/lib/stripIndent')
+const utils = require('../server/utils')
+// @ts-ignore
+const { version } = require('../../package.json')
 
 /**
  * Reads all uppy-server configuration set via environment variables
@@ -141,4 +145,39 @@ exports.validateConfig = (config) => {
  */
 exports.hasProtocol = (url) => {
   return url.startsWith('http://') || url.startsWith('https://')
+}
+
+exports.buildHelpfulStartupMessage = (uppyOptions) => {
+  const buildURL = utils.getURLBuilder(uppyOptions)
+  const callbackURLs = []
+  Object.keys(uppyOptions.providerOptions).forEach((providerName) => {
+    // s3 does not need redirect_uris
+    if (providerName === 's3') {
+      return
+    }
+
+    if (providerName === 'google') {
+      providerName = 'drive'
+    }
+
+    callbackURLs.push(buildURL(`/${providerName}/callback`, true))
+  })
+
+  return stripIndent`
+    Welcome to Uppy Server v${version}
+    ===================================
+
+    Congratulations on setting up Uppy Server! Thanks for joining our cause, you have taken
+    the first step towards the future of file uploading! We
+    hope you are as excited about this as we are!
+
+    While you did an awesome job on getting Uppy Server running, this is just the welcome
+    message, so let's talk about the places that really matter:
+
+    - Be sure to add ${callbackURLs.join(', ')} as your Oauth redirect uris on their corresponding developer interfaces.
+    - The URL ${buildURL('/metrics', true)} is available for  statistics to keep Uppy Server running smoothly
+    - https://github.com/transloadit/uppy-server/issues - report your bugs here
+
+    So quit lollygagging, start uploading and experience the future!
+  `
 }

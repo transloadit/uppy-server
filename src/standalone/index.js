@@ -7,7 +7,6 @@ const bodyParser = require('body-parser')
 // @ts-ignore
 const promBundle = require('express-prom-bundle')
 const session = require('express-session')
-const stripIndent = require('common-tags/lib/stripIndent')
 const helper = require('./helper')
 // @ts-ignore
 const { version } = require('../../package.json')
@@ -108,30 +107,14 @@ app.use((req, res, next) => {
   next()
 })
 
+const uppyOptions = helper.getUppyOptions()
 // Routes
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/plain')
-  res.send(stripIndent`
-    Welcome to Uppy Server v${version}
-    ===================================
-
-    Congratulations on setting up Uppy Server! Thanks for joining our cause, you have taken
-    the first step towards the future of file uploading! We
-    hope you are as excited about this as we are!
-
-    While you did an awesome job on getting Uppy Server running, this is just the welcome
-    message, so let's talk about the places that really matter:
-
-    - /dropbox/callback - oAuth dances with clients
-    - /metrics - gather statistics to keep Uppy Server running smoothly
-    - https://github.com/transloadit/uppy-server/issues - report your bugs here
-
-    So quit lollygagging, start uploading and experience the future!
-  `)
+  res.send(helper.buildHelpfulStartupMessage(uppyOptions))
 })
 
 // initialize uppy
-const uppyOptions = helper.getUppyOptions()
 helper.validateConfig(uppyOptions)
 if (process.env.UPPYSERVER_PATH) {
   app.use(process.env.UPPYSERVER_PATH, uppy.app(uppyOptions))

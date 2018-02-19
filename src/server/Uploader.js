@@ -162,6 +162,7 @@ class Uploader {
     // @ts-ignore
     this.tus = new tus.Upload(file, {
       endpoint: this.options.endpoint,
+      uploadUrl: this.options.uploadUrl,
       resume: true,
       uploadSize: this.options.size || fs.statSync(this.options.path).size,
       metadata,

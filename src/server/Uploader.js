@@ -11,6 +11,7 @@ class Uploader {
   /**
    * @typedef {object} Options
    * @property {string} endpoint
+   * @property {string=} uploadUrl
    * @property {string} protocol
    * @property {object} metadata
    * @property {number} size

@@ -26,8 +26,8 @@ __kube="${__dir}"
 
 rm -f "${__kube}/uppy-server/uppy-env.yaml"
 echo $UPPY_ENV
-echo $UPPY_ENV | base64 --decode -i
-echo $UPPY_ENV | base64 --decode -i  > "${__kube}/uppy-server/uppy-env.yaml"
+echo $UPPY_ENV | base64 --decode 
+echo $UPPY_ENV | base64 --decode   > "${__kube}/uppy-server/uppy-env.yaml"
 
 # kubectl config current-context
 

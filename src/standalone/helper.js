@@ -44,6 +44,7 @@ const getConfigFromEnv = () => {
         key: process.env.UPPYSERVER_AWS_KEY,
         secret: process.env.UPPYSERVER_AWS_SECRET,
         bucket: process.env.UPPYSERVER_AWS_BUCKET,
+        endpoint: process.env.UPPYSERVER_AWS_ENDPOINT,
         region: process.env.UPPYSERVER_AWS_REGION
       }
     },

@@ -23,7 +23,8 @@ kubectl config set-cluster transloadit-cluster --embed-certs=true --server=${CLU
 kubectl config set-credentials travis --token=$SA_TOKEN
 kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis --namespace=uppy
 kubectl config use-context travis
-
+# Should be already removed. Using it temporarily.
+rm -f "${__kube}/uppy-server/uppy-env.yaml"
 echo $UPPY_ENV | base64 --decode > "${__kube}/uppy-server/uppy-env.yaml"
 
 kubectl config current-context

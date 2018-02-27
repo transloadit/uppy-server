@@ -27,6 +27,7 @@ function get (req, res) {
     req.uppy.debugLog('Instantiating uploader.')
     const uploader = new Uploader({
       endpoint: body.endpoint,
+      uploadUrl: body.uploadUrl,
       protocol: body.protocol,
       metadata: body.metadata,
       size: size,

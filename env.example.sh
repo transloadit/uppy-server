@@ -32,6 +32,7 @@ export UPPYSERVER_INSTAGRAM_SECRET="***"
 export UPPYSERVER_AWS_KEY="***"
 export UPPYSERVER_AWS_SECRET="***"
 export UPPYSERVER_AWS_BUCKET="***"
+export UPPYSERVER_AWS_ENDPOINT="https://s3.{region}.amazonaws.com"
 export UPPYSERVER_AWS_REGION="***"
 
 # source env.sh

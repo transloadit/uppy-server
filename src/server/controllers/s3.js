@@ -4,6 +4,7 @@ const S3 = require('aws-sdk/clients/s3')
 
 const defaultConfig = {
   acl: 'public-read',
+  endpoint: 'https://{service}.{region}.amazonaws.com',
   conditions: [],
   getKey: (req, filename) => filename
 }
@@ -20,6 +21,7 @@ module.exports = function s3 (config) {
 
   const client = new S3({
     region: config.region,
+    endpoint: config.endpoint,
     accessKeyId: config.key,
     secretAccessKey: config.secret
   })

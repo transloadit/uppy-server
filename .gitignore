@@ -29,7 +29,6 @@ node_modules
 # oAuth Configuration
 config/auth.js
 
-Frey-residu-*
 *.pem
 env.*
 !env.test.sh

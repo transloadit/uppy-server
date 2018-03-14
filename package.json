@@ -59,6 +59,7 @@
     "lint-staged": "3.2.1",
     "nodemon": "1.8.1",
     "pre-commit": "1.1.3",
+    "request-logs": "0.0.5",
     "supertest": "3.0.0",
     "typescript": "2.7.1"
   },

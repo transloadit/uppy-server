@@ -75,7 +75,7 @@
     "express-prom-bundle": "^3.1.0",
     "express-session": "1.15.6",
     "grant": "^4.0.0",
-    "grant-express": "3.8.0",
+    "grant-express": "^4.0.0",
     "helmet": "3.8.2",
     "jsonwebtoken": "^8.0.1",
     "lodash.merge": "^4.6.0",

@@ -48,7 +48,7 @@ before_deploy:
   - gcloud --quiet components update
   - gcloud --quiet components update kubectl
   - wget https://kubernetes-helm.storage.googleapis.com/helm-v2.8.1-linux-amd64.tar.gz -P /tmp
-  - cd /tmp && tar -zxvf helm-v2.8.1-linux-amd64.tar.gz && mv /tmp/linux-amd64/helm /usr/local/bin/helm && cd -
+  - cd /tmp && tar -zxvf helm-v2.8.1-linux-amd64.tar.gz && sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm && cd -
 deploy:
   skip_cleanup: true
   provider: script

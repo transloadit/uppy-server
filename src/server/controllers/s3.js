@@ -57,4 +57,106 @@ module.exports = function s3 (config) {
         })
       })
     })
+    .post('/multipart', (req, res, next) => {
+      const key = config.getKey(req, req.query.filename)
+      if (typeof key !== 'string') {
+        return res.status(500).json({ error: 's3: filename returned from `getKey` must be a string' })
+      }
+
+      client.createMultipartUpload({
+        Bucket: config.bucket,
+        Key: key,
+        ACL: config.acl,
+        ContentType: req.query.type,
+        Expires: new Date(Date.now() + ms('5 minutes') / 1000)
+      }, (err, data) => {
+        if (err) {
+          next(err)
+          return
+        }
+        res.json({
+          key: data.Key,
+          uploadId: data.UploadId
+        })
+      })
+    })
+    .get('/multipart/:uploadId/:partNumber', (req, res, next) => {
+      const { uploadId, partNumber } = req.params
+      const { key } = req.query
+
+      if (typeof key !== 'string') {
+        return res.status(400).json({ error: 's3: the object key must be passed as a query parameter. For example: "?key=abc.jpg"' })
+      }
+      if (!parseInt(partNumber, 10)) {
+        return res.status(400).json({ error: 's3: the part number must be a number between 1 and 10000.' })
+      }
+
+      client.getSignedUrl('uploadPart', {
+        Bucket: config.bucket,
+        Key: key,
+        UploadId: uploadId,
+        PartNumber: partNumber,
+        Body: '',
+        Expires: new Date(Date.now() + ms('5 minutes') / 1000)
+      }, (err, url) => {
+        if (err) {
+          next(err)
+          return
+        }
+        res.json({ url })
+      })
+    })
+    .delete('/multipart/:uploadId', (req, res, next) => {
+      const { uploadId } = req.params
+      const { key } = req.query
+
+      if (typeof key !== 'string') {
+        return res.status(400).json({ error: 's3: the object key must be passed as a query parameter. For example: "?key=abc.jpg"' })
+      }
+
+      client.abortMultipartUpload({
+        Bucket: config.bucket,
+        Key: key,
+        UploadId: uploadId
+      }, (err, data) => {
+        if (err) {
+          next(err)
+          return
+        }
+        res.json({})
+      })
+    })
+    .post('/multipart/:uploadId/complete', (req, res, next) => {
+      const { uploadId } = req.params
+      const { key } = req.query
+      const { parts } = req.body
+
+      if (typeof key !== 'string') {
+        return res.status(400).json({ error: 's3: the object key must be passed as a query parameter. For example: "?key=abc.jpg"' })
+      }
+      if (!Array.isArray(parts) || !parts.every(isValidPart)) {
+        return res.status(400).json({ error: 's3: `parts` must be an array of {ETag, PartNumber} objects.' })
+      }
+
+      client.completeMultipartUpload({
+        Bucket: config.bucket,
+        Key: key,
+        UploadId: uploadId,
+        MultipartUpload: {
+          Parts: parts
+        }
+      }, (err, data) => {
+        if (err) {
+          next(err)
+          return
+        }
+        res.json({
+          location: data.Location
+        })
+      })
+    })
+}
+
+function isValidPart (part) {
+  return part && typeof part === 'object' && typeof part.PartNumber === 'number' && typeof part.ETag === 'string'
 }

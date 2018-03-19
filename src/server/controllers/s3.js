@@ -68,7 +68,7 @@ module.exports = function s3 (config) {
         Key: key,
         ACL: config.acl,
         ContentType: req.query.type,
-        Expires: new Date(Date.now() + ms('5 minutes') / 1000)
+        Expires: ms('5 minutes') / 1000
       }, (err, data) => {
         if (err) {
           next(err)
@@ -97,7 +97,7 @@ module.exports = function s3 (config) {
         UploadId: uploadId,
         PartNumber: partNumber,
         Body: '',
-        Expires: new Date(Date.now() + ms('5 minutes') / 1000)
+        Expires: ms('5 minutes') / 1000
       }, (err, url) => {
         if (err) {
           next(err)

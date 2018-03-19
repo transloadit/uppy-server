@@ -58,7 +58,7 @@ class Uploader {
    */
   handleChunk (chunk) {
     this.writer.write(chunk, () => {
-      logger.debug(`downloaded ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
+      logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
@@ -110,7 +110,10 @@ class Uploader {
     bytesTotal = bytesTotal || this.options.size
     const percentage = (bytesUploaded / bytesTotal * 100)
     const formatPercentage = percentage.toFixed(2)
-    logger.debug(`${bytesUploaded} ${bytesTotal} ${formatPercentage}%`, 'uploader.upload.progress')
+    logger.debug(
+      `${this.token.substring(0, 8)} ${bytesUploaded} ${bytesTotal} ${formatPercentage}%`,
+      'uploader.upload.progress'
+    )
 
     const dataToEmit = {
       action: 'progress',

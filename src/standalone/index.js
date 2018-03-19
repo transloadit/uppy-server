@@ -54,8 +54,9 @@ app.use(helmet.noSniff())
 app.use(helmet.ieNoOpen())
 app.disable('x-powered-by')
 
+const uppyOptions = helper.getUppyOptions()
 const sessionOptions = {
-  secret: process.env.UPPYSERVER_SECRET,
+  secret: uppyOptions.secret,
   resave: true,
   saveUninitialized: true
 }
@@ -107,7 +108,6 @@ app.use((req, res, next) => {
   next()
 })
 
-const uppyOptions = helper.getUppyOptions()
 // Routes
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/plain')

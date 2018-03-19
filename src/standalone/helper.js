@@ -2,6 +2,7 @@ const fs = require('fs')
 const merge = require('lodash.merge')
 const stripIndent = require('common-tags/lib/stripIndent')
 const utils = require('../server/utils')
+const crypto = require('crypto')
 // @ts-ignore
 const { version } = require('../../package.json')
 
@@ -60,12 +61,22 @@ const getConfigFromEnv = () => {
     redisUrl: process.env.UPPYSERVER_REDIS_URL,
     sendSelfEndpoint: process.env.UPPYSERVER_SELF_ENDPOINT,
     uploadUrls: uploadUrls ? uploadUrls.split(',') : null,
-    secret: process.env.UPPYSERVER_SECRET,
+    secret: process.env.UPPYSERVER_SECRET || generateSecret(),
     debug: process.env.NODE_ENV !== 'production',
     // TODO: this is a temporary hack to support distributed systems.
     // it is not documented, because it should be changed soon.
     cookieDomain: process.env.UPPYSERVER_COOKIE_DOMAIN
   }
+}
+
+/**
+ * Auto-generates server secret
+ *
+ * @returns {string}
+ */
+const generateSecret = () => {
+  console.log('uppy-server: auto-generating server secret because none was specified')
+  return crypto.randomBytes(64).toString('hex')
 }
 
 /**

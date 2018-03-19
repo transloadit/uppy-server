@@ -1,6 +1,7 @@
 const request = require('request')
 const purest = require('purest')({ request })
 const utils = require('../utils')
+const logger = require('../logger')
 
 class Instagram {
   constructor (options) {
@@ -42,11 +43,11 @@ class Instagram {
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
-        if (err) return console.error(err)
+        if (err) return logger.error(err, 'provider.instagram.download.error')
         request(this._getMediaUrl(body, query.carousel_id))
           .on('data', onData)
           .on('error', (err) => {
-            console.error(err)
+            logger.error(err, 'provider.instagram.download.url.error')
           })
       })
   }
@@ -56,12 +57,12 @@ class Instagram {
       .get(`media/${id}`)
       .auth(token)
       .request((err, resp, body) => {
-        if (err) return console.error(err)
+        if (err) return logger.error(err, 'provider.instagram.thumbnail.error')
 
         request(body.data.images.thumbnail.url)
           .on('response', done)
           .on('error', (err) => {
-            console.error(err)
+            logger.error(err, 'provider.instagram.thumbnail.error')
           })
       })
   }
@@ -72,14 +73,14 @@ class Instagram {
       .auth(token)
       .request((err, resp, body) => {
         if (err) {
-          console.error(err)
+          logger.error(err, 'provider.instagram.size.error')
           return done()
         }
 
         utils.getURLMeta(this._getMediaUrl(body, query.carousel_id))
           .then(({ size }) => done(size))
           .catch((err) => {
-            console.error(err)
+            logger.error(err, 'provider.instagram.size.error')
             done()
           })
       })

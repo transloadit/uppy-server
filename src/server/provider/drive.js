@@ -1,6 +1,7 @@
 const request = require('request')
 // @ts-ignore
 const purest = require('purest')({ request })
+const logger = require('../logger')
 
 /**
  * @class
@@ -43,14 +44,14 @@ class Drive {
       .request()
       .on('data', onData)
       .on('error', (err) => {
-        console.error(err)
+        logger.error(err, 'provider.drive.download.error')
       })
   }
 
   thumbnail ({id, token}, done) {
     return this.stats({id, token}, (err, resp, body) => {
       if (err) {
-        console.error(err)
+        logger.error(err, 'provider.drive.thumbnail.error')
         return done(null)
       }
       done(body.thumbnailLink ? request(body.thumbnailLink) : null)
@@ -60,7 +61,7 @@ class Drive {
   size ({id, token}, done) {
     return this.stats({ id, token }, (err, resp, body) => {
       if (err) {
-        console.error(err)
+        logger.error(err, 'provider.drive.size.error')
         return done(null)
       }
       done(parseInt(body.fileSize))

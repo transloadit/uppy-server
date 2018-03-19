@@ -1,6 +1,8 @@
 // TODO: this function seems uneccessary. Might be better to just
 // have this as a middleware that is used for all auth required routes.
 
+const logger = require('../logger')
+
 /**
  * checks if uppy-server is authorized to access a user's provider account.
  *
@@ -19,7 +21,7 @@ function authorized (req, res) {
   uppy.provider.list({ token }, (err, response, body) => {
     const notAuthenticated = Boolean(err)
     if (notAuthenticated) {
-      console.log(`Provider:${providerName} failed authorizarion test err:${err}`)
+      logger.debug(`${providerName} failed authorizarion test err:${err}`, 'provider.auth.check')
     }
     return res.json({ authenticated: !notAuthenticated })
   })

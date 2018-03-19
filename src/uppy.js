@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser')
 const { jsonStringify, getURLBuilder } = require('./server/utils')
 const jobs = require('./server/jobs')
 const interceptor = require('express-interceptor')
+const logger = require('./server/logger')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -100,7 +101,7 @@ module.exports.socket = (server, options) => {
      */
     function sendProgress (data) {
       ws.send(jsonStringify(data), (err) => {
-        if (err) console.error(err)
+        if (err) logger.error(err, 'socket.progress.error')
       })
     }
 
@@ -111,7 +112,7 @@ module.exports.socket = (server, options) => {
         redisClient = redis.createClient({ url: redisUrl })
       }
       redisClient.get(token, (err, data) => {
-        if (err) console.error(err)
+        if (err) logger.error(err, 'socket.redis.error')
         if (data) {
           const dataObj = JSON.parse(data.toString())
           if (dataObj.action) sendProgress(dataObj)
@@ -144,7 +145,7 @@ const interceptGrantErrorResponse = interceptor((req, res) => {
     intercept: (body, send) => {
       const unwantedBody = 'error=Grant%3A%20missing%20session%20or%20misconfigured%20provider'
       if (body === unwantedBody) {
-        console.error(`uppy-server: grant.js responded with error: ${body}`)
+        logger.error(`grant.js responded with error: ${body}`, 'grant.oauth.error')
         send([
           'Uppy-server was unable to complete the OAuth process :(',
           '(Hint, try clearing your cookies and try again)'
@@ -164,6 +165,7 @@ const interceptGrantErrorResponse = interceptor((req, res) => {
  * @returns {function}
  */
 const getDebugLogger = (options) => {
+  // TODO: deprecate this.
   // TODO: add line number and originating file
   /**
    *
@@ -171,7 +173,7 @@ const getDebugLogger = (options) => {
    */
   const conditonalLogger = (message) => {
     if (options.debug) {
-      console.log(`uppy-server: ${message}`)
+      logger.debug(message, 'debugLog')
     }
   }
 

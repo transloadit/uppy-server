@@ -23,7 +23,6 @@ function get (req, res) {
 
   // get the file size before proceeding
   provider.size({ id, token }, (size) => {
-    console.log(size, typeof size)
     req.uppy.debugLog('Instantiating uploader.')
     const uploader = new Uploader({
       endpoint: body.endpoint,

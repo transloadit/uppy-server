@@ -3,6 +3,7 @@ const request = require('request')
 const Uploader = require('../Uploader')
 const validator = require('validator')
 const utils = require('../utils')
+const logger = require('../logger')
 
 module.exports = () => {
   return router()
@@ -27,7 +28,7 @@ const meta = (req, res) => {
   utils.getURLMeta(req.body.url)
     .then((meta) => res.json(meta))
     .catch((err) => {
-      console.error(err)
+      logger.error(err, 'controller.url.meta.error')
       return res.status(500).json({ error: err })
     })
 }
@@ -73,7 +74,7 @@ const get = (req, res) => {
       const response = uploader.getResponse()
       res.status(response.status).json(response.body)
     }).catch((err) => {
-      console.error(err)
+      logger.error(err, 'controller.url.get.error')
       res.json({ err })
     })
 }
@@ -94,7 +95,7 @@ const downloadURL = (url, onDataChunk) => {
 
   request(opts)
     .on('data', onDataChunk)
-    .on('error', (err) => console.error(err))
+    .on('error', (err) => logger.error(err, 'controller.url.download.error'))
 }
 
 /**

@@ -7,6 +7,7 @@ const dropbox = require('./dropbox')
 const drive = require('./drive')
 const instagram = require('./instagram')
 const { getURLBuilder } = require('../utils')
+const logger = require('../logger')
 
 /**
  * Provider interface defines the specifications of any provider implementation
@@ -77,7 +78,7 @@ module.exports.getProviderMiddleware = (providers) => {
     if (providers[providerName] && validOptions(req.uppy.options)) {
       req.uppy.provider = new providers[providerName]({ providerName, config })
     } else {
-      console.warn('uppy-server: Invalid provider options detected. Provider will not be loaded')
+      logger.warn('invalid provider options detected. Provider will not be loaded', 'provider.middleware.invalid')
     }
     next()
   }
@@ -115,7 +116,7 @@ module.exports.addCustomProviders = (customProviders, providers, grantConfig) =>
 module.exports.addProviderOptions = (options, grantConfig) => {
   const { server, providerOptions } = options
   if (!validOptions({ server })) {
-    console.warn('uppy-server: Invalid provider options detected. Providers will not be loaded')
+    logger.warn('invalid provider options detected. Providers will not be loaded', 'provider.options.invalid')
     return
   }
 
@@ -147,7 +148,7 @@ module.exports.addProviderOptions = (options, grantConfig) => {
         grantConfig[authProvider].callback = `${server.implicitPath}${grantConfig[authProvider].callback}`
       }
     } else if (authProvider !== 's3') { // TODO: there should be a cleaner way to do this.
-      console.warn(`uppy-server: skipping one found unsupported provider "${authProvider}".`)
+      logger.warn(`skipping one found unsupported provider "${authProvider}".`, 'provider.options.skip')
     }
   })
 }

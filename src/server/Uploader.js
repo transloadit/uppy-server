@@ -6,6 +6,7 @@ const emitter = require('./WebsocketEmitter')
 const request = require('request')
 const serializeError = require('serialize-error')
 const { jsonStringify } = require('./utils')
+const logger = require('./logger')
 
 class Uploader {
   /**
@@ -44,7 +45,7 @@ class Uploader {
   cleanUp () {
     fs.unlink(this.options.path, (err) => {
       if (err) {
-        console.error(`unable to clean up uploaded file: ${this.options.path} err: ${err}`)
+        logger.error(`cleanup failed for: ${this.options.path} err: ${err}`, 'uploader.cleanup.error')
       }
     })
     emitter.removeAllListeners(`pause:${this.token}`)
@@ -57,7 +58,7 @@ class Uploader {
    */
   handleChunk (chunk) {
     this.writer.write(chunk, () => {
-      console.log(`Downloaded ${this.writer.bytesWritten} bytes`)
+      logger.debug(`downloaded ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
@@ -109,7 +110,7 @@ class Uploader {
     bytesTotal = bytesTotal || this.options.size
     const percentage = (bytesUploaded / bytesTotal * 100)
     const formatPercentage = percentage.toFixed(2)
-    console.log(bytesUploaded, bytesTotal, `${formatPercentage}%`)
+    logger.debug(`${bytesUploaded} ${bytesTotal} ${formatPercentage}%`, 'uploader.upload.progress')
 
     const dataToEmit = {
       action: 'progress',
@@ -173,7 +174,7 @@ class Uploader {
        * @param {Error} error
        */
       onError (error) {
-        console.error(error)
+        logger.error(error, 'uploader.tus.error')
         uploader.emitError(error)
       },
       /**
@@ -227,7 +228,7 @@ class Uploader {
     )
     request.post({ url: this.options.endpoint, formData, encoding: null }, (error, response, body) => {
       if (error) {
-        console.error(`error: ${error}`)
+        logger.error(error, 'upload.multipart.error')
         this.emitError(error)
         return
       }
@@ -244,7 +245,7 @@ class Uploader {
       }
 
       if (response.statusCode >= 400) {
-        console.error(`upload failed with status: ${response.statusCode}`)
+        logger.error(`upload failed with status: ${response.statusCode}`, 'upload.multipar.error')
         this.emitError(new Error(response.statusMessage), respObj)
       } else {
         this.emitSuccess(null, { response: respObj })

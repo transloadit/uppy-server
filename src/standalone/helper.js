@@ -2,6 +2,7 @@ const fs = require('fs')
 const merge = require('lodash.merge')
 const stripIndent = require('common-tags/lib/stripIndent')
 const utils = require('../server/utils')
+const logger = require('../server/logger')
 const crypto = require('crypto')
 // @ts-ignore
 const { version } = require('../../package.json')
@@ -75,7 +76,7 @@ const getConfigFromEnv = () => {
  * @returns {string}
  */
 const generateSecret = () => {
-  console.log('uppy-server: auto-generating server secret because none was specified')
+  logger.warn('auto-generating server secret because none was specified', 'startup.secret')
   return crypto.randomBytes(64).toString('hex')
 }
 

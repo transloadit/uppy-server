@@ -1,5 +1,6 @@
 const request = require('request')
 const purest = require('purest')({ request })
+const logger = require('../logger')
 
 /**
  *
@@ -49,7 +50,7 @@ class DropBox {
       .request()
       .on('data', onData)
       .on('error', (err) => {
-        console.error(err)
+        logger.error(err, 'provider.dropbox.download.error')
       })
   }
 
@@ -66,7 +67,7 @@ class DropBox {
       .request()
       .on('response', done)
       .on('error', (err) => {
-        console.error(err)
+        logger.error(err, 'provider.dropbox.thumbnail.error')
       })
   }
 
@@ -81,7 +82,7 @@ class DropBox {
       })
       .request((err, resp, body) => {
         if (err) {
-          console.error(err)
+          logger.error(err, 'provider.dropbox.size.error')
           return done(null)
         }
 

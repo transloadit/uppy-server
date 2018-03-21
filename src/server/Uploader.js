@@ -29,6 +29,7 @@ class Uploader {
     this.token = uuid.v4()
     this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}-${this.options.pathSuffix}`
     this.writer = fs.createWriteStream(this.options.path)
+      .on('error', (err) => logger.error(err, 'uploader.write.error'))
     /** @type {number} */
     this.emittedProgress = 0
     this.storage = options.storage

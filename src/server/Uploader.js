@@ -57,8 +57,8 @@ class Uploader {
    * @param {Buffer | Buffer[]} chunk
    */
   handleChunk (chunk) {
+    logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
     this.writer.write(chunk, () => {
-      logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {

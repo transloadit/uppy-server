@@ -242,7 +242,7 @@ class Uploader {
       delete headers['set-cookie2']
 
       const respObj = {
-        reponseText: body.toString(),
+        responseText: body.toString(),
         status: response.statusCode,
         statusText: response.statusMessage,
         headers

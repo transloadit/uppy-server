@@ -80,6 +80,28 @@ module.exports = function s3 (config) {
         })
       })
     })
+    .get('/multipart/:uploadId', (req, res, next) => {
+      const { uploadId } = req.params
+      const { key } = req.query
+
+      if (typeof key !== 'string') {
+        return res.status(400).json({ error: 's3: the object key must be passed as a query parameter. For example: "?key=abc.jpg"' })
+      }
+
+      client.listParts({
+        Bucket: config.bucket,
+        Key: key,
+        UploadId: uploadId
+      }, (err, data) => {
+        if (err) {
+          next(err)
+          return
+        }
+
+        // TODO Account for `data.IsTruncated` when there are more than 1000 parts
+        res.json(data.Parts)
+      })
+    })
     .get('/multipart/:uploadId/:partNumber', (req, res, next) => {
       const { uploadId, partNumber } = req.params
       const { key } = req.query

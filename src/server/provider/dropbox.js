@@ -49,6 +49,7 @@ class DropBox {
       .auth(token)
       .request()
       .on('data', onData)
+      .on('end', () => onData(null))
       .on('error', (err) => {
         logger.error(err, 'provider.dropbox.download.error')
       })

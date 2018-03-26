@@ -57,16 +57,21 @@ class Uploader {
    * @param {Buffer | Buffer[]} chunk
    */
   handleChunk (chunk) {
+    logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
+
+    // Completed.
+    if (chunk === null) {
+      if (this.options.endpoint && this.options.protocol !== 'tus') {
+        this.uploadMultipart()
+      }
+      return this.writer.end()
+    }
+
     this.writer.write(chunk, () => {
-      logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
         return this.uploadTus()
-      }
-
-      if (this.options.protocol !== 'tus' && this.writer.bytesWritten === this.options.size) {
-        return this.uploadMultipart()
       }
     })
   }

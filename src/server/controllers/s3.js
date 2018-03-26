@@ -1,17 +1,7 @@
 const router = require('express').Router
 const ms = require('ms')
-const S3 = require('aws-sdk/clients/s3')
-
-const defaultConfig = {
-  acl: 'public-read',
-  endpoint: 'https://{service}.{region}.amazonaws.com',
-  conditions: [],
-  getKey: (req, filename) => filename
-}
 
 module.exports = function s3 (config) {
-  config = Object.assign({}, defaultConfig, config)
-
   if (typeof config.acl !== 'string') {
     throw new TypeError('s3: The `acl` option must be a string')
   }
@@ -19,15 +9,9 @@ module.exports = function s3 (config) {
     throw new TypeError('s3: The `getKey` option must be a function')
   }
 
-  const client = new S3({
-    region: config.region,
-    endpoint: config.endpoint,
-    accessKeyId: config.key,
-    secretAccessKey: config.secret
-  })
-
   return router()
     .get('/params', (req, res, next) => {
+      const client = req.uppy.s3Client
       const key = config.getKey(req, req.query.filename)
       if (typeof key !== 'string') {
         return res.status(500).json({ error: 's3: filename returned from `getKey` must be a string' })
@@ -58,6 +42,7 @@ module.exports = function s3 (config) {
       })
     })
     .post('/multipart', (req, res, next) => {
+      const client = req.uppy.s3Client
       const key = config.getKey(req, req.query.filename)
       if (typeof key !== 'string') {
         return res.status(500).json({ error: 's3: filename returned from `getKey` must be a string' })
@@ -81,6 +66,7 @@ module.exports = function s3 (config) {
       })
     })
     .get('/multipart/:uploadId', (req, res, next) => {
+      const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query
 
@@ -103,6 +89,7 @@ module.exports = function s3 (config) {
       })
     })
     .get('/multipart/:uploadId/:partNumber', (req, res, next) => {
+      const client = req.uppy.s3Client
       const { uploadId, partNumber } = req.params
       const { key } = req.query
 
@@ -129,6 +116,7 @@ module.exports = function s3 (config) {
       })
     })
     .delete('/multipart/:uploadId', (req, res, next) => {
+      const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query
 
@@ -149,6 +137,7 @@ module.exports = function s3 (config) {
       })
     })
     .post('/multipart/:uploadId/complete', (req, res, next) => {
+      const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query
       const { parts } = req.body

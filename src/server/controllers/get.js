@@ -32,7 +32,11 @@ function get (req, res) {
       size: size,
       fieldname: body.fieldname,
       pathPrefix: `${req.uppy.options.filePath}`,
-      storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
+      storage: redisUrl ? redis.createClient({ url: redisUrl }) : null,
+      s3: req.uppy.s3Client ? {
+        client: req.uppy.s3Client,
+        options: req.uppy.providerOptions.s3
+      } : null
     })
 
     // wait till the client has connected to the socket, before starting

@@ -1,7 +1,9 @@
 const fs = require('fs')
 const path = require('path')
+const { PassThrough } = require('stream')
 const tus = require('tus-js-client')
 const uuid = require('uuid')
+const tee = require('tee')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
 const serializeError = require('serialize-error')
@@ -20,6 +22,7 @@ class Uploader {
    * @property {string} pathPrefix
    * @property {object=} storage
    * @property {string=} path
+   * @property {object=} s3
    *
    * @param {Options} options
    */
@@ -32,6 +35,16 @@ class Uploader {
     /** @type {number} */
     this.emittedProgress = 0
     this.storage = options.storage
+
+    // Stream to S3 and to the local filesystem.
+    if (this.options.protocol === 's3-multipart') {
+      this.s3Input = PassThrough()
+      const pipe = tee(this.s3Input)
+      pipe.pipe(this.writer)
+      this.writer = pipe
+
+      this.uploadS3Multipart()
+    }
   }
 
   /**
@@ -61,14 +74,14 @@ class Uploader {
 
     // Completed.
     if (chunk === null) {
-      if (this.options.endpoint && this.options.protocol !== 'tus') {
+      if (this.options.endpoint && this.options.protocol !== 'tus' && this.options.protocol !== 's3-multipart') {
         this.uploadMultipart()
       }
       return this.writer.end()
     }
 
     this.writer.write(chunk, () => {
-      if (!this.options.endpoint) return
+      if (!this.options.endpoint || this.options.protocol === 's3-multipart') return
 
       if (this.options.protocol === 'tus' && !this.tus) {
         return this.uploadTus()
@@ -83,14 +96,18 @@ class Uploader {
   handleResponse (resp) {
     resp.pipe(this.writer)
     this.writer.on('finish', () => {
-      if (!this.options.endpoint) return
+      if (!this.options.endpoint || this.options.protocol === 's3-multipart') return
 
-      this.options.protocol === 'tus' ? this.uploadTus() : this.uploadMultipart()
+      if (this.options.protocol === 'tus') {
+        this.uploadTus()
+      } else {
+        this.uploadMultipart()
+      }
     })
   }
 
   getResponse () {
-    const body = this.options.endpoint
+    const body = this.options.endpoint || this.options.protocol === 's3-multipart'
       ? { token: this.token }
       : 'No endpoint, file written to uppy server local storage'
 
@@ -261,6 +278,56 @@ class Uploader {
 
       this.cleanUp()
     })
+  }
+
+  uploadS3Multipart () {
+    if (!this.options.s3) {
+      this.emitError(new Error('The S3 client is not configured on this uppy-server.'))
+      return
+    }
+
+    const filename = path.basename(this.options.path)
+    const { client, options } = this.options.s3
+
+    this.s3Input.on('data', (chunk) => {
+      console.log(`Pushing ${chunk.length} to s3`)
+    })
+    console.log({
+      Bucket: options.bucket,
+      Key: options.getKey(null, filename),
+      ACL: options.acl,
+      ContentType: this.options.metadata.type
+    })
+
+    const upload = require('s3-stream-upload')(client, {
+      Bucket: options.bucket,
+      Key: options.getKey(null, filename),
+      ACL: options.acl,
+      ContentType: this.options.metadata.type
+    })
+
+    const progress = setInterval(() => {
+      this.emitProgress(upload.bytesWritten, null)
+    }, 300)
+
+    upload.on('error', (error) => {
+      clearInterval(progress)
+      console.error(`error: ${error}`)
+      this.emitError(error)
+      this.cleanUp()
+    })
+    upload.on('finish', (result) => {
+      clearInterval(progress)
+      console.log(result)
+      this.emitSuccess(null, {
+        response: {
+          responseText: result.toString('utf8')
+        }
+      })
+      this.cleanUp()
+    })
+
+    this.s3Input.pipe(upload)
   }
 }
 

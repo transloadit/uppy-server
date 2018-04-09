@@ -1,9 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const { PassThrough } = require('stream')
 const tus = require('tus-js-client')
 const uuid = require('uuid')
-const tee = require('tee')
+const createTailReadStream = require('fs-tail-stream')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
 const serializeError = require('serialize-error')
@@ -35,16 +34,6 @@ class Uploader {
     /** @type {number} */
     this.emittedProgress = 0
     this.storage = options.storage
-
-    // Stream to S3 and to the local filesystem.
-    if (this.options.protocol === 's3-multipart') {
-      this.s3Input = PassThrough()
-      const pipe = tee(this.s3Input)
-      pipe.pipe(this.writer)
-      this.writer = pipe
-
-      this.uploadS3Multipart()
-    }
   }
 
   /**
@@ -72,7 +61,7 @@ class Uploader {
   handleChunk (chunk) {
     logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
 
-    // Completed.
+    // The download has completed; close the file and start an upload if necessary.
     if (chunk === null) {
       if (this.options.endpoint && this.options.protocol !== 'tus' && this.options.protocol !== 's3-multipart') {
         this.uploadMultipart()
@@ -81,7 +70,10 @@ class Uploader {
     }
 
     this.writer.write(chunk, () => {
-      if (!this.options.endpoint || this.options.protocol === 's3-multipart') return
+      if (this.options.protocol === 's3-multipart' && !this.s3Upload) {
+        return this.uploadS3Multipart()
+      }
+      if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
         return this.uploadTus()
@@ -96,7 +88,12 @@ class Uploader {
   handleResponse (resp) {
     resp.pipe(this.writer)
     this.writer.on('finish', () => {
-      if (!this.options.endpoint || this.options.protocol === 's3-multipart') return
+      if (this.options.protocol === 's3-multipart') {
+        this.uploadS3Managed()
+        return
+      }
+
+      if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus') {
         this.uploadTus()
@@ -281,6 +278,23 @@ class Uploader {
   }
 
   uploadS3Multipart () {
+    const file = createTailReadStream(this.options.path, {
+      tail: true
+    })
+
+    this.writer.on('finish', () => {
+      file.close()
+    })
+
+    return this.uploadS3Stream(file)
+  }
+
+  uploadS3Managed () {
+    const file = fs.createReadStream(this.options.path)
+    return this.uploadS3Stream(file)
+  }
+
+  uploadS3Stream (stream) {
     if (!this.options.s3) {
       this.emitError(new Error('The S3 client is not configured on this uppy-server.'))
       return
@@ -289,45 +303,46 @@ class Uploader {
     const filename = path.basename(this.options.path)
     const { client, options } = this.options.s3
 
-    this.s3Input.on('data', (chunk) => {
-      console.log(`Pushing ${chunk.length} to s3`)
-    })
-    console.log({
+    console.log(
+      {
+        Bucket: options.bucket,
+        Key: options.getKey(null, filename),
+        ACL: options.acl,
+        ContentType: this.options.metadata.type,
+        Body: stream
+      }
+    )
+
+    const upload = client.upload({
       Bucket: options.bucket,
       Key: options.getKey(null, filename),
       ACL: options.acl,
-      ContentType: this.options.metadata.type
+      ContentType: this.options.metadata.type,
+      Body: stream
     })
 
-    const upload = require('s3-stream-upload')(client, {
-      Bucket: options.bucket,
-      Key: options.getKey(null, filename),
-      ACL: options.acl,
-      ContentType: this.options.metadata.type
+    this.s3Upload = upload
+
+    upload.on('httpUploadProgress', ({ loaded, total }) => {
+      this.emitProgress(loaded, total)
     })
 
-    const progress = setInterval(() => {
-      this.emitProgress(upload.bytesWritten, null)
-    }, 300)
-
-    upload.on('error', (error) => {
-      clearInterval(progress)
-      console.error(`error: ${error}`)
-      this.emitError(error)
+    upload.send((error, data) => {
+      this.s3Upload = null
+      if (error) {
+        this.emitError(error)
+      } else {
+        this.emitSuccess(null, {
+          response: {
+            responseText: JSON.stringify(data),
+            headers: {
+              'content-type': 'application/json'
+            }
+          }
+        })
+      }
       this.cleanUp()
     })
-    upload.on('finish', (result) => {
-      clearInterval(progress)
-      console.log(result)
-      this.emitSuccess(null, {
-        response: {
-          responseText: result.toString('utf8')
-        }
-      })
-      this.cleanUp()
-    })
-
-    this.s3Input.pipe(upload)
   }
 }
 

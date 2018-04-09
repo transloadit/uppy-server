@@ -309,7 +309,7 @@ class Uploader {
       return
     }
 
-    const filename = this.options.filename || path.basename(this.options.path)
+    const filename = this.options.metadata.filename || path.basename(this.options.path)
     const { client, options } = this.options.s3
 
     const upload = client.upload({

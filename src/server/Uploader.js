@@ -61,21 +61,23 @@ class Uploader {
   handleChunk (chunk) {
     logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
 
+    const protocol = this.options.protocol || 'multipart'
+
     // The download has completed; close the file and start an upload if necessary.
     if (chunk === null) {
-      if (this.options.endpoint && this.options.protocol !== 'tus' && this.options.protocol !== 's3-multipart') {
+      if (this.options.endpoint && protocol === 'multipart') {
         this.uploadMultipart()
       }
       return this.writer.end()
     }
 
     this.writer.write(chunk, () => {
-      if (this.options.protocol === 's3-multipart' && !this.s3Upload) {
+      if (protocol === 's3-multipart' && !this.s3Upload) {
         return this.uploadS3Streaming()
       }
       if (!this.options.endpoint) return
 
-      if (this.options.protocol === 'tus' && !this.tus) {
+      if (protocol === 'tus' && !this.tus) {
         return this.uploadTus()
       }
     })
@@ -87,17 +89,20 @@ class Uploader {
    */
   handleResponse (resp) {
     resp.pipe(this.writer)
+
+    const protocol = this.options.protocol || 'multipart'
+
     this.writer.on('finish', () => {
-      if (this.options.protocol === 's3-multipart') {
+      if (protocol === 's3-multipart') {
         this.uploadS3Full()
-        return
       }
 
       if (!this.options.endpoint) return
 
-      if (this.options.protocol === 'tus') {
+      if (protocol === 'tus') {
         this.uploadTus()
-      } else {
+      }
+      if (protocol === 'multipart') {
         this.uploadMultipart()
       }
     })

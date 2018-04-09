@@ -43,7 +43,7 @@ module.exports = function s3 (config) {
     })
     .post('/multipart', (req, res, next) => {
       const client = req.uppy.s3Client
-      const key = config.getKey(req, req.query.filename)
+      const key = config.getKey(req, req.body.filename)
       if (typeof key !== 'string') {
         return res.status(500).json({ error: 's3: filename returned from `getKey` must be a string' })
       }

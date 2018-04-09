@@ -71,7 +71,7 @@ class Uploader {
 
     this.writer.write(chunk, () => {
       if (this.options.protocol === 's3-multipart' && !this.s3Upload) {
-        return this.uploadS3Multipart()
+        return this.uploadS3Streaming()
       }
       if (!this.options.endpoint) return
 
@@ -89,7 +89,7 @@ class Uploader {
     resp.pipe(this.writer)
     this.writer.on('finish', () => {
       if (this.options.protocol === 's3-multipart') {
-        this.uploadS3Managed()
+        this.uploadS3Full()
         return
       }
 
@@ -277,7 +277,10 @@ class Uploader {
     })
   }
 
-  uploadS3Multipart () {
+  /**
+   * Upload the file to S3 while it is still being downloaded.
+   */
+  uploadS3Streaming () {
     const file = createTailReadStream(this.options.path, {
       tail: true
     })
@@ -286,32 +289,28 @@ class Uploader {
       file.close()
     })
 
-    return this.uploadS3Stream(file)
+    return this._uploadS3Managed(file)
   }
 
-  uploadS3Managed () {
+  /**
+   * Upload the file to S3 after it has been fully downloaded.
+   */
+  uploadS3Full () {
     const file = fs.createReadStream(this.options.path)
-    return this.uploadS3Stream(file)
+    return this._uploadS3Managed(file)
   }
 
-  uploadS3Stream (stream) {
+  /**
+   * Upload a stream to S3.
+   */
+  _uploadS3Managed (stream) {
     if (!this.options.s3) {
       this.emitError(new Error('The S3 client is not configured on this uppy-server.'))
       return
     }
 
-    const filename = path.basename(this.options.path)
+    const filename = this.options.filename || path.basename(this.options.path)
     const { client, options } = this.options.s3
-
-    console.log(
-      {
-        Bucket: options.bucket,
-        Key: options.getKey(null, filename),
-        ACL: options.acl,
-        ContentType: this.options.metadata.type,
-        Body: stream
-      }
-    )
 
     const upload = client.upload({
       Bucket: options.bucket,

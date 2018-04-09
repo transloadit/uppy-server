@@ -78,19 +78,35 @@ module.exports = function s3 (config) {
         return res.status(400).json({ error: 's3: the object key must be passed as a query parameter. For example: "?key=abc.jpg"' })
       }
 
-      client.listParts({
-        Bucket: config.bucket,
-        Key: key,
-        UploadId: uploadId
-      }, (err, data) => {
-        if (err) {
-          next(err)
-          return
-        }
+      let parts = []
+      listPartsPage(0)
 
-        // TODO Account for `data.IsTruncated` when there are more than 1000 parts
-        res.json(data.Parts)
-      })
+      function listPartsPage (startAt) {
+        client.listParts({
+          Bucket: config.bucket,
+          Key: key,
+          UploadId: uploadId,
+          PartNumberMarker: startAt
+        }, (err, data) => {
+          if (err) {
+            next(err)
+            return
+          }
+
+          parts = parts.concat(data.Parts)
+
+          if (data.IsTruncated) {
+            // Get the next page.
+            listPartsPage(data.NextPartNumberMarker)
+          } else {
+            done()
+          }
+        })
+      }
+
+      function done () {
+        res.json(parts)
+      }
     })
     .get('/multipart/:uploadId/:partNumber', (req, res, next) => {
       const client = req.uppy.s3Client

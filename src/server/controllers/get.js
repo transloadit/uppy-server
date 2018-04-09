@@ -14,7 +14,7 @@ function get (req, res) {
   const body = req.body
   const token = req.uppy.providerTokens[providerName]
   const provider = req.uppy.provider
-  const { redisUrl, uploadUrls } = req.uppy.options
+  const { redisUrl, uploadUrls, providerOptions } = req.uppy.options
 
   if (uploadUrls && body.endpoint && !hasMatch(body.endpoint, uploadUrls)) {
     req.uppy.debugLog('Unmatching upload endpoint detected. Exiting download/upload handler.')
@@ -35,7 +35,7 @@ function get (req, res) {
       storage: redisUrl ? redis.createClient({ url: redisUrl }) : null,
       s3: req.uppy.s3Client ? {
         client: req.uppy.s3Client,
-        options: req.uppy.providerOptions.s3
+        options: providerOptions.s3
       } : null
     })
 

@@ -44,15 +44,19 @@ module.exports = function s3 (config) {
     .post('/multipart', (req, res, next) => {
       const client = req.uppy.s3Client
       const key = config.getKey(req, req.body.filename)
+      const { type } = req.body
       if (typeof key !== 'string') {
         return res.status(500).json({ error: 's3: filename returned from `getKey` must be a string' })
+      }
+      if (typeof type !== 'string') {
+        return res.status(400).json({ error: 's3: content type must be a string' })
       }
 
       client.createMultipartUpload({
         Bucket: config.bucket,
         Key: key,
         ACL: config.acl,
-        ContentType: req.query.type,
+        ContentType: type,
         Expires: ms('5 minutes') / 1000
       }, (err, data) => {
         if (err) {

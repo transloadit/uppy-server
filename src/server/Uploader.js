@@ -44,11 +44,13 @@ class Uploader {
   }
 
   cleanUp () {
+   if (fs.existsSync(this.options.path)) {
     fs.unlink(this.options.path, (err) => {
       if (err) {
         logger.error(`cleanup failed for: ${this.options.path} err: ${err}`, 'uploader.cleanup.error')
       }
     })
+   }
     emitter.removeAllListeners(`pause:${this.token}`)
     emitter.removeAllListeners(`resume:${this.token}`)
   }

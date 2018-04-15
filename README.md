@@ -79,9 +79,9 @@ npm start
 
 Uppy-server can be deployed as a serverless function to AWS Lambda or other cloud providers through `serverless`. Check [this guide](https://serverless.com/framework/docs/getting-started/) to get started.
 
-After you have cloned the repo go inside `src/standalone/serverless`:
+After you have cloned the repo go inside `examples/serverless`:
 ```
-cd src/standalone/serverless
+cd examples/serverless
 ```
  
 You can enter your API Keys inside the `serverless.yml` file:

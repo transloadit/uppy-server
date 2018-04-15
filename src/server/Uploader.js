@@ -18,7 +18,6 @@ class Uploader {
    * @property {number} size
    * @property {string=} fieldname
    * @property {string} pathPrefix
-   * @property {string} pathSuffix
    * @property {object=} storage
    * @property {string=} path
    *
@@ -27,8 +26,8 @@ class Uploader {
   constructor (options) {
     this.options = options
     this.token = uuid.v4()
-    this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}-${this.options.pathSuffix}`
-    this.writer = fs.createWriteStream(this.options.path)
+    this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}`
+    this.writer = fs.createWriteStream(this.options.path, { mode: 0o666 }) // no executable files
       .on('error', (err) => logger.error(`${this.token.substring(0, 8)} ${err}`, 'uploader.write.error'))
     /** @type {number} */
     this.emittedProgress = 0
@@ -58,8 +57,8 @@ class Uploader {
    * @param {Buffer | Buffer[]} chunk
    */
   handleChunk (chunk) {
-    logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
     this.writer.write(chunk, () => {
+      logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
       if (!this.options.endpoint) return
 
       if (this.options.protocol === 'tus' && !this.tus) {
@@ -99,7 +98,7 @@ class Uploader {
    */
   saveState (state) {
     if (!this.storage) return
-    this.storage.set(this.token, jsonStringify(state))
+    this.storage.set(`${Uploader.STORAGE_PREFIX}:${this.token}`, jsonStringify(state))
   }
 
   /**
@@ -261,5 +260,6 @@ class Uploader {
 }
 
 Uploader.FILE_NAME_PREFIX = 'uppy-file'
+Uploader.STORAGE_PREFIX = 'uppy-server'
 
 module.exports = Uploader

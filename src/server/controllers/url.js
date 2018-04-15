@@ -44,6 +44,7 @@ const meta = (req, res) => {
 const get = (req, res) => {
   req.uppy.debugLog('URL file import handler running')
 
+  // TODO validate that url is part of valid upload URLs
   if (!validateData(req.body, req.uppy.options.debug)) {
     req.uppy.debugLog('Invalid request body detected. Exiting url download/upload handler.')
     return res.status(400).json({ error: 'Invalid request body' })
@@ -60,8 +61,7 @@ const get = (req, res) => {
         protocol: req.body.protocol,
         metadata: req.body.metadata,
         size: size,
-        pathPrefix: `${filePath}`,
-        pathSuffix: `${encodeURIComponent(req.body.url)}`
+        pathPrefix: `${filePath}`
         // TODO: add redis client for golden retriever state storage
       })
 

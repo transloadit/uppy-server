@@ -26,6 +26,7 @@ const getConfigFromEnv = () => {
   const uploadUrls = process.env.UPPYSERVER_UPLOAD_URLS
   const domains = process.env.UPPYSERVER_DOMAINS || process.env.UPPYSERVER_DOMAIN || null
   const validHosts = domains ? domains.split(',') : []
+  const clients = process.env.UPPY_ENDPOINTS
 
   return {
     // TODO: Rename providerOptions to providers.
@@ -66,7 +67,8 @@ const getConfigFromEnv = () => {
     debug: process.env.NODE_ENV !== 'production',
     // TODO: this is a temporary hack to support distributed systems.
     // it is not documented, because it should be changed soon.
-    cookieDomain: process.env.UPPYSERVER_COOKIE_DOMAIN
+    cookieDomain: process.env.UPPYSERVER_COOKIE_DOMAIN,
+    clients: clients ? clients.split(',') : null
   }
 }
 

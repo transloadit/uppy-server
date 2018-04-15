@@ -32,7 +32,6 @@ function get (req, res) {
       size: size,
       fieldname: body.fieldname,
       pathPrefix: `${req.uppy.options.filePath}`,
-      pathSuffix: `${encodeURIComponent(id)}`,
       storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
     })
 

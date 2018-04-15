@@ -5,6 +5,8 @@
 // @ts-ignore
 const atob = require('atob')
 const tokenService = require('../token-service')
+const parseUrl = require('url').parse
+const { hasMatch } = require('../utils')
 
 /**
  *
@@ -26,11 +28,12 @@ module.exports = function callback (req, res, next) {
   tokenService.setToken(res, uppyAuthToken, req.uppy.options)
 
   if (req.session.grant.state) {
-    // TODO: confirm if the direct is one of uppy endpoints
-    //    or just validate this redirect someway, since it's coming
-    //    from the client.
-    res.redirect(JSON.parse(atob(req.session.grant.state)).redirect)
-  } else {
-    next()
+    const redirectUrl = JSON.parse(atob(req.session.grant.state)).redirect
+    // if no clients then allow any client
+    if (!req.uppy.options.clients || hasMatch(parseUrl(redirectUrl).host, req.uppy.options.clients)) {
+      res.redirect(redirectUrl)
+    }
+    return
   }
+  next()
 }

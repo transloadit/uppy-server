@@ -15,6 +15,7 @@ const { jsonStringify, getURLBuilder } = require('./server/utils')
 const jobs = require('./server/jobs')
 const interceptor = require('express-interceptor')
 const logger = require('./server/logger')
+const { STORAGE_PREFIX } = require('./server/Uploader')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -111,7 +112,7 @@ module.exports.socket = (server, options) => {
       if (!redisClient) {
         redisClient = redis.createClient({ url: redisUrl })
       }
-      redisClient.get(token, (err, data) => {
+      redisClient.get(`${STORAGE_PREFIX}:${token}`, (err, data) => {
         if (err) logger.error(err, 'socket.redis.error')
         if (data) {
           const dataObj = JSON.parse(data.toString())
@@ -125,7 +126,10 @@ module.exports.socket = (server, options) => {
 
     ws.on('message', (jsonData) => {
       const data = JSON.parse(jsonData.toString())
-      emitter.emit(`${data.action}:${token}`)
+      // whitelist triggered actions
+      if (data.action === 'pause' || data.action === 'resume') {
+        emitter.emit(`${data.action}:${token}`)
+      }
     })
 
     ws.on('close', () => {

@@ -1397,7 +1397,7 @@ deep-copy@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/deep-copy/-/deep-copy-1.1.2.tgz#75360b1080b3eb5b9e6f0f0ba2cf159bb5a28b04"
 
-deep-copy@^1.2.0, deep-copy@^1.4.2:
+deep-copy@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/deep-copy/-/deep-copy-1.4.2.tgz#0622719257e4bd60240e401ea96718211c5c4697"
 
@@ -2189,27 +2189,19 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.4, graceful-fs@^4.1.6:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-grant-express@3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/grant-express/-/grant-express-3.8.0.tgz#3c0791ed48a6ffd9a8224d9454ca9f9228e14314"
+grant-express@^4.0.1:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/grant-express/-/grant-express-4.1.0.tgz#e886ca2e3ab60cbb0fde2e4436dc3c6c7831c739"
   dependencies:
-    grant "3.8.0"
+    grant "4.1.0"
 
-grant@3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/grant/-/grant-3.8.0.tgz#c3133f864d11838b5ebeac2d7c882d976884df44"
-  dependencies:
-    deep-copy "^1.2.0"
-    qs "6.4.0"
-    request "2.81.0"
-
-grant@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/grant/-/grant-4.0.0.tgz#7eba19ee4362c741296ffff9af4102de74466624"
+grant@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/grant/-/grant-4.1.0.tgz#04849ad83126639dda3767f81947a5c74d965324"
   dependencies:
     deep-copy "^1.4.2"
     qs "^6.5.1"
-    request-compose "0.0.5"
+    request-compose "0.0.8"
     request-oauth "0.0.2"
 
 growly@^1.3.0:
@@ -4049,13 +4041,13 @@ purest@3.0.0:
     "@request/api" "^0.6.0"
     extend "^3.0.0"
 
-qs@6.4.0, qs@^6.1.0, qs@~6.4.0:
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
-
 qs@6.5.1, qs@^6.5.1, qs@~6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
+
+qs@^6.1.0, qs@~6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
 querystring@0.2.0:
   version "0.2.0"
@@ -4270,9 +4262,9 @@ replace-comments-x@^2.0.0:
     require-coercible-to-string-x "^1.0.0"
     to-string-x "^1.4.2"
 
-request-compose@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/request-compose/-/request-compose-0.0.5.tgz#5b16cd935afef342ec552064dcf05f725abbaeeb"
+request-compose@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/request-compose/-/request-compose-0.0.8.tgz#337e5299b36a1cf9a4444ad235bbe96b44908af9"
 
 request-oauth@0.0.2:
   version "0.0.2"
@@ -4282,7 +4274,7 @@ request-oauth@0.0.2:
     qs "^6.5.1"
     uuid "^3.2.1"
 
-request@2.81.0, request@2.x, request@^2.79.0:
+request@2.x, request@^2.79.0:
   version "2.81.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.81.0.tgz#c6928946a0e06c5f8d6f8a9333469ffda46298a0"
   dependencies:

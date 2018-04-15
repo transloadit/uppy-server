@@ -33,8 +33,11 @@
   },
   "pre-commit": "lint-staged",
   "devDependencies": {
+    "@types/aws-serverless-express": "^3.0.1",
+    "@types/compression": "0.0.36",
     "@types/connect-redis": "0.0.7",
     "@types/cookie-parser": "^1.4.1",
+    "@types/cors": "^2.8.3",
     "@types/express-session": "^1.15.6",
     "@types/helmet": "0.0.37",
     "@types/jsonwebtoken": "^7.2.5",

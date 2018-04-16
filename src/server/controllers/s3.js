@@ -11,6 +11,7 @@ module.exports = function s3 (config) {
 
   return router()
     .get('/params', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const key = config.getKey(req, req.query.filename)
       if (typeof key !== 'string') {
@@ -42,6 +43,7 @@ module.exports = function s3 (config) {
       })
     })
     .post('/multipart', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const key = config.getKey(req, req.body.filename)
       const { type } = req.body
@@ -70,6 +72,7 @@ module.exports = function s3 (config) {
       })
     })
     .get('/multipart/:uploadId', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query
@@ -109,6 +112,7 @@ module.exports = function s3 (config) {
       }
     })
     .get('/multipart/:uploadId/:partNumber', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const { uploadId, partNumber } = req.params
       const { key } = req.query
@@ -136,6 +140,7 @@ module.exports = function s3 (config) {
       })
     })
     .delete('/multipart/:uploadId', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query
@@ -157,6 +162,7 @@ module.exports = function s3 (config) {
       })
     })
     .post('/multipart/:uploadId/complete', (req, res, next) => {
+      // @ts-ignore The `uppy` property is added by middleware before reaching here.
       const client = req.uppy.s3Client
       const { uploadId } = req.params
       const { key } = req.query

@@ -294,7 +294,7 @@ class Uploader {
       file.close()
     })
 
-    return this._uploadS3Managed(file)
+    return this._uploadS3(file)
   }
 
   /**
@@ -302,13 +302,13 @@ class Uploader {
    */
   uploadS3Full () {
     const file = fs.createReadStream(this.options.path)
-    return this._uploadS3Managed(file)
+    return this._uploadS3(file)
   }
 
   /**
    * Upload a stream to S3.
    */
-  _uploadS3Managed (stream) {
+  _uploadS3 (stream) {
     if (!this.options.s3) {
       this.emitError(new Error('The S3 client is not configured on this uppy-server.'))
       return

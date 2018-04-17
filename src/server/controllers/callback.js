@@ -29,11 +29,14 @@ module.exports = function callback (req, res, next) {
 
   if (req.session.grant.state) {
     const redirectUrl = JSON.parse(atob(req.session.grant.state)).redirect
+    const allowedClients = req.uppy.options.clients
+    const urlObj = parseUrl(redirectUrl)
+    const urlWithProtocol = `${urlObj.protocol}//${urlObj.host}`
     // if no clients then allow any client
-    if (!req.uppy.options.clients || hasMatch(parseUrl(redirectUrl).host, req.uppy.options.clients)) {
+    if (!req.uppy.options.clients || hasMatch(urlWithProtocol, allowedClients) || hasMatch(urlObj.host, allowedClients)) {
       res.redirect(redirectUrl)
+      return
     }
-    return
   }
   next()
 }

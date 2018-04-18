@@ -11,8 +11,6 @@ provider:
 
     # NOTE: Make sure you set the API Keys for your chosen provider
 
-    AWS_KEY: <YOUR_AWS_KEY>
-    AWS_SECRET: <YOUR_AWS_SECRET>
     AWS_S3_BUCKET: <YOUR_AWS_S3_BUCKET_NAME>
     AWS_S3_REGION: <YOUR_AWS_S3_BUCKET_REGION>
 
@@ -31,4 +29,4 @@ functions:
 
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}' 
+      - http: 'ANY {proxy+}'

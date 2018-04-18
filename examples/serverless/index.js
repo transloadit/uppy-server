@@ -23,8 +23,6 @@ const options = {
   providerOptions: {
     s3: {
       getKey: (req, filename) => filename,
-      key: process.env.AWS_KEY,
-      secret: process.env.AWS_SECRET,
       bucket: process.env.AWS_S3_BUCKET,
       region: process.env.AWS_S3_REGION
     },

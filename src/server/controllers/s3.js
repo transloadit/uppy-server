@@ -1,6 +1,7 @@
 const router = require('express').Router
 const ms = require('ms')
 const S3 = require('aws-sdk/clients/s3')
+const AWS = require('aws-sdk')
 
 const defaultConfig = {
   acl: 'public-read',
@@ -12,6 +13,14 @@ const defaultConfig = {
 module.exports = function s3 (config) {
   config = Object.assign({}, defaultConfig, config)
 
+  // Use credentials to allow assumed roles to pass STS sessions in.
+  // If the user doesn't specify key and secret, the default credentials (process-env)
+  // will be used by S3 in calls below.
+  let credentials
+  if ('key' in config && 'secret' in config) {
+    credentials = new AWS.Credentials(config.key, config.secret, config.sessionToken)
+  }
+
   if (typeof config.acl !== 'string') {
     throw new TypeError('s3: The `acl` option must be a string')
   }
@@ -22,8 +31,7 @@ module.exports = function s3 (config) {
   const client = new S3({
     region: config.region,
     endpoint: config.endpoint,
-    accessKeyId: config.key,
-    secretAccessKey: config.secret
+    credentials
   })
 
   return router()

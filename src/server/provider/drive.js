@@ -43,6 +43,7 @@ class Drive {
       .auth(token)
       .request()
       .on('data', onData)
+      .on('end', () => onData(null))
       .on('error', (err) => {
         logger.error(err, 'provider.drive.download.error')
       })

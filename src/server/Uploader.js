@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const tus = require('tus-js-client')
 const uuid = require('uuid')
+const createTailReadStream = require('@uppy/fs-tail-stream')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
 const serializeError = require('serialize-error')
@@ -20,6 +21,7 @@ class Uploader {
    * @property {string} pathPrefix
    * @property {object=} storage
    * @property {string=} path
+   * @property {object=} s3
    *
    * @param {Options} options
    */
@@ -57,16 +59,26 @@ class Uploader {
    * @param {Buffer | Buffer[]} chunk
    */
   handleChunk (chunk) {
+    logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
+
+    const protocol = this.options.protocol || 'multipart'
+
+    // The download has completed; close the file and start an upload if necessary.
+    if (chunk === null) {
+      if (this.options.endpoint && protocol === 'multipart') {
+        this.uploadMultipart()
+      }
+      return this.writer.end()
+    }
+
     this.writer.write(chunk, () => {
-      logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
+      if (protocol === 's3-multipart' && !this.s3Upload) {
+        return this.uploadS3Streaming()
+      }
       if (!this.options.endpoint) return
 
-      if (this.options.protocol === 'tus' && !this.tus) {
+      if (protocol === 'tus' && !this.tus) {
         return this.uploadTus()
-      }
-
-      if (this.options.protocol !== 'tus' && this.writer.bytesWritten === this.options.size) {
-        return this.uploadMultipart()
       }
     })
   }
@@ -77,15 +89,27 @@ class Uploader {
    */
   handleResponse (resp) {
     resp.pipe(this.writer)
+
+    const protocol = this.options.protocol || 'multipart'
+
     this.writer.on('finish', () => {
+      if (protocol === 's3-multipart') {
+        this.uploadS3Full()
+      }
+
       if (!this.options.endpoint) return
 
-      this.options.protocol === 'tus' ? this.uploadTus() : this.uploadMultipart()
+      if (protocol === 'tus') {
+        this.uploadTus()
+      }
+      if (protocol === 'multipart') {
+        this.uploadMultipart()
+      }
     })
   }
 
   getResponse () {
-    const body = this.options.endpoint
+    const body = this.options.endpoint || this.options.protocol === 's3-multipart'
       ? { token: this.token }
       : 'No endpoint, file written to uppy server local storage'
 
@@ -254,6 +278,73 @@ class Uploader {
         this.emitSuccess(null, { response: respObj })
       }
 
+      this.cleanUp()
+    })
+  }
+
+  /**
+   * Upload the file to S3 while it is still being downloaded.
+   */
+  uploadS3Streaming () {
+    const file = createTailReadStream(this.options.path, {
+      tail: true
+    })
+
+    this.writer.on('finish', () => {
+      file.close()
+    })
+
+    return this._uploadS3(file)
+  }
+
+  /**
+   * Upload the file to S3 after it has been fully downloaded.
+   */
+  uploadS3Full () {
+    const file = fs.createReadStream(this.options.path)
+    return this._uploadS3(file)
+  }
+
+  /**
+   * Upload a stream to S3.
+   */
+  _uploadS3 (stream) {
+    if (!this.options.s3) {
+      this.emitError(new Error('The S3 client is not configured on this uppy-server.'))
+      return
+    }
+
+    const filename = this.options.metadata.filename || path.basename(this.options.path)
+    const { client, options } = this.options.s3
+
+    const upload = client.upload({
+      Bucket: options.bucket,
+      Key: options.getKey(null, filename),
+      ACL: options.acl,
+      ContentType: this.options.metadata.type,
+      Body: stream
+    })
+
+    this.s3Upload = upload
+
+    upload.on('httpUploadProgress', ({ loaded, total }) => {
+      this.emitProgress(loaded, total)
+    })
+
+    upload.send((error, data) => {
+      this.s3Upload = null
+      if (error) {
+        this.emitError(error)
+      } else {
+        this.emitSuccess(null, {
+          response: {
+            responseText: JSON.stringify(data),
+            headers: {
+              'content-type': 'application/json'
+            }
+          }
+        })
+      }
       this.cleanUp()
     })
   }

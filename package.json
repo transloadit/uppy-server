@@ -67,6 +67,7 @@
   },
   "dependencies": {
     "@purest/providers": "1.0.0",
+    "@uppy/fs-tail-stream": "^1.2.0",
     "atob": "2.0.3",
     "aws-sdk": "^2.77.0",
     "body-parser": "1.18.2",

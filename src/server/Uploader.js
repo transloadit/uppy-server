@@ -6,26 +6,33 @@ const createTailReadStream = require('@uppy/fs-tail-stream')
 const emitter = require('./WebsocketEmitter')
 const request = require('request')
 const serializeError = require('serialize-error')
-const { jsonStringify } = require('./utils')
+const { jsonStringify, hasMatch } = require('./utils')
 const logger = require('./logger')
+const validator = require('validator')
 
 class Uploader {
   /**
-   * @typedef {object} Options
+   * @typedef {object} UploaderOptions
    * @property {string} endpoint
    * @property {string=} uploadUrl
    * @property {string} protocol
    * @property {object} metadata
    * @property {number} size
+   * @property {object} uppyOptions
    * @property {string=} fieldname
    * @property {string} pathPrefix
    * @property {object=} storage
    * @property {string=} path
    * @property {object=} s3
    *
-   * @param {Options} options
+   * @param {UploaderOptions} options
    */
   constructor (options) {
+    if (!this.validateOptions(options)) {
+      logger.debug(this._errRespMessage, 'uploader.validator.fail')
+      return
+    }
+
     this.options = options
     this.token = uuid.v4()
     this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}`
@@ -34,6 +41,35 @@ class Uploader {
     /** @type {number} */
     this.emittedProgress = 0
     this.storage = options.storage
+  }
+
+  /**
+   * Validate the options passed down to the uplaoder
+   *
+   * @param {UploaderOptions} options
+   * @returns {boolean}
+   */
+  validateOptions (options) {
+    if (!options.endpoint && !options.uploadUrl) {
+      this._errRespMessage = 'No destination specified'
+      return false
+    }
+
+    const validatorOpts = { require_protocol: true, require_tld: !options.uppyOptions.debug }
+    return [options.endpoint, options.uploadUrl].every((url) => {
+      if (url && !validator.isURL(url, validatorOpts)) {
+        this._errRespMessage = 'Invalid destination url'
+        return false
+      }
+
+      const allowedUrls = options.uppyOptions.uploadUrls
+      if (allowedUrls && url && !hasMatch(url, allowedUrls)) {
+        this._errRespMessage = 'upload destination does not match any allowed destinations'
+        return false
+      }
+
+      return true
+    })
   }
 
   /**
@@ -109,11 +145,10 @@ class Uploader {
   }
 
   getResponse () {
-    const body = this.options.endpoint || this.options.protocol === 's3-multipart'
-      ? { token: this.token }
-      : 'No endpoint, file written to uppy server local storage'
-
-    return { body, status: 200 }
+    if (this._errRespMessage) {
+      return { body: this._errRespMessage, status: 400 }
+    }
+    return { body: { token: this.token }, status: 200 }
   }
 
   /**

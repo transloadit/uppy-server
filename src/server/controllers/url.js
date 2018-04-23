@@ -4,6 +4,7 @@ const Uploader = require('../Uploader')
 const validator = require('validator')
 const utils = require('../utils')
 const logger = require('../logger')
+const redis = require('redis')
 
 module.exports = () => {
   return router()
@@ -20,7 +21,7 @@ module.exports = () => {
 const meta = (req, res) => {
   req.uppy.debugLog('URL file import handler running')
 
-  if (!validateData(req.body, req.uppy.options.debug)) {
+  if (!validator.isURL(req.body.url, { require_protocol: true, require_tld: !req.uppy.options.debug })) {
     req.uppy.debugLog('Invalid request body detected. Exiting url meta handler.')
     return res.status(400).json({error: 'Invalid request body'})
   }
@@ -33,7 +34,6 @@ const meta = (req, res) => {
     })
 }
 
-// TODO: refactor this so it can be merged someway with ./get.js
 /**
  * Handles the reques of import a file from a remote URL, and then
  * subsequently uploading it to the specified destination.
@@ -44,25 +44,20 @@ const meta = (req, res) => {
 const get = (req, res) => {
   req.uppy.debugLog('URL file import handler running')
 
-  // TODO validate that url is part of valid upload URLs
-  if (!validateData(req.body, req.uppy.options.debug)) {
-    req.uppy.debugLog('Invalid request body detected. Exiting url download/upload handler.')
-    return res.status(400).json({ error: 'Invalid request body' })
-  }
-
   utils.getURLMeta(req.body.url)
     .then(({ size }) => {
       // @ts-ignore
-      const { filePath } = req.uppy.options
+      const { filePath, redisUrl } = req.uppy.options
       req.uppy.debugLog('Instantiating uploader.')
       const uploader = new Uploader({
+        uppyOptions: req.uppy.options,
         endpoint: req.body.endpoint,
         uploadUrl: req.body.uploadUrl,
         protocol: req.body.protocol,
         metadata: req.body.metadata,
         size: size,
-        pathPrefix: `${filePath}`
-        // TODO: add redis client for golden retriever state storage
+        pathPrefix: `${filePath}`,
+        storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
       })
 
       req.uppy.debugLog('Waiting for socket connection before beginning remote download.')
@@ -96,23 +91,4 @@ const downloadURL = (url, onDataChunk) => {
   request(opts)
     .on('data', onDataChunk)
     .on('error', (err) => logger.error(err, 'controller.url.download.error'))
-}
-
-/**
- * Validates if passed data contains valid content
- *
- * @param {object} data
- * @param {boolean} debugMode
- * @returns {boolean}
- */
-const validateData = (data, debugMode) => {
-  if (data.endpoint && !validator.isURL(data.endpoint, { require_protocol: true, require_tld: !debugMode })) {
-    return false
-  }
-
-  if (data.url && !validator.isURL(data.url, { require_protocol: true, require_tld: !debugMode })) {
-    return false
-  }
-
-  return true
 }

@@ -24,6 +24,7 @@ class Uploader {
    * @property {object=} storage
    * @property {string=} path
    * @property {object=} s3
+   * @property {object} headers
    *
    * @param {UploaderOptions} options
    */
@@ -288,7 +289,7 @@ class Uploader {
       this.options.metadata,
       { [this.options.fieldname]: file }
     )
-    request.post({ url: this.options.endpoint, formData, encoding: null }, (error, response, body) => {
+    request.post({ url: this.options.endpoint, headers: this.options.headers, formData, encoding: null }, (error, response, body) => {
       if (error) {
         logger.error(error, 'upload.multipart.error')
         this.emitError(error)

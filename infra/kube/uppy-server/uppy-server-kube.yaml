@@ -18,6 +18,18 @@ metadata:
   namespace: uppy
 spec:
   replicas: 2
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - uppy-server
+          topologyKey: kubernetes.io/hostname
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -35,9 +47,9 @@ spec:
         name: uppy-server        
         resources:
           limits:
-            memory: 150Mi
+            memory: 2Gi
           requests:
-            memory: 100Mi
+            memory: 2Gi
         envFrom:
         - configMapRef:
             name: uppy-server-env

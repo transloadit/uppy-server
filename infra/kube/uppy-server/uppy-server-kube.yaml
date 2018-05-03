@@ -31,12 +31,12 @@ spec:
     spec:
       affinity:
         nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - preference:
-                matchExpressions:
-                - key: cloud.google.com/gke-preemptible
-                  operator: Exists
-              weight: 100
+          requiredDuringSchedulingIgnoredDuringExecution:
+            preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-preemptible
+                operator: Exists
+            weight: 100
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:

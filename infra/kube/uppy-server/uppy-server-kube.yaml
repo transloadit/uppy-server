@@ -18,18 +18,6 @@ metadata:
   namespace: uppy
 spec:
   replicas: 2
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - uppy-server
-          topologyKey: kubernetes.io/hostname
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -41,6 +29,16 @@ spec:
       labels:
         app: uppy-server
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - uppy-server
+            topologyKey: kubernetes.io/hostname    
       containers:
       - image: docker.io/transloadit/uppy-server:latest
         imagePullPolicy: Always

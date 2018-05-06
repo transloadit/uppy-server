@@ -25,7 +25,8 @@ function get (req, res) {
       s3: req.uppy.s3Client ? {
         client: req.uppy.s3Client,
         options: providerOptions.s3
-      } : null
+      } : null,
+      headers: body.headers
     })
 
     // wait till the client has connected to the socket, before starting

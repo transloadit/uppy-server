@@ -9,6 +9,7 @@ const serializeError = require('serialize-error')
 const { jsonStringify, hasMatch } = require('./utils')
 const logger = require('./logger')
 const validator = require('validator')
+const headerSanitize = require('./header-blacklist')
 
 class Uploader {
   /**
@@ -24,6 +25,7 @@ class Uploader {
    * @property {object=} storage
    * @property {string=} path
    * @property {object=} s3
+   * @property {object=} headers
    *
    * @param {UploaderOptions} options
    */
@@ -288,7 +290,8 @@ class Uploader {
       this.options.metadata,
       { [this.options.fieldname]: file }
     )
-    request.post({ url: this.options.endpoint, formData, encoding: null }, (error, response, body) => {
+    const headers = headerSanitize(this.options.headers)
+    request.post({ url: this.options.endpoint, headers, formData, encoding: null }, (error, response, body) => {
       if (error) {
         logger.error(error, 'upload.multipart.error')
         this.emitError(error)

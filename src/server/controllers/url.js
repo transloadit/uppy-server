@@ -57,7 +57,8 @@ const get = (req, res) => {
         metadata: req.body.metadata,
         size: size,
         pathPrefix: `${filePath}`,
-        storage: redisUrl ? redis.createClient({ url: redisUrl }) : null
+        storage: redisUrl ? redis.createClient({ url: redisUrl }) : null,
+        headers: req.body.headers
       })
 
       req.uppy.debugLog('Waiting for socket connection before beginning remote download.')

@@ -30,8 +30,6 @@ echo $UPPY_ENV | base64 --decode > "${__kube}/uppy-server/uppy-env.yaml"
 kubectl config current-context
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
-sed -i "s#NFS_SERVER_IP#${NFS_SERVER_IP}#" "${__kube}/uppy-server/nfs.yaml"
-kubectl apply -f "${__kube}/uppy-server/nfs.yaml"
 sleep 10s # This cost me some precious debugging time.
 kubectl apply -f "${__kube}/uppy-server/uppy-server-kube.yaml"
 kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT

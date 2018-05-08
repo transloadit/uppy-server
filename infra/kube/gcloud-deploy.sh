@@ -32,6 +32,7 @@ kubectl config current-context
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
 sleep 10s # This cost me some precious debugging time.
 kubectl apply -f "${__kube}/uppy-server/uppy-server-kube.yaml"
+kubectl apply -f "${__kube}/uppy-server/uppy-server-redis.yaml"
 kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 

@@ -20,8 +20,8 @@ gcloud config set container/use_client_certificate True
 export CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 
 kubectl config set-cluster transloadit-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
-kubectl config set-credentials travis --token=$SA_TOKEN
-kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis --namespace=uppy
+kubectl config set-credentials travis-uppy --token=$SA_TOKEN
+kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis-uppy --namespace=uppy
 kubectl config use-context travis
 # Should be already removed. Using it temporarily.
 rm -f "${__kube}/uppy-server/uppy-env.yaml"

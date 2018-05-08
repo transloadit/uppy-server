@@ -19,7 +19,7 @@ echo $CA_CRT | base64 --decode -i > ${HOME}/ca.crt
 gcloud config set container/use_client_certificate True
 export CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 
-kubectl config set-cluster transloadit-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
+kubectl config set-cluster transloadit-gke-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
 kubectl config set-credentials travis-uppy --token=$SA_TOKEN
 kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis-uppy --namespace=uppy
 kubectl config use-context travis

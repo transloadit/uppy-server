@@ -29,7 +29,7 @@ module.exports.verifyToken = (token, secret) => {
  * @param {string} token
  * @param {object=} uppyOptions
  */
-module.exports.setToken = (res, token, uppyOptions) => {
+module.exports.addToCookies = (res, token, uppyOptions) => {
   const cookieOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 30, // would expire after 30 days
     httpOnly: true

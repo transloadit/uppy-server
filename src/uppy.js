@@ -3,7 +3,7 @@ const express = require('express')
 const Grant = require('grant-express')
 const grantConfig = require('./config/grant')()
 const providerManager = require('./server/provider')
-const dispatcher = require('./server/controllers/dispatcher')
+const controllers = require('./server/controllers')
 const s3 = require('./server/controllers/s3')
 const url = require('./server/controllers/url')
 const SocketServer = require('ws').Server
@@ -16,6 +16,7 @@ const jobs = require('./server/jobs')
 const interceptor = require('express-interceptor')
 const logger = require('./server/logger')
 const { STORAGE_PREFIX } = require('./server/Uploader')
+const middlewares = require('./server/middlewares')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -53,8 +54,14 @@ module.exports.app = (options = {}) => {
 
   app.use(interceptGrantErrorResponse)
   app.use(new Grant(grantConfig))
+  app.use((req, res, next) => {
+    res.header(
+      'Access-Control-Allow-Headers',
+      [res.get('Access-Control-Allow-Headers'), 'uppy-auth-token'].join(', ')
+    )
+    next()
+  })
   if (options.sendSelfEndpoint) {
-    // TODO: handle Access-Control-Allow-Origin here instead of externally
     app.use('*', (req, res, next) => {
       const { protocol } = options.server
       res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
@@ -68,10 +75,15 @@ module.exports.app = (options = {}) => {
   app.use('*', getOptionsMiddleware(options))
   app.use('/s3', s3(options.providerOptions.s3))
   app.use('/url', url())
-  app.get('/:providerName/:action', dispatcher)
-  app.get('/:providerName/:action/:id', dispatcher)
-  app.post('/:providerName/:action', dispatcher)
-  app.post('/:providerName/:action/:id', dispatcher)
+
+  app.get('/:providerName/callback', middlewares.hasSessionAndProvider, controllers.callback)
+  app.get('/:providerName/connect', middlewares.hasSessionAndProvider, controllers.connect)
+  app.get('/:providerName/redirect', middlewares.hasSessionAndProvider, controllers.redirect)
+  app.get('/:providerName/logout', middlewares.hasSessionAndProvider, middlewares.gentleVerifyToken, controllers.logout)
+  app.get('/:providerName/authorized', middlewares.hasSessionAndProvider, middlewares.gentleVerifyToken, controllers.authorized)
+  app.get('/:providerName/list/:id?', middlewares.hasSessionAndProvider, middlewares.verifyToken, controllers.list)
+  app.post('/:providerName/get/:id', middlewares.hasSessionAndProvider, middlewares.verifyToken, controllers.get)
+  app.get('/:providerName/thumbnail/:id', middlewares.hasSessionAndProvider, middlewares.cookieAuthToken, middlewares.verifyToken, controllers.thumbnail)
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 
@@ -219,7 +231,7 @@ const getOptionsMiddleware = (options) => {
     req.uppy = {
       options,
       s3Client,
-      authToken: req.cookies.uppyAuthToken,
+      authToken: req.header('uppy-auth-token'),
       debugLog: getDebugLogger(options),
       buildURL: getURLBuilder(options)
     }

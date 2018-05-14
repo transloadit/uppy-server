@@ -1,29 +1,29 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: Service
 metadata:
-  name: hdd-uppy
+  name: uppy-server
   namespace: uppy
+  labels: 
+    app: uppy-server
 spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: "standard"
-  resources:
-    requests:
-      storage: 20Gi
+  ports:
+  - port: 80
+    targetPort: 3020
+    protocol: TCP
+  selector:
+    app: uppy-server
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: uppy-server
   namespace: uppy
 spec:
-  replicas: 1
-  minReadySeconds: 3
-  # strategy:
-  #   type: RollingUpdate
-  #   rollingUpdate:
-  #     maxSurge: 2
-  #     maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: uppy-server
+  replicas: 2
+  serviceName: "uppy-server"
   template:
     metadata:
       labels:
@@ -36,15 +36,15 @@ spec:
               - matchExpressions:
                 - key: cloud.google.com/gke-preemptible
                   operator: Exists
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: app
-      #           operator: In
-      #           values:
-      #           - uppy-server
-      #       topologyKey: kubernetes.io/hostname    
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - uppy-server
+            topologyKey: kubernetes.io/hostname    
       containers:
       - image: docker.io/transloadit/uppy-server:latest
         imagePullPolicy: Always
@@ -62,23 +62,15 @@ spec:
         volumeMounts:
         - name: uppy-server-data
           mountPath: /mnt/uppy-server-data
-      volumes:
-      - name: uppy-server-data
-        persistentVolumeClaim:
-          claimName: hdd-uppy
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: uppy-server
-  namespace: uppy
-spec:
-  ports:
-  - port: 80
-    targetPort: 3020
-    protocol: TCP
-  selector:
-    app: uppy-server
+  volumeClaimTemplates:
+  - metadata:
+      name: uppy-server-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 10Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

@@ -7,9 +7,9 @@ kubectl create ns uppy
 We will need a Redis container that we can get through [helm](https://github.com/kubernetes/helm)
 
 ```bash
- helm install --name uppy \
+ helm install --name redis \
   --namespace uppy \
-  --set redisPassword=superSecretPassword \
+  --set password=superSecretPassword \
     stable/redis
 ```
 

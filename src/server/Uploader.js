@@ -102,7 +102,9 @@ class Uploader {
     // The download has completed; close the file and start an upload if necessary.
     if (chunk === null) {
       if (this.options.endpoint && protocol === 'multipart') {
-        this.uploadMultipart()
+        this.writer.on('finish', () => {
+          this.uploadMultipart()
+        })
       }
       return this.writer.end()
     }

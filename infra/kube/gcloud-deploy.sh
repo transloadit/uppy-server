@@ -19,9 +19,9 @@ echo $CA_CRT | base64 --decode -i > ${HOME}/ca.crt
 gcloud config set container/use_client_certificate True
 export CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 
-kubectl config set-cluster transloadit-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
-kubectl config set-credentials travis --token=$SA_TOKEN
-kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis --namespace=uppy
+kubectl config set-cluster transloadit-gke-cluster --embed-certs=true --server=${CLUSTER_ENDPOINT} --certificate-authority=${HOME}/ca.crt
+kubectl config set-credentials travis-uppy --token=$SA_TOKEN
+kubectl config set-context travis --cluster=$CLUSTER_NAME --user=travis-uppy --namespace=uppy
 kubectl config use-context travis
 # Should be already removed. Using it temporarily.
 rm -f "${__kube}/uppy-server/uppy-env.yaml"
@@ -30,11 +30,10 @@ echo $UPPY_ENV | base64 --decode > "${__kube}/uppy-server/uppy-env.yaml"
 kubectl config current-context
 
 kubectl apply -f "${__kube}/uppy-server/uppy-env.yaml"
-sed -i "s#NFS_SERVER_IP#${NFS_SERVER_IP}#" "${__kube}/uppy-server/nfs.yaml"
-kubectl apply -f "${__kube}/uppy-server/nfs.yaml"
 sleep 10s # This cost me some precious debugging time.
 kubectl apply -f "${__kube}/uppy-server/uppy-server-kube.yaml"
-kubectl set image deployment/uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
+kubectl apply -f "${__kube}/uppy-server/uppy-server-redis.yaml"
+kubectl set image statefulset uppy-server --namespace=uppy uppy-server=docker.io/transloadit/uppy-server:$TRAVIS_COMMIT
 sleep 10s
 
 kubectl get pods --namespace=uppy

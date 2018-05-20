@@ -1,29 +1,29 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: Service
 metadata:
-  name: nfs-uppy
+  name: uppy-server
   namespace: uppy
+  labels: 
+    app: uppy-server
 spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: ""
-  resources:
-    requests:
-      storage: 20Gi
+  ports:
+  - port: 80
+    targetPort: 3020
+    protocol: TCP
+  selector:
+    app: uppy-server
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: uppy-server
   namespace: uppy
 spec:
+  selector:
+    matchLabels:
+      app: uppy-server
   replicas: 2
-  minReadySeconds: 5
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 2
-      maxUnavailable: 1
+  serviceName: "uppy-server"
   template:
     metadata:
       labels:
@@ -62,23 +62,15 @@ spec:
         volumeMounts:
         - name: uppy-server-data
           mountPath: /mnt/uppy-server-data
-      volumes:
-      - name: uppy-server-data
-        persistentVolumeClaim:
-          claimName: nfs-uppy
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: uppy-server
-  namespace: uppy
-spec:
-  ports:
-  - port: 80
-    targetPort: 3020
-    protocol: TCP
-  selector:
-    app: uppy-server
+  volumeClaimTemplates:
+  - metadata:
+      name: uppy-server-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 10Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -112,8 +104,8 @@ metadata:
   namespace: uppy
 spec:
   scaleTargetRef:
-    apiVersion: apps/v1beta1
-    kind: Deployment
+    apiVersion: apps/v1
+    kind: Statefulset
     name: uppy-server
   minReplicas: 1
   maxReplicas: 5

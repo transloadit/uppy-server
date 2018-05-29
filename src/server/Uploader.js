@@ -221,7 +221,8 @@ class Uploader {
 
   uploadTus () {
     const fname = path.basename(this.options.path)
-    const metadata = Object.assign({ filename: fname }, this.options.metadata || {})
+    const ftype = this.options.metadata.type
+    const metadata = Object.assign({ filename: fname, filetype: ftype }, this.options.metadata || {})
     const file = fs.createReadStream(this.options.path)
     const uploader = this
 

@@ -33,7 +33,6 @@ module.exports = function callback (req, res, next) {
     const allowedClients = req.uppy.options.clients
     // if no preset clients then allow any client
     if (!allowedClients || hasMatch(origin, allowedClients) || hasMatch(parseUrl(origin).host, allowedClients)) {
-      console.log('inb')
       return res.send(`
         <!DOCTYPE html>
         <html>

@@ -24,6 +24,18 @@
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@request/interface/-/interface-0.1.0.tgz#c913504d3dc2810afad555b599aeaec2cc4c6768"
 
+"@types/aws-lambda@*":
+  version "8.10.6"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.6.tgz#5c01fac0c7736e7e43ca7b6652781862e702a199"
+
+"@types/aws-serverless-express@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/aws-serverless-express/-/aws-serverless-express-3.0.1.tgz#ea29611d71370ecf3ca59a90d606af55da9abf01"
+  dependencies:
+    "@types/aws-lambda" "*"
+    "@types/express" "*"
+    "@types/node" "*"
+
 "@types/body-parser@*":
   version "1.16.8"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.16.8.tgz#687ec34140624a3bec2b1a8ea9268478ae8f3be3"
@@ -34,6 +46,12 @@
 "@types/caseless@*":
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.1.tgz#9794c69c8385d0192acc471a540d1f8e0d16218a"
+
+"@types/compression@0.0.36":
+  version "0.0.36"
+  resolved "https://registry.yarnpkg.com/@types/compression/-/compression-0.0.36.tgz#7646602ffbfc43ea48a8bf0b2f1d5e5f9d75c0d0"
+  dependencies:
+    "@types/express" "*"
 
 "@types/connect-redis@0.0.7":
   version "0.0.7"
@@ -46,6 +64,12 @@
 "@types/cookie-parser@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@types/cookie-parser/-/cookie-parser-1.4.1.tgz#e88a39c41960f31549b4c52dd8620aa4a2feb4bb"
+  dependencies:
+    "@types/express" "*"
+
+"@types/cors@^2.8.3":
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.4.tgz#50991a759a29c0b89492751008c6af7a7c8267b0"
   dependencies:
     "@types/express" "*"
 
@@ -167,6 +191,12 @@
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-3.2.1.tgz#b0c1579e58e686f83ce0a97bb9463d29705827fb"
   dependencies:
     "@types/node" "*"
+
+"@uppy/fs-tail-stream@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@uppy/fs-tail-stream/-/fs-tail-stream-1.2.0.tgz#bfd149c208d11e54ada1911c18a3f38abd0aa985"
+  dependencies:
+    once "^1.4.0"
 
 abab@^1.0.3:
   version "1.0.3"
@@ -361,9 +391,9 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-atob@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/atob/-/atob-2.0.3.tgz#19c7a760473774468f20b2d2d03372ad7d4cbf5d"
+atob@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.0.tgz#ab2b150e51d7b122b9efc8d7340c06b6c41076bc"
 
 attempt-x@^1.1.0, attempt-x@^1.1.1:
   version "1.1.1"
@@ -2699,6 +2729,10 @@ isarray@1.0.0, isarray@^1.0.0, isarray@~1.0.0:
 isexe@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-1.1.2.tgz#36f3e22e60750920f5e7241a476a8c6a42275ad0"
+
+isobject@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
 isobject@^2.0.0:
   version "2.1.0"

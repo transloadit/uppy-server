@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Server component for Uppy's (https://uppy.io) extensible file upload widget with support for drag&drop, resumable uploads, previews, restrictions, file processing/encoding, remote providers like Dropbox and Google Drive, S3 and more :dog:",
   "main": "lib/uppy.js",
   "types": "types/index.d.ts",
@@ -80,6 +80,7 @@
     "express-session": "1.15.6",
     "grant-express": "^4.0.1",
     "helmet": "3.8.2",
+    "isobject": "3.0.1",
     "jsonwebtoken": "^8.0.1",
     "lodash.merge": "^4.6.0",
     "morgan": "1.9.0",

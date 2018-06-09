@@ -7,9 +7,9 @@ const controllers = require('./server/controllers')
 const s3 = require('./server/controllers/s3')
 const url = require('./server/controllers/url')
 const SocketServer = require('ws').Server
-const emitter = require('./server/WebsocketEmitter')
+const emitter = require('./server/emitter')
 const merge = require('lodash.merge')
-const redis = require('redis')
+const redis = require('./server/redis')
 const cookieParser = require('cookie-parser')
 const { jsonStringify, getURLBuilder } = require('./server/utils')
 const jobs = require('./server/jobs')
@@ -48,6 +48,12 @@ module.exports.app = (options = {}) => {
   if (customProviders) {
     providerManager.addCustomProviders(customProviders, providers, grantConfig)
   }
+
+  // create singleton redis client
+  if (options.redisUrl) {
+    redis.client({ url: options.redisUrl })
+  }
+  emitter(options.multipleInstances && options.redisUrl)
 
   const app = express()
   app.use(cookieParser()) // server tokens are added to cookies
@@ -98,11 +104,10 @@ module.exports.app = (options = {}) => {
  * the socket is used to send progress events during an upload
  *
  * @param {object} server
- * @param {object} options
  */
-module.exports.socket = (server, options) => {
+module.exports.socket = (server) => {
   const wss = new SocketServer({ server })
-  const { redisUrl } = options
+  const redisClient = redis.client()
 
   // A new connection is usually created when an upload begins,
   // or when connection fails while an upload is on-going and,
@@ -110,7 +115,6 @@ module.exports.socket = (server, options) => {
   wss.on('connection', (ws) => {
     // @ts-ignore
     const fullPath = ws.upgradeReq.url
-    let redisClient
     // the token identifies which ongoing upload's progress, the socket
     // connection wishes to listen to.
     const token = fullPath.replace(/\/api\//, '')
@@ -126,12 +130,9 @@ module.exports.socket = (server, options) => {
       })
     }
 
-    // if the redis url is set, then we attempt to check the storage
+    // if the redisClient is available, then we attempt to check the storage
     // if we have any already stored progress data on the upload.
-    if (redisUrl) {
-      if (!redisClient) {
-        redisClient = redis.createClient({ url: redisUrl })
-      }
+    if (redisClient) {
       redisClient.get(`${STORAGE_PREFIX}:${token}`, (err, data) => {
         if (err) logger.error(err, 'socket.redis.error')
         if (data) {
@@ -141,20 +142,19 @@ module.exports.socket = (server, options) => {
       })
     }
 
-    logger.debug(`emitting connection message for ${token} ${emitter.emit(`connection:${token}`)}`, 'socket.connect.emit')
-    // emitter.emit(`connection:${token}`)
-    emitter.on(token, sendProgress)
+    emitter().emit(`connection:${token}`)
+    emitter().on(token, sendProgress)
 
     ws.on('message', (jsonData) => {
       const data = JSON.parse(jsonData.toString())
       // whitelist triggered actions
       if (data.action === 'pause' || data.action === 'resume') {
-        emitter.emit(`${data.action}:${token}`)
+        emitter().emit(`${data.action}:${token}`)
       }
     })
 
     ws.on('close', () => {
-      emitter.removeListener(token, sendProgress)
+      emitter().removeListener(token, sendProgress)
     })
   })
 }

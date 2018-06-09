@@ -3,7 +3,7 @@ const path = require('path')
 const tus = require('tus-js-client')
 const uuid = require('uuid')
 const createTailReadStream = require('@uppy/fs-tail-stream')
-const emitter = require('./WebsocketEmitter')
+const emitter = require('./emitter')
 const request = require('request')
 const serializeError = require('serialize-error')
 const { jsonStringify, hasMatch } = require('./utils')
@@ -17,14 +17,14 @@ class Uploader {
    * @property {string} endpoint
    * @property {string=} uploadUrl
    * @property {string} protocol
-   * @property {object} metadata
    * @property {number} size
-   * @property {object} uppyOptions
    * @property {string=} fieldname
    * @property {string} pathPrefix
-   * @property {object=} storage
    * @property {string=} path
    * @property {object=} s3
+   * @property {object} metadata
+   * @property {object} uppyOptions
+   * @property {object=} storage
    * @property {object=} headers
    *
    * @param {UploaderOptions} options
@@ -39,7 +39,7 @@ class Uploader {
     this.token = uuid.v4()
     this.options.path = `${this.options.pathPrefix}/${Uploader.FILE_NAME_PREFIX}-${this.token}`
     this.writer = fs.createWriteStream(this.options.path, { mode: 0o666 }) // no executable files
-      .on('error', (err) => logger.error(`${this.token.substring(0, 8)} ${err}`, 'uploader.write.error'))
+      .on('error', (err) => logger.error(`${this.shortToken} ${err}`, 'uploader.write.error'))
     /** @type {number} */
     this.emittedProgress = 0
     this.storage = options.storage
@@ -75,12 +75,19 @@ class Uploader {
   }
 
   /**
+   * returns a substring of the token
+   */
+  get shortToken () {
+    return this.token.substring(0, 8)
+  }
+
+  /**
    *
    * @param {function} callback
    */
   onSocketReady (callback) {
-    emitter.once(`connection:${this.token}`, () => callback())
-    logger.debug(`${this.token} waiting for connection`, 'uploader.connect.wait')
+    emitter().once(`connection:${this.token}`, () => callback())
+    logger.debug(`${this.shortToken} waiting for connection`, 'uploader.socket.wait')
   }
 
   cleanUp () {
@@ -89,8 +96,8 @@ class Uploader {
         logger.error(`cleanup failed for: ${this.options.path} err: ${err}`, 'uploader.cleanup.error')
       }
     })
-    emitter.removeAllListeners(`pause:${this.token}`)
-    emitter.removeAllListeners(`resume:${this.token}`)
+    emitter().removeAllListeners(`pause:${this.token}`)
+    emitter().removeAllListeners(`resume:${this.token}`)
   }
 
   /**
@@ -98,7 +105,7 @@ class Uploader {
    * @param {Buffer | Buffer[]} chunk
    */
   handleChunk (chunk) {
-    logger.debug(`${this.token.substring(0, 8)} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
+    logger.debug(`${this.shortToken} ${this.writer.bytesWritten} bytes`, 'uploader.download.progress')
 
     const protocol = this.options.protocol || 'multipart'
 
@@ -173,7 +180,7 @@ class Uploader {
     const percentage = (bytesUploaded / bytesTotal * 100)
     const formatPercentage = percentage.toFixed(2)
     logger.debug(
-      `${this.token.substring(0, 8)} ${bytesUploaded} ${bytesTotal} ${formatPercentage}%`,
+      `${this.shortToken} ${bytesUploaded} ${bytesTotal} ${formatPercentage}%`,
       'uploader.upload.progress'
     )
 
@@ -187,7 +194,7 @@ class Uploader {
     const roundedPercentage = Math.floor(percentage)
     if (this.emittedProgress !== roundedPercentage) {
       this.emittedProgress = roundedPercentage
-      emitter.emit(this.token, dataToEmit)
+      emitter().emit(this.token, dataToEmit)
     }
   }
 
@@ -202,7 +209,7 @@ class Uploader {
       payload: Object.assign(extraData, { complete: true, url })
     }
     this.saveState(emitData)
-    emitter.emit(this.token, emitData)
+    emitter().emit(this.token, emitData)
   }
 
   /**
@@ -217,7 +224,7 @@ class Uploader {
       payload: Object.assign(extraData, { error: serializeError(err) })
     }
     this.saveState(dataToEmit)
-    emitter.emit(this.token, dataToEmit)
+    emitter().emit(this.token, dataToEmit)
   }
 
   uploadTus () {
@@ -267,11 +274,11 @@ class Uploader {
 
     this.tus.start()
 
-    emitter.on(`pause:${this.token}`, () => {
+    emitter().on(`pause:${this.token}`, () => {
       this.tus.abort()
     })
 
-    emitter.on(`resume:${this.token}`, () => {
+    emitter().on(`resume:${this.token}`, () => {
       this.tus.start()
     })
   }

@@ -141,8 +141,8 @@ module.exports.socket = (server, options) => {
       })
     }
 
-    logger.debug(`emitting connection message for ${token}`, 'socket.connect.emit')
-    emitter.emit(`connection:${token}`)
+    logger.debug(`emitting connection message for ${token} ${emitter.emit(`connection:${token}`)}`, 'socket.connect.emit')
+    // emitter.emit(`connection:${token}`)
     emitter.on(token, sendProgress)
 
     ws.on('message', (jsonData) => {

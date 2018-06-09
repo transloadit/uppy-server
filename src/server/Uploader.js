@@ -80,6 +80,7 @@ class Uploader {
    */
   onSocketReady (callback) {
     emitter.once(`connection:${this.token}`, () => callback())
+    logger.debug(`${this.token} waiting for connection`, 'uploader.connect.wait')
   }
 
   cleanUp () {

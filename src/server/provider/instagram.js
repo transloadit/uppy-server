@@ -46,6 +46,7 @@ class Instagram {
         if (err) return logger.error(err, 'provider.instagram.download.error')
         request(this._getMediaUrl(body, query.carousel_id))
           .on('data', onData)
+          .on('end', () => onData(null))
           .on('error', (err) => {
             logger.error(err, 'provider.instagram.download.url.error')
           })

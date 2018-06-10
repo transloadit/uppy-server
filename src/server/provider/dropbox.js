@@ -15,13 +15,51 @@ class DropBox {
     return 'dropbox'
   }
 
+  _userInfo ({ token }, done) {
+    this.client
+      .post('users/get_current_account')
+      .options({ version: '2' })
+      .auth(token)
+      .request(done)
+  }
+
   /**
+   * Makes 2 requests in parallel - 1. to get files, 2. to get user email
+   * it then waits till both requests are done before proceeding with the callback
    *
    * @param {object} options
    * @param {function} done
    */
   list (options, done) {
-    return this.stats(options, done)
+    let userInfoDone = false
+    let statsDone = false
+    let userInfo
+    let stats
+    let reqErr
+    const finishReq = () => {
+      if (!reqErr) {
+        stats.body.user_email = userInfo.body.email
+      }
+      done(reqErr, stats, stats.body)
+    }
+
+    this.stats(options, (err, resp) => {
+      statsDone = true
+      stats = resp
+      reqErr = reqErr || err
+      if (userInfoDone) {
+        finishReq()
+      }
+    })
+
+    this._userInfo(options, (err, resp) => {
+      userInfoDone = true
+      userInfo = resp
+      reqErr = reqErr || err
+      if (statsDone) {
+        finishReq()
+      }
+    })
   }
 
   stats ({ directory, query, token }, done) {
@@ -49,6 +87,7 @@ class DropBox {
       .auth(token)
       .request()
       .on('data', onData)
+      .on('end', () => onData(null))
       .on('error', (err) => {
         logger.error(err, 'provider.dropbox.download.error')
       })

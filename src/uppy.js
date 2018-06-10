@@ -3,19 +3,20 @@ const express = require('express')
 const Grant = require('grant-express')
 const grantConfig = require('./config/grant')()
 const providerManager = require('./server/provider')
-const dispatcher = require('./server/controllers/dispatcher')
+const controllers = require('./server/controllers')
 const s3 = require('./server/controllers/s3')
 const url = require('./server/controllers/url')
 const SocketServer = require('ws').Server
-const emitter = require('./server/WebsocketEmitter')
+const emitter = require('./server/emitter')
 const merge = require('lodash.merge')
-const redis = require('redis')
+const redis = require('./server/redis')
 const cookieParser = require('cookie-parser')
 const { jsonStringify, getURLBuilder } = require('./server/utils')
 const jobs = require('./server/jobs')
 const interceptor = require('express-interceptor')
 const logger = require('./server/logger')
 const { STORAGE_PREFIX } = require('./server/Uploader')
+const middlewares = require('./server/middlewares')
 
 const providers = providerManager.getDefaultProviders()
 const defaultOptions = {
@@ -23,7 +24,14 @@ const defaultOptions = {
     protocol: 'http',
     path: ''
   },
-  providerOptions: {},
+  providerOptions: {
+    s3: {
+      acl: 'public-read',
+      endpoint: 'https://{service}.{region}.amazonaws.com',
+      conditions: [],
+      getKey: (req, filename) => filename
+    }
+  },
   debug: true
 }
 
@@ -41,13 +49,25 @@ module.exports.app = (options = {}) => {
     providerManager.addCustomProviders(customProviders, providers, grantConfig)
   }
 
+  // create singleton redis client
+  if (options.redisUrl) {
+    redis.client({ url: options.redisUrl })
+  }
+  emitter(options.multipleInstances && options.redisUrl)
+
   const app = express()
   app.use(cookieParser()) // server tokens are added to cookies
 
   app.use(interceptGrantErrorResponse)
   app.use(new Grant(grantConfig))
+  app.use((req, res, next) => {
+    res.header(
+      'Access-Control-Allow-Headers',
+      [res.get('Access-Control-Allow-Headers'), 'uppy-auth-token'].join(', ')
+    )
+    next()
+  })
   if (options.sendSelfEndpoint) {
-    // TODO: handle Access-Control-Allow-Origin here instead of externally
     app.use('*', (req, res, next) => {
       const { protocol } = options.server
       res.header('i-am', `${protocol}://${options.sendSelfEndpoint}`)
@@ -61,10 +81,15 @@ module.exports.app = (options = {}) => {
   app.use('*', getOptionsMiddleware(options))
   app.use('/s3', s3(options.providerOptions.s3))
   app.use('/url', url())
-  app.get('/:providerName/:action', dispatcher)
-  app.get('/:providerName/:action/:id', dispatcher)
-  app.post('/:providerName/:action', dispatcher)
-  app.post('/:providerName/:action/:id', dispatcher)
+
+  app.get('/:providerName/callback', middlewares.hasSessionAndProvider, controllers.callback)
+  app.get('/:providerName/connect', middlewares.hasSessionAndProvider, controllers.connect)
+  app.get('/:providerName/redirect', middlewares.hasSessionAndProvider, controllers.redirect)
+  app.get('/:providerName/logout', middlewares.hasSessionAndProvider, middlewares.gentleVerifyToken, controllers.logout)
+  app.get('/:providerName/authorized', middlewares.hasSessionAndProvider, middlewares.gentleVerifyToken, controllers.authorized)
+  app.get('/:providerName/list/:id?', middlewares.hasSessionAndProvider, middlewares.verifyToken, controllers.list)
+  app.post('/:providerName/get/:id', middlewares.hasSessionAndProvider, middlewares.verifyToken, controllers.get)
+  app.get('/:providerName/thumbnail/:id', middlewares.hasSessionAndProvider, middlewares.cookieAuthToken, middlewares.verifyToken, controllers.thumbnail)
 
   app.param('providerName', providerManager.getProviderMiddleware(providers))
 
@@ -79,11 +104,10 @@ module.exports.app = (options = {}) => {
  * the socket is used to send progress events during an upload
  *
  * @param {object} server
- * @param {object} options
  */
-module.exports.socket = (server, options) => {
+module.exports.socket = (server) => {
   const wss = new SocketServer({ server })
-  const { redisUrl } = options
+  const redisClient = redis.client()
 
   // A new connection is usually created when an upload begins,
   // or when connection fails while an upload is on-going and,
@@ -91,10 +115,10 @@ module.exports.socket = (server, options) => {
   wss.on('connection', (ws) => {
     // @ts-ignore
     const fullPath = ws.upgradeReq.url
-    let redisClient
     // the token identifies which ongoing upload's progress, the socket
     // connection wishes to listen to.
     const token = fullPath.replace(/\/api\//, '')
+    logger.info(`connection received from ${token}`, 'socket.connect')
 
     /**
      *
@@ -106,12 +130,9 @@ module.exports.socket = (server, options) => {
       })
     }
 
-    // if the redis url is set, then we attempt to check the storage
+    // if the redisClient is available, then we attempt to check the storage
     // if we have any already stored progress data on the upload.
-    if (redisUrl) {
-      if (!redisClient) {
-        redisClient = redis.createClient({ url: redisUrl })
-      }
+    if (redisClient) {
       redisClient.get(`${STORAGE_PREFIX}:${token}`, (err, data) => {
         if (err) logger.error(err, 'socket.redis.error')
         if (data) {
@@ -121,19 +142,19 @@ module.exports.socket = (server, options) => {
       })
     }
 
-    emitter.emit(`connection:${token}`)
-    emitter.on(token, sendProgress)
+    emitter().emit(`connection:${token}`)
+    emitter().on(token, sendProgress)
 
     ws.on('message', (jsonData) => {
       const data = JSON.parse(jsonData.toString())
       // whitelist triggered actions
       if (data.action === 'pause' || data.action === 'resume') {
-        emitter.emit(`${data.action}:${token}`)
+        emitter().emit(`${data.action}:${token}`)
       }
     })
 
     ws.on('close', () => {
-      emitter.removeListener(token, sendProgress)
+      emitter().removeListener(token, sendProgress)
     })
   })
 }
@@ -189,6 +210,19 @@ const getDebugLogger = (options) => {
  * @param {object} options
  */
 const getOptionsMiddleware = (options) => {
+  let s3Client = null
+  if (options.providerOptions.s3) {
+    const S3 = require('aws-sdk/clients/s3')
+    const config = options.providerOptions.s3
+    s3Client = new S3({
+      region: config.region,
+      endpoint: config.endpoint,
+      accessKeyId: config.key,
+      secretAccessKey: config.secret,
+      signatureVersion: 'v4'
+    })
+  }
+
   /**
    *
    * @param {object} req
@@ -198,7 +232,8 @@ const getOptionsMiddleware = (options) => {
   const middleware = (req, res, next) => {
     req.uppy = {
       options,
-      authToken: req.cookies.uppyAuthToken,
+      s3Client,
+      authToken: req.header('uppy-auth-token'),
       debugLog: getDebugLogger(options),
       buildURL: getURLBuilder(options)
     }

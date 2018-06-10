@@ -213,12 +213,19 @@ const getOptionsMiddleware = (options) => {
   let s3Client = null
   if (options.providerOptions.s3) {
     const S3 = require('aws-sdk/clients/s3')
+    const AWS = require('aws-sdk')
     const config = options.providerOptions.s3
+    // Use credentials to allow assumed roles to pass STS sessions in.
+    // If the user doesn't specify key and secret, the default credentials (process-env)
+    // will be used by S3 in calls below.
+    let credentials
+    if (config.key && config.secret) {
+      credentials = new AWS.Credentials(config.key, config.secret, config.sessionToken)
+    }
     s3Client = new S3({
       region: config.region,
       endpoint: config.endpoint,
-      accessKeyId: config.key,
-      secretAccessKey: config.secret,
+      credentials,
       signatureVersion: 'v4'
     })
   }

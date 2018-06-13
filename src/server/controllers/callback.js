@@ -28,7 +28,7 @@ module.exports = function callback (req, res, next) {
   // add the token to cookies for thumbnail/image requests
   tokenService.addToCookies(res, uppyAuthToken, req.uppy.options)
 
-  if (req.session.grant.state) {
+  if ((req.session.grant || {}).state) {
     const origin = JSON.parse(atob(req.session.grant.state)).origin
     const allowedClients = req.uppy.options.clients
     // if no preset clients then allow any client

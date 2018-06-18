@@ -6,7 +6,8 @@ var authServer = express()
 
 authServer.use(session({ secret: 'grant', resave: true, saveUninitialized: true }))
 authServer.all('/drive/callback', (req, res, next) => {
-  req.session.grant = { state: Buffer.from(JSON.stringify({ origin: 'http://redirect.foo' })).toString('base64') }
+  req.session.grant = {
+    state: 'non-empty-value' }
   next()
 })
 

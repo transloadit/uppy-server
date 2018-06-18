@@ -1,5 +1,5 @@
-const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
+const { encrypt, decrypt } = require('./utils')
 
 /**
  *
@@ -41,18 +41,4 @@ module.exports.addToCookies = (res, token, uppyOptions) => {
   }
   // send signed token to client.
   res.cookie('uppyAuthToken', token, cookieOptions)
-}
-
-const encrypt = (input, secret) => {
-  const cipher = crypto.createCipher('aes256', secret)
-  let encrypted = cipher.update(input, 'utf8', 'hex')
-  encrypted += cipher.final('hex')
-  return encrypted
-}
-
-const decrypt = (encrypted, secret) => {
-  var decipher = crypto.createDecipher('aes256', secret)
-  var decrypted = decipher.update(encrypted, 'hex', 'utf8')
-  decrypted += decipher.final('utf8')
-  return decrypted
 }

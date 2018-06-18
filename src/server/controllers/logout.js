@@ -1,4 +1,4 @@
-const tokenService = require('../token-service')
+const tokenService = require('../helpers/jwt')
 
 /**
  *

@@ -1,4 +1,5 @@
 const request = require('request')
+const crypto = require('crypto')
 
 /**
  *
@@ -64,7 +65,7 @@ exports.getURLMeta = (url) => {
  *
  * @param {object} options uppy options
  */
-const getURLBuilder = (options) => {
+module.exports.getURLBuilder = (options) => {
   /**
    * Builds uppy targeted url
    *
@@ -91,4 +92,21 @@ const getURLBuilder = (options) => {
   return buildURL
 }
 
-module.exports.getURLBuilder = getURLBuilder
+/**
+ *
+ * @param {*} input
+ * @param {string} secret
+ */
+module.exports.encrypt = (input, secret) => {
+  const cipher = crypto.createCipher('aes256', secret)
+  let encrypted = cipher.update(input, 'utf8', 'hex')
+  encrypted += cipher.final('hex')
+  return encrypted
+}
+
+module.exports.decrypt = (encrypted, secret) => {
+  var decipher = crypto.createDecipher('aes256', secret)
+  var decrypted = decipher.update(encrypted, 'hex', 'utf8')
+  decrypted += decipher.final('utf8')
+  return decrypted
+}

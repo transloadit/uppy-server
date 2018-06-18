@@ -2,15 +2,25 @@
 
 jest.mock('tus-js-client')
 jest.mock('purest')
+jest.mock('../../src/server/helpers/oauth-state', () => {
+  return {
+    generateState: () => 'some-cool-nice-encrytpion',
+    addToState: () => 'some-cool-nice-encrytpion',
+    getFromState: (state) => {
+      return state === 'state-with-invalid-instance-url' ? 'http://localhost:3452' : 'http://localhost:3020'
+    }
+  }
+})
 
 const request = require('supertest')
-const tokenService = require('../../src/server/token-service')
+const tokenService = require('../../src/server/helpers/jwt')
 const { authServer, noAuthServer } = require('../mockserver')
 const authData = {
   dropbox: 'token value',
   drive: 'token value'
 }
 const token = tokenService.generateToken(authData, process.env.UPPYSERVER_SECRET)
+const OAUTH_STATE = 'some-cool-nice-encrytpion'
 
 describe('set i-am header', () => {
   test('set i-am header in response', () => {
@@ -63,18 +73,18 @@ describe('test authentication', () => {
       .expect(200)
       .expect((res) => {
         const authToken = res.header['set-cookie'][0].split(';')[0].split('uppyAuthToken=')[1]
-        // see mockserver.js for http://redirect.foo
+        // see mock ../../src/server/helpers/oauth-state above for http://localhost:3020
         const body = `
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8" />
             <script>
-              window.opener.postMessage({token: "${authToken}"}, "http://redirect.foo")
+              window.opener.postMessage({token: "${authToken}"}, "http://localhost:3020")
               window.close()
             </script>
         </head>
-        <body>yes sire</body>
+        <body></body>
         </html>`
         expect(res.text).toBe(body)
       })
@@ -108,7 +118,7 @@ describe('connect to provider', () => {
       .get('/dropbox/connect?foo=bar')
       .set('uppy-auth-token', token)
       .expect(302)
-      .expect('Location', 'http://localhost:3020/connect/dropbox?foo=bar')
+      .expect('Location', `http://localhost:3020/connect/dropbox?state=${OAUTH_STATE}`)
   })
 
   test('connect to drive via grant.js endpoint', () => {
@@ -116,22 +126,21 @@ describe('connect to provider', () => {
       .get('/drive/connect?foo=bar')
       .set('uppy-auth-token', token)
       .expect(302)
-      .expect('Location', 'http://localhost:3020/connect/google?foo=bar')
+      .expect('Location', `http://localhost:3020/connect/google?state=${OAUTH_STATE}`)
   })
 })
 
 describe('handle oauth redirect', () => {
   test('redirect to a valid uppy instance', () => {
-    const state = Buffer.from(JSON.stringify({ uppyInstance: 'http://localhost:3020' })).toString('base64')
     return request(authServer)
-      .get(`/dropbox/redirect?state=${state}`)
+      .get(`/dropbox/redirect?state=${OAUTH_STATE}`)
       .set('uppy-auth-token', token)
       .expect(302)
-      .expect('Location', `http://localhost:3020/connect/dropbox/callback?state=${encodeURIComponent(state)}`)
+      .expect('Location', `http://localhost:3020/connect/dropbox/callback?state=${OAUTH_STATE}`)
   })
 
   test('do not redirect to invalid uppy instances', () => {
-    const state = Buffer.from(JSON.stringify({ uppyInstance: 'http://localhost:3452' })).toString('base64')
+    const state = 'state-with-invalid-instance-url' // see mock ../../src/server/helpers/oauth-state above
     return request(authServer)
       .get(`/dropbox/redirect?state=${state}`)
       .set('uppy-auth-token', token)

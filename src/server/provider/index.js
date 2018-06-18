@@ -6,7 +6,7 @@ const config = require('@purest/providers')
 const dropbox = require('./dropbox')
 const drive = require('./drive')
 const instagram = require('./instagram')
-const { getURLBuilder } = require('../utils')
+const { getURLBuilder } = require('../helpers/utils')
 const logger = require('../logger')
 
 /**

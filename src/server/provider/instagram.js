@@ -1,6 +1,6 @@
 const request = require('request')
 const purest = require('purest')({ request })
-const utils = require('../utils')
+const utils = require('../helpers/utils')
 const logger = require('../logger')
 
 class Instagram {

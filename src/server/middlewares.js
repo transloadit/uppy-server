@@ -1,4 +1,4 @@
-const tokenService = require('./token-service')
+const tokenService = require('./helpers/jwt')
 
 exports.hasSessionAndProvider = (req, res, next) => {
   if (!req.session || !req.body) {

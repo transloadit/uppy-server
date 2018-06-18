@@ -2,7 +2,7 @@ const router = require('express').Router
 const request = require('request')
 const Uploader = require('../Uploader')
 const validator = require('validator')
-const utils = require('../utils')
+const utils = require('../helpers/utils')
 const logger = require('../logger')
 const redis = require('../redis')
 

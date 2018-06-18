@@ -1,12 +1,11 @@
 /**
- * oAuth callback.  Encripts the access token and sends the new token with the response,
+ * oAuth callback.  Encrypts the access token and sends the new token with the response,
  * and redirects to redirect url.
  */
-// @ts-ignore
-const atob = require('atob')
-const tokenService = require('../token-service')
+const tokenService = require('../helpers/jwt')
 const parseUrl = require('url').parse
-const { hasMatch } = require('../utils')
+const { hasMatch } = require('../helpers/utils')
+const oAuthState = require('../helpers/oauth-state')
 
 /**
  *
@@ -29,7 +28,7 @@ module.exports = function callback (req, res, next) {
   tokenService.addToCookies(res, uppyAuthToken, req.uppy.options)
 
   if ((req.session.grant || {}).state) {
-    const origin = JSON.parse(atob(req.session.grant.state)).origin
+    const origin = oAuthState.getFromState(req.session.grant.state, 'origin', req.uppy.options.secret)
     const allowedClients = req.uppy.options.clients
     // if no preset clients then allow any client
     if (!allowedClients || hasMatch(origin, allowedClients) || hasMatch(parseUrl(origin).host, allowedClients)) {
@@ -43,7 +42,7 @@ module.exports = function callback (req, res, next) {
               window.close()
             </script>
         </head>
-        <body>yes sire</body>
+        <body></body>
         </html>`
       )
     }

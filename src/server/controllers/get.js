@@ -1,5 +1,6 @@
 const Uploader = require('../Uploader')
 const redis = require('../redis')
+const logger = require('../logger')
 
 function get (req, res) {
   const providerName = req.params.providerName
@@ -11,6 +12,11 @@ function get (req, res) {
 
   // get the file size before proceeding
   provider.size({ id, token }, (size) => {
+    if (!size) {
+      logger.error('unable to determine file size', 'controller.get.provider.size')
+      return res.status(400).json({error: 'unable to determine file size'})
+    }
+
     req.uppy.debugLog('Instantiating uploader.')
     const uploader = new Uploader({
       uppyOptions: req.uppy.options,
@@ -35,9 +41,7 @@ function get (req, res) {
     // waiting for socketReady.
     uploader.onSocketReady(() => {
       req.uppy.debugLog('Socket connection received. Starting remote download.')
-      provider.download({ id, token, query: req.query },
-        size ? uploader.handleChunk.bind(uploader) : null,
-        !size ? uploader.handleResponse.bind(uploader) : null)
+      provider.download({ id, token, query: req.query }, uploader.handleChunk.bind(uploader))
     })
     const response = uploader.getResponse()
     res.status(response.status).json(response.body)

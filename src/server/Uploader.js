@@ -21,11 +21,11 @@ class Uploader {
    * @property {string=} fieldname
    * @property {string} pathPrefix
    * @property {string=} path
-   * @property {object=} s3
-   * @property {object} metadata
-   * @property {object} uppyOptions
-   * @property {object=} storage
-   * @property {object=} headers
+   * @property {any=} s3
+   * @property {any} metadata
+   * @property {any} uppyOptions
+   * @property {any=} storage
+   * @property {any=} headers
    *
    * @param {UploaderOptions} options
    */

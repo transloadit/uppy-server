@@ -1,6 +1,6 @@
 {
   "name": "uppy-server",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "description": "Server component for Uppy's (https://uppy.io) extensible file upload widget with support for drag&drop, resumable uploads, previews, restrictions, file processing/encoding, remote providers like Dropbox and Google Drive, S3 and more :dog:",
   "main": "lib/uppy.js",
   "types": "types/index.d.ts",
@@ -122,6 +122,6 @@
     "test:watch": "npm test -- --watch"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=6.0.0"
   }
 }

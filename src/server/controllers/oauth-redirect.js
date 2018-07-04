@@ -9,6 +9,9 @@ const oAuthState = require('../helpers/oauth-state')
  * @param {object} res
  */
 module.exports = function oauthRedirect (req, res) {
+  if (!req.query.state) {
+    return res.status(400).send('Cannot find state param in reques')
+  }
   const handler = oAuthState.getFromState(req.query.state, 'uppyInstance', req.uppy.options.secret)
   const handlerHostName = parseUrl(handler).host
 
